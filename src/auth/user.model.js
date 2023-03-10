@@ -18,12 +18,12 @@ const userSchema = new Schema(
       type: String,
       trim: true,
     },
+    username: {
+      type: String,
+      trim: true,
+    },
     userPin: {
       type: Number,
-    },
-    userRole: {
-      type: String,
-      enums: [getEnumsArray(USER_ROLE)],
     },
     photo: {
       type: String,
@@ -32,6 +32,11 @@ const userSchema = new Schema(
     password: {
       type: String,
       trim: true,
+    },
+    isAccountConfirmed: {
+      type: Boolean,
+      trim: true,
+      default: false,
     },
   },
   { timestamps: true }

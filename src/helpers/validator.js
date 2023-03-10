@@ -1,22 +1,27 @@
 const Joi = require('joi');
+const { check, validationResult } = require('express-validator');
 const ApiError = require('./error');
 
-const authSchema = Joi.object({
-  name: Joi.string()
+const nameSchema = Joi.object({
+  firstName: Joi.string()
     .min(3)
     .max(30)
     .required()
     .trim()
-    .error(
-      new ApiError(400, 'Kindly input the name in the appropriate format...')
-    ),
+    .error(new ApiError(400, 'Kindly input a valid string as firstName...')),
 
-  password: Joi.string()
+  lastName: Joi.string()
     .min(3)
     .max(30)
     .required()
     .trim()
-    .error(new ApiError(400, 'Kindly input a password you would remember...')),
+    .error(new ApiError(400, 'Kindly input a valid string as lastName...')),
+  username: Joi.string()
+    .min(3)
+    .max(30)
+    .required()
+    .trim()
+    .error(new ApiError(400, 'Kindly input a valid string as username...')),
 });
 
 const emailSchema = Joi.object({
@@ -26,6 +31,29 @@ const emailSchema = Joi.object({
     .required()
     .error(new ApiError(400, 'Oops! A valid email is actually required here!')),
 });
+const passwordSchema = Joi.object({
+  password: Joi.string()
+    .min(5)
+    .max(30)
+    .required()
+    .trim()
+    .error(
+      new ApiError(
+        400,
+        'Kindly input a password between 5 and 30 characters...'
+      )
+    ),
+});
+
+const passwordValidator = async (req, res, next) => {
+  const data = req.body;
+  try {
+    await passwordSchema.validateAsync(data);
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
 
 const emailValidator = async (req, res, next) => {
   const data = req.body;
@@ -37,10 +65,10 @@ const emailValidator = async (req, res, next) => {
   }
 };
 
-const authValidate = async (req, res, next) => {
+const nameValidator = async (req, res, next) => {
   const data = req.body;
   try {
-    await authSchema.validateAsync(data);
+    await nameSchema.validateAsync(data);
     next();
   } catch (error) {
     next(error);
@@ -99,4 +127,9 @@ const productValidator = async (req, res, next) => {
   }
 };
 
-module.exports = { authValidate, productValidator, emailValidator };
+module.exports = {
+  productValidator,
+  passwordValidator,
+  nameValidator,
+  emailValidator,
+};

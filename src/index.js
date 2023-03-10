@@ -1,9 +1,11 @@
 const express = require('express');
-
+const passport = require('passport');
 const { json, urlencoded } = express;
 const { PORT } = require('./config/keys');
 const { connectToDatabase } = require('./config/mongoose');
+const { errorConverter, errorHandler } = require('./helpers/asyncError');
 const logger = require('./helpers/logger');
+require('./auth/auth.service')(passport);
 const app = express();
 
 app.use(json());
@@ -19,6 +21,10 @@ app.get('/', (req, res) => {
 });
 
 connectToDatabase();
+
+app.use(errorConverter);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   logger.info(`Server is now live at port ${PORT}`);

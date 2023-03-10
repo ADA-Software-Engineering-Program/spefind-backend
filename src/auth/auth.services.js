@@ -1,8 +1,67 @@
 const User = require('./user.model');
 const ApiError = require('../helpers/error');
 const bcrypt = require('bcryptjs');
+const cron = require('node-cron');
 
-const registerUser = (data) => {};
+const registerUser = async (data) => {
+  const code = Math.floor(Math.random() * (999999 - 100000) + 100000);
+  data.userPin = code;
+  const rawData = JSON.parse(JSON.stringify(data));
+  const returnedData = await User.create(rawData);
+  const refreshCode = Math.floor(Math.random() * (999999 - 100000) + 100000);
+  cron.schedule('*/5 * * * *', async () => {
+    await User.findByIdAndUpdate(
+      returnedData._id,
+      { userPin: refreshCode },
+      { new: true }
+    );
+  });
+
+  return returnedData;
+};
+
+const nameInput = async (userId, data) => {
+  return await User.findByIdAndUpdate(userId, data, { new: true });
+};
+
+const confirmOTP = async (userId, data) => {
+  try {
+    const { userPin } = await User.findById(userId);
+    if (userPin != data) {
+      throw new ApiError(400, 'Incorrect pin inputted...');
+    }
+    return await User.findByIdAndUpdate(
+      userId,
+      { isAccountConfirmed: true },
+      { new: true }
+    );
+  } catch (error) {
+    throw new ApiError(400, 'Incorrect pin inputted...');
+  }
+};
+
+const resendOTP = async (userId) => {
+  const code = Math.floor(Math.random() * (999999 - 100000) + 100000);
+  const data = await User.findByIdAndUpdate(
+    userId,
+    { userPin: code },
+    { new: true }
+  );
+  return code;
+};
+
+const inputPassword = async (userId, data) => {
+  try {
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+    return await User.findByIdAndUpdate(
+      userId,
+      { password: hashedPassword },
+      { new: true }
+    );
+  } catch (error) {
+    throw new ApiError(400, 'Unable to input Password...');
+  }
+};
 
 const getUserByMail = async (email) => {
   try {
@@ -18,13 +77,6 @@ const getUserByMail = async (email) => {
       'Oops! You are yet to be registered with this mail...'
     );
   }
-};
-
-const confirmOTP = (userPin, data) => {
-  if (userPin != data) {
-    throw new ApiError(400, 'Incorrect pin inputted...');
-  }
-  return;
 };
 
 const changePassword = async (user, data) => {
@@ -87,10 +139,13 @@ const editUserProfile = async (userId, data) => {
 };
 
 module.exports = {
+  registerUser,
+  nameInput,
+  inputPassword,
   editUserProfile,
   confirmOTP,
   getUserByMail,
-  confirmOTP,
+  resendOTP,
   changePassword,
   updatePassword,
 };

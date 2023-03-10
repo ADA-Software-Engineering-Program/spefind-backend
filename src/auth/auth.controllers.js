@@ -1,34 +1,54 @@
 const catchAsync = require('express-async-handler');
 const tokenService = require('./token.service');
+const cron = require('node-cron');
 const passport = require('passport');
 const ApiError = require('../helpers/error');
 const authService = require('./auth.services');
+const { sendOTP } = require('../helpers/email');
 // const cloudinary = require('../helpers/cloudinary');
 // const { sendOTP } = require('../helpers/email');
 
 const register = catchAsync(async (req, res) => {
-  let data = req.user;
+  const data = await authService.registerUser(req.body);
   const authToken = await tokenService.generateAuthTokens(data);
   const token = authToken.access.token;
+  sendOTP(data.email, data.userPin);
   res.status(201).json({
     status: true,
-    message: 'Account Successfully Created!',
-    data,
-    token,
-  });
-});
-const registerAdmin = catchAsync(async (req, res) => {
-  let data = req.user;
-  const authToken = await tokenService.generateAuthTokens(data);
-  const token = authToken.access.token;
-  res.status(201).json({
-    status: true,
-    message: 'Admin Account Successfully Created!',
+    message:
+      'Account Creation Initiated! You have also just received an OTP in your mail...',
     data,
     token,
   });
 });
 
+const confirmOTP = catchAsync(async (req, res) => {
+  if (!req.body.OTP) {
+    throw new ApiError(400, 'An OTP is required here...');
+  }
+  await authService.confirmOTP(req.user._id, req.body.OTP);
+  res.status(200).json({
+    status: true,
+    message: 'Yeaa! OTP correctly inputted... Your email is also now verified!',
+  });
+});
+
+const resendOTP = catchAsync(async (req, res) => {
+  const data = await authService.resendOTP(req.user._id);
+  res.status(201).json({
+    status: true,
+    message: 'OTP has just been resent to your mail...',
+  });
+});
+
+const nameInput = catchAsync(async (req, res) => {
+  const data = await authService.nameInput(req.user._id, req.body);
+  res.status(201).json({
+    status: 'success',
+    message: 'First, Last Name & Username now Updated...',
+    data,
+  });
+});
 const login = catchAsync((req, res, next) => {
   passport.authenticate('login', async (err, user, info) => {
     try {
@@ -44,11 +64,13 @@ const login = catchAsync((req, res, next) => {
       }
       req.login(user, { session: false }, async (err) => {
         if (err) return next(err);
+        console.log(user);
         const data = {
           _id: user._id,
           email: user.email,
-          name: user.name,
-          userRole: user.userRole,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          username: user.username,
         };
         const token = await tokenService.generateAuthTokens(data);
 
@@ -65,6 +87,13 @@ const login = catchAsync((req, res, next) => {
   })(req, res, next);
 });
 
+const passwordInput = catchAsync(async (req, res) => {
+  const data = await authService.inputPassword(req.user._id, req.body);
+  res
+    .status(201)
+    .json({ status: 'success', message: 'Password input Successful...' });
+});
+
 const forgotPassword = async (req, res) => {
   const { email, userPin } = await authService.getUserByMail(req.body.email);
   let data = { email, userPin };
@@ -76,17 +105,6 @@ const forgotPassword = async (req, res) => {
     token: token.access.token,
   });
 };
-
-const confirmOTP = catchAsync(async (req, res) => {
-  if (!req.body.OTP) {
-    throw new ApiError(400, 'An OTP is required here...');
-  }
-
-  const user = await authService.confirmOTP(req.user.userPin, req.body.OTP);
-  res
-    .status(200)
-    .json({ status: true, message: 'Yeaa! OTP correctly inputted...' });
-});
 
 const changePassword = catchAsync(async (req, res) => {
   if (!req.body.password) {
@@ -135,11 +153,13 @@ const editProfile = catchAsync(async (req, res) => {
 
 module.exports = {
   register,
+  nameInput,
   login,
   editProfile,
-  registerAdmin,
   forgotPassword,
   confirmOTP,
+  passwordInput,
+  resendOTP,
   changePassword,
   updatePassword,
 };
