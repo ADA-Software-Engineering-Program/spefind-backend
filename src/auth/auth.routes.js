@@ -7,6 +7,7 @@ const {
   resendOTP,
   nameInput,
   passwordInput,
+  uploadProfilePhoto,
   changePassword,
   updatePassword,
   editProfile,
@@ -23,7 +24,7 @@ const {
   userAuthentication,
   verifiedEmailAuthorization,
 } = require('../helpers/auth');
-// const upload = require('../helpers/multer');
+const upload = require('../helpers/multer');
 const passport = require('passport');
 const router = Router();
 
@@ -52,12 +53,12 @@ router.put(
 
 router.post('/login', loginValidator, login);
 
-// router.put(
-//   '/edit/profile',
-//   userAuthentication,
-// upload.single('photo'),
-//   editProfile
-// );
+router.put(
+  '/image/upload',
+  userAuthentication,
+  upload.single('photo'),
+  uploadProfilePhoto
+);
 
 // router.put('/change/password', userAuthentication, changePassword);
 

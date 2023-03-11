@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/keys');
+const User = require('../auth/user.model');
 
 const userAuthentication = (req, res, next) => {
   const bearerHeader = req.headers.authorization;
@@ -29,8 +30,9 @@ const userAuthentication = (req, res, next) => {
   // console.log(bearer[1]);
 };
 
-const verifiedEmailAuthorization = (req, res, next) => {
-  if (!req.user || req.user.isAccountConfirmed !== true) {
+const verifiedEmailAuthorization = async (req, res, next) => {
+  const { isAccountConfirmed } = await User.findById(req.user._id);
+  if (!req.user || isAccountConfirmed !== true) {
     res.status(403).json({
       status: 'access denied',
       message:

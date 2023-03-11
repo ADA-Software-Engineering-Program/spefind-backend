@@ -4,9 +4,8 @@ const cron = require('node-cron');
 const passport = require('passport');
 const ApiError = require('../helpers/error');
 const authService = require('./auth.services');
-const { sendOTP } = require('../helpers/email');
-// const cloudinary = require('../helpers/cloudinary');
-// const { sendOTP } = require('../helpers/email');
+const { sendOTP, resendOTPMail } = require('../helpers/email');
+const cloudinary = require('../helpers/cloudinary');
 
 const register = catchAsync(async (req, res) => {
   const data = await authService.registerUser(req.body);
@@ -35,6 +34,8 @@ const confirmOTP = catchAsync(async (req, res) => {
 
 const resendOTP = catchAsync(async (req, res) => {
   const data = await authService.resendOTP(req.user._id);
+  console.log(data);
+  resendOTPMail(req.user.email, data);
   res.status(201).json({
     status: true,
     message: 'OTP has just been resent to your mail...',
@@ -132,21 +133,21 @@ const updatePassword = catchAsync(async (req, res) => {
     .json({ status: 'success', message: 'Password Successfully Updated...' });
 });
 
-const editProfile = catchAsync(async (req, res) => {
-  if (req.body.password) {
-    throw new ApiError(400, "You can't update your password Here!");
+const uploadProfilePhoto = catchAsync(async (req, res) => {
+  if (req.body.password || req.body.username || req.body.firstName) {
+    throw new ApiError(400, "You can't upload any other user info here...");
   }
-  const updatedbody = req.body;
+  const uploadedImage = {};
 
   if (req.file) {
     const avatar = await cloudinary.uploader.upload(req.file.path);
-    updatedbody.photo = avatar.secure_url;
+    uploadedImage.photo = avatar.secure_url;
   }
 
-  const user = await authService.editUserProfile(req.user._id, updatedbody);
+  const user = await authService.uploadPhoto(req.user._id, uploadedImage);
   res.status(200).json({
     status: 'success',
-    message: 'Yeaa! Profile update successful!',
+    message: 'Yeaa! Display Photo update successful!',
     user,
   });
 });
@@ -155,7 +156,7 @@ module.exports = {
   register,
   nameInput,
   login,
-  editProfile,
+  uploadProfilePhoto,
   forgotPassword,
   confirmOTP,
   passwordInput,

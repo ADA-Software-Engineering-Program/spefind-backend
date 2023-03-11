@@ -57,17 +57,17 @@ const sendOTP = async (userMail, userPin) => {
   });
 };
 
-const resendOTP = async (userMail, userPin) => {
+const resendOTPMail = async (userMail, userPin) => {
   console.log(userMail, userPin);
   const email_sender = 'info@davayte.net';
-  const subject_matter = 'Password Reset';
+  const subject_matter = 'OTP Resend';
   const email = {
     body: {
       greeting: `Heyy There`,
       intro: [``],
 
       action: {
-        instructions: `You are receiving this mail because you requested to reset your password. Your OTP is ${userPin}.`,
+        instructions: `You are receiving this mail because you requested an OTP resend. Your OTP is ${userPin}.`,
         button: {
           color: '', // Optional action button color
           text: '',
@@ -95,4 +95,4 @@ const resendOTP = async (userMail, userPin) => {
   });
 };
 
-module.exports = { sendOTP, resendOTP };
+module.exports = { sendOTP, resendOTPMail };

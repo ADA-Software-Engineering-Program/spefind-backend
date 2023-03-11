@@ -21,7 +21,11 @@ const registerUser = async (data) => {
 };
 
 const nameInput = async (userId, data) => {
-  return await User.findByIdAndUpdate(userId, data, { new: true });
+  try {
+    return await User.findByIdAndUpdate(userId, data, { new: true });
+  } catch (error) {
+    throw new ApiError(400, 'Unable to input user information');
+  }
 };
 
 const confirmOTP = async (userId, data) => {
@@ -42,12 +46,12 @@ const confirmOTP = async (userId, data) => {
 
 const resendOTP = async (userId) => {
   const code = Math.floor(Math.random() * (999999 - 100000) + 100000);
-  const data = await User.findByIdAndUpdate(
-    userId,
-    { userPin: code },
-    { new: true }
-  );
-  return code;
+  const { userPin } = await User.findById(userId);
+  cron.schedule('*/5 * * * *', async () => {
+    await User.findByIdAndUpdate(userId, { userPin: code }, { new: true });
+  });
+
+  return userPin;
 };
 
 const inputPassword = async (userId, data) => {
@@ -116,8 +120,15 @@ const updatePassword = async (email, oldPassword, newPassword) => {
   );
 };
 
+const uploadPhoto = async (userId, data) => {
+  try {
+    return await User.findByIdAndUpdate(userId, data, { new: true });
+  } catch (error) {
+    throw new ApiError(400, 'Unable to upload photo');
+  }
+};
+
 const editUserProfile = async (userId, data) => {
-  console.log(data);
   const user = await User.findOne({ id: userId });
   if (!user) {
     throw new ApiError(400, 'User not found...');
@@ -146,6 +157,7 @@ module.exports = {
   confirmOTP,
   getUserByMail,
   resendOTP,
+  uploadPhoto,
   changePassword,
   updatePassword,
 };
