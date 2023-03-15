@@ -95,17 +95,32 @@ const passwordInput = catchAsync(async (req, res) => {
     .json({ status: 'success', message: 'Password input Successful...' });
 });
 
+const userBio = async (req, res) => {
+  const data = await authService.userBio(req.user._id, req.body);
+  res
+    .status(200)
+    .json({ status: true, message: 'User Bio Now Updated...', data });
+};
+
 const forgotPassword = async (req, res) => {
-  const { email, userPin } = await authService.getUserByMail(req.body.email);
-  let data = { email, userPin };
+  const { email } = await authService.getUserByMail(req.body.email);
+  let data = { email };
   const token = await tokenService.generateAuthTokens(data);
-  sendOTP(email, userPin);
+
   res.status(200).json({
     status: true,
-    message: 'You have just been sent an OTP to your email... Please confirm',
+    message: 'Email confirmed... Please proceed onto reset your password',
     token: token.access.token,
   });
 };
+
+const resetPassword = catchAsync(async (req, res) => {
+  await authService.changePassword(req.user.email, req.body.password);
+  res.status(200).json({
+    status: 'success',
+    message: 'Password successfully reset...',
+  });
+});
 
 const changePassword = catchAsync(async (req, res) => {
   if (!req.body.password) {
@@ -119,18 +134,6 @@ const changePassword = catchAsync(async (req, res) => {
     status: true,
     message: 'Password Change Successfully Effected...',
   });
-});
-
-const updatePassword = catchAsync(async (req, res) => {
-  console.log(req.user);
-  await authService.updatePassword(
-    req.user.email,
-    req.body.oldPassword,
-    req.body.newPassword
-  );
-  res
-    .status(201)
-    .json({ status: 'success', message: 'Password Successfully Updated...' });
 });
 
 const uploadProfilePhoto = catchAsync(async (req, res) => {
@@ -152,15 +155,26 @@ const uploadProfilePhoto = catchAsync(async (req, res) => {
   });
 });
 
+const updateField = async (req, res) => {
+  const data = await authService.updateField(req.user._id, req.body);
+  res.status(200).json({
+    status: true,
+    message: 'Field of Discipline now updated...',
+    data,
+  });
+};
+
 module.exports = {
   register,
+  updateField,
   nameInput,
   login,
   uploadProfilePhoto,
   forgotPassword,
   confirmOTP,
+  userBio,
   passwordInput,
   resendOTP,
+  resetPassword,
   changePassword,
-  updatePassword,
 };

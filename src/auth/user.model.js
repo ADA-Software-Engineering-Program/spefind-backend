@@ -33,6 +33,20 @@ const userSchema = new Schema(
       type: String,
       trim: true,
     },
+    selfDescription: {
+      type: String,
+      trim: true,
+    },
+
+    discipline: {
+      type: Schema.Types.ObjectId,
+      ref: 'Field',
+    },
+    areaOfSpecialty: {
+      type: String,
+      trim: true,
+    },
+
     isAccountConfirmed: {
       type: Boolean,
       trim: true,

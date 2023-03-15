@@ -57,13 +57,26 @@ const resendOTP = async (userId) => {
 const inputPassword = async (userId, data) => {
   try {
     const hashedPassword = await bcrypt.hash(data.password, 10);
-    return await User.findByIdAndUpdate(
-      userId,
-      { password: hashedPassword },
-      { new: true }
-    );
+    const passwordData = { password: hashedPassword };
+    return await updateUserById(userId, passwordData);
   } catch (error) {
     throw new ApiError(400, 'Unable to input Password...');
+  }
+};
+
+const updateUserById = async (id, data) => {
+  try {
+    return await User.findByIdAndUpdate(id, data, { new: true });
+  } catch (error) {
+    throw new ApiError(400, 'Unable to update user by Id');
+  }
+};
+
+const userBio = async (userId, info) => {
+  try {
+    return await updateUserById(userId, info);
+  } catch (error) {
+    throw new ApiError(400, 'Unable to update User Bio...');
   }
 };
 
@@ -104,25 +117,9 @@ const comparePassword = async (entered, password) => {
   }
 };
 
-const updatePassword = async (email, oldPassword, newPassword) => {
-  const user = await User.findOne({ email });
-  if (!user) {
-    throw new ApiError(401, 'Incorrect email or password...');
-  }
-  const compare = await comparePassword(oldPassword, user.password);
-
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-  return await User.findOneAndUpdate(
-    user._id,
-    { password: hashedPassword },
-    { new: true }
-  );
-};
-
 const uploadPhoto = async (userId, data) => {
   try {
-    return await User.findByIdAndUpdate(userId, data, { new: true });
+    return await updateUserById(userId, data);
   } catch (error) {
     throw new ApiError(400, 'Unable to upload photo');
   }
@@ -149,15 +146,21 @@ const editUserProfile = async (userId, data) => {
   throw new ApiError(400, "Kindly input the details you're looking to update!");
 };
 
+const updateField = async (userId, data) => {
+  return await User.findOneAndUpdate({ _id: userId }, data, { new: true });
+};
+
 module.exports = {
   registerUser,
+  updateField,
   nameInput,
+  userBio,
   inputPassword,
   editUserProfile,
   confirmOTP,
   getUserByMail,
+  updateField,
   resendOTP,
   uploadPhoto,
   changePassword,
-  updatePassword,
 };

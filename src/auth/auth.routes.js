@@ -2,14 +2,16 @@ const { Router } = require('express');
 const {
   register,
   login,
+  userBio,
   forgotPassword,
   confirmOTP,
   resendOTP,
   nameInput,
   passwordInput,
   uploadProfilePhoto,
+  updateField,
   changePassword,
-  updatePassword,
+  resetPassword,
   editProfile,
 } = require('./auth.controllers');
 const { checkEmail, checkUserName } = require('../helpers/checkUser');
@@ -56,11 +58,18 @@ router.post('/login', loginValidator, login);
 router.put(
   '/image/upload',
   userAuthentication,
+  verifiedEmailAuthorization,
   upload.single('photo'),
   uploadProfilePhoto
 );
 
-// router.put('/change/password', userAuthentication, changePassword);
+router.put('/bio', userAuthentication, verifiedEmailAuthorization, userBio);
+
+router.post('/input/discipline', userAuthentication, updateField);
+
+router.put('/password/forgot', forgotPassword);
+
+router.put('/password/reset', userAuthentication, resetPassword);
 
 // router.patch('/update/password', userAuthentication, updatePassword);
 
