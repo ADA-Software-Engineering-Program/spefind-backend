@@ -9,7 +9,6 @@ module.exports = (passport) => {
     new localStrategy(
       { usernameField: 'email', passwordField: 'password' },
       async (email, password, done) => {
-        // console.log(email, password);
         try {
           const transformedMail = email.toLowerCase();
           const user = await User.findOne({ email: transformedMail });
@@ -18,7 +17,6 @@ module.exports = (passport) => {
             return done(null, false, { message: 'User not found' });
           }
           const validate = await user.isPasswordMatch(password);
-          console.log(validate);
 
           if (!validate) {
             return done(null, false, {

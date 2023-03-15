@@ -1,5 +1,7 @@
 const User = require('./user.model');
 const ApiError = require('../helpers/error');
+const Following = require('../user/following.model');
+const Follow = require('../user/follow.model');
 const bcrypt = require('bcryptjs');
 const cron = require('node-cron');
 
@@ -8,6 +10,9 @@ const registerUser = async (data) => {
   data.userPin = code;
   const rawData = JSON.parse(JSON.stringify(data));
   const returnedData = await User.create(rawData);
+  const user = { userId: returnedData._id };
+  await Follow.create(user);
+  await Following.create(user);
   const refreshCode = Math.floor(Math.random() * (999999 - 100000) + 100000);
   cron.schedule('*/5 * * * *', async () => {
     await User.findByIdAndUpdate(

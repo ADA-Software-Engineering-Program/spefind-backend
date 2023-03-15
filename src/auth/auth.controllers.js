@@ -34,7 +34,6 @@ const confirmOTP = catchAsync(async (req, res) => {
 
 const resendOTP = catchAsync(async (req, res) => {
   const data = await authService.resendOTP(req.user._id);
-  console.log(data);
   resendOTPMail(req.user.email, data);
   res.status(201).json({
     status: true,
@@ -65,7 +64,6 @@ const login = catchAsync((req, res, next) => {
       }
       req.login(user, { session: false }, async (err) => {
         if (err) return next(err);
-        console.log(user);
         const data = {
           _id: user._id,
           email: user.email,
@@ -155,14 +153,14 @@ const uploadProfilePhoto = catchAsync(async (req, res) => {
   });
 });
 
-const updateField = async (req, res) => {
+const updateField = catchAsync(async (req, res) => {
   const data = await authService.updateField(req.user._id, req.body);
   res.status(200).json({
     status: true,
     message: 'Field of Discipline now updated...',
     data,
   });
-};
+});
 
 module.exports = {
   register,
