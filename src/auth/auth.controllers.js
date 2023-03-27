@@ -45,7 +45,7 @@ const nameInput = catchAsync(async (req, res) => {
   const data = await authService.nameInput(req.user._id, req.body);
   res.status(201).json({
     status: 'success',
-    message: 'First, Last Name & Username now Updated...',
+    message: 'First, Last Name, Username & Password now Updated...',
     data,
   });
 });

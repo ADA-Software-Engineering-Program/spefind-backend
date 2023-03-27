@@ -26,8 +26,16 @@ const registerUser = async (data) => {
 };
 
 const nameInput = async (userId, data) => {
+  const rawData = data;
+  const hashedPassword = await bcrypt.hash(data.password, 10);
+  rawData.password = hashedPassword;
+
   try {
-    return await User.findByIdAndUpdate(userId, data, { new: true });
+    return await User.findByIdAndUpdate(
+      userId,
+      { $set: rawData },
+      { new: true }
+    );
   } catch (error) {
     throw new ApiError(400, 'Unable to input user information');
   }
