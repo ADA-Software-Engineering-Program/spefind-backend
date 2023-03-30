@@ -86,12 +86,12 @@ const login = catchAsync((req, res, next) => {
   })(req, res, next);
 });
 
-const passwordInput = catchAsync(async (req, res) => {
-  const data = await authService.inputPassword(req.user._id, req.body);
-  res
-    .status(201)
-    .json({ status: 'success', message: 'Password input Successful...' });
-});
+// const passwordInput = catchAsync(async (req, res) => {
+//   const data = await authService.inputPassword(req.user._id, req.body);
+//   res
+//     .status(201)
+//     .json({ status: 'success', message: 'Password input Successful...' });
+// });
 
 const userBio = async (req, res) => {
   const data = await authService.userBio(req.user._id, req.body);
@@ -171,7 +171,6 @@ module.exports = {
   forgotPassword,
   confirmOTP,
   userBio,
-  passwordInput,
   resendOTP,
   resetPassword,
   changePassword,
