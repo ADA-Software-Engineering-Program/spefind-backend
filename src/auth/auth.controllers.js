@@ -86,13 +86,6 @@ const login = catchAsync((req, res, next) => {
   })(req, res, next);
 });
 
-// const passwordInput = catchAsync(async (req, res) => {
-//   const data = await authService.inputPassword(req.user._id, req.body);
-//   res
-//     .status(201)
-//     .json({ status: 'success', message: 'Password input Successful...' });
-// });
-
 const userBio = async (req, res) => {
   const data = await authService.userBio(req.user._id, req.body);
   res
@@ -134,21 +127,21 @@ const changePassword = catchAsync(async (req, res) => {
   });
 });
 
-const uploadProfilePhoto = catchAsync(async (req, res) => {
-  if (req.body.password || req.body.username || req.body.firstName) {
-    throw new ApiError(400, "You can't upload any other user info here...");
+const editProfile = catchAsync(async (req, res) => {
+  if (req.body.password) {
+    throw new ApiError(400, "You can't update your password Here!");
   }
-  const uploadedImage = {};
+  const updatedbody = req.body;
 
   if (req.file) {
     const avatar = await cloudinary.uploader.upload(req.file.path);
-    uploadedImage.photo = avatar.secure_url;
+    updatedbody.photo = avatar.secure_url;
   }
 
-  const user = await authService.uploadPhoto(req.user._id, uploadedImage);
+  const user = await authService.editUserProfile(req.user._id, updatedbody);
   res.status(200).json({
     status: 'success',
-    message: 'Yeaa! Display Photo update successful!',
+    message: 'Yeaa! Profile update successful!',
     user,
   });
 });
@@ -167,7 +160,7 @@ module.exports = {
   updateField,
   nameInput,
   login,
-  uploadProfilePhoto,
+  editProfile,
   forgotPassword,
   confirmOTP,
   userBio,

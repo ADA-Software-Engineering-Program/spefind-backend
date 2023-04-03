@@ -67,16 +67,6 @@ const resendOTP = async (userId) => {
   return userPin;
 };
 
-// const inputPassword = async (userId, data) => {
-//   try {
-//     const hashedPassword = await bcrypt.hash(data.password, 10);
-//     const passwordData = { password: hashedPassword };
-//     return await updateUserById(userId, passwordData);
-//   } catch (error) {
-//     throw new ApiError(400, 'Unable to input Password...');
-//   }
-// };
-
 const updateUserById = async (id, data) => {
   try {
     return await User.findByIdAndUpdate(id, data, { new: true });

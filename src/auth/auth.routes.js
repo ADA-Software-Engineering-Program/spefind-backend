@@ -7,8 +7,7 @@ const {
   confirmOTP,
   resendOTP,
   nameInput,
-  passwordInput,
-  uploadProfilePhoto,
+  editProfile,
   updateField,
   changePassword,
   resetPassword,
@@ -45,22 +44,22 @@ router.post('/confirm/otp', userAuthentication, confirmOTP);
 
 router.post('/otp/resend', userAuthentication, resendOTP);
 
-router.put(
-  '/password/input',
-  passwordValidator,
-  userAuthentication,
-  verifiedEmailAuthorization,
-  passwordInput
-);
+// router.put(
+//   '/password/input',
+//   passwordValidator,
+//   userAuthentication,
+//   verifiedEmailAuthorization,
+//   passwordInput
+// );
 
 router.post('/login', loginValidator, login);
 
 router.put(
-  '/image/upload',
+  '/profile/edit',
   userAuthentication,
   verifiedEmailAuthorization,
   upload.single('photo'),
-  uploadProfilePhoto
+  editProfile
 );
 
 router.put('/bio', userAuthentication, verifiedEmailAuthorization, userBio);
