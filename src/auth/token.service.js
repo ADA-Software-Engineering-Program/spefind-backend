@@ -12,7 +12,7 @@ const generateToken = (user, expires) => {
   return jwt.sign(payload, JWT_STRING);
 };
 
-const generateAuthTokens = async (user, newUser = false) => {
+const generateAuthTokens = (user, newUser = false) => {
   const accessTokenExpires = moment().add(60, 'minutes');
   const accessToken = generateToken(user, accessTokenExpires);
   const returnTokens = {

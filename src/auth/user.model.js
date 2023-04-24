@@ -18,10 +18,15 @@ const userSchema = new Schema(
       required: true,
       trim: true,
     },
-    userPin: {
-      type: Number,
+    gender: {
+      type: String,
+      trim: true,
     },
-    dateOfBirth: {
+    state: {
+      type: String,
+      trim: true,
+    },
+    biography: {
       type: String,
       trim: true,
     },
