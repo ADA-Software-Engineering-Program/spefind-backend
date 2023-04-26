@@ -19,14 +19,10 @@ module.exports = (passport) => {
           data.email = transformedMail;
           const hashedPassword = await bcrypt.hash(password, 10);
           data.password = hashedPassword;
-          data.firstName = req.body.firstName;
-          data.lastName = req.body.lastName;
           data.userRole = 'speaker';
           const user = await User.create(data);
           let createdObject = {};
           createdObject.email = user.email;
-          createdObject.firstName = user.firstName;
-          createdObject.lastName = user.lastName;
           createdObject.userRole = user.userRole;
           createdObject.createdAt = user.createdAt;
           createdObject.updatedAt = user.updatedAt;

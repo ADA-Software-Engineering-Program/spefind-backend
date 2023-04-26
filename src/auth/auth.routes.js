@@ -8,7 +8,7 @@ const router = Router();
 
 router.post(
   '/speaker/signup',
-  registerValidator,
+  loginValidator,
   checkEmail,
   passport.authenticate('speaker', { session: false }),
   register
@@ -16,6 +16,7 @@ router.post(
 
 router.post(
   '/organizer/signup',
+  registerValidator,
   passport.authenticate('organizer', { session: false }),
   register
 );
