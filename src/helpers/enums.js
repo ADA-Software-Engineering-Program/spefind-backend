@@ -10,4 +10,4 @@ const USER_ROLE = Object.freeze({ SPEAKER: 'speaker', ORGANIZER: 'organizer' });
 //   FAILED: 'failed',
 // });
 
-module.exports = { USER_ROLE, TRANSACTION_STATUS, getEnumsArray };
+module.exports = { USER_ROLE, getEnumsArray };
