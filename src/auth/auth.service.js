@@ -23,6 +23,8 @@ module.exports = (passport) => {
           const user = await User.create(data);
           let createdObject = {};
           createdObject.email = user.email;
+          data.firstName = req.body.firstName;
+          data.lastName = req.body.lastName;
           createdObject.userRole = user.userRole;
           createdObject.createdAt = user.createdAt;
           createdObject.updatedAt = user.updatedAt;
