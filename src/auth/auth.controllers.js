@@ -2,8 +2,8 @@ const catchAsync = require('express-async-handler');
 const tokenService = require('./token.service');
 const passport = require('passport');
 const ApiError = require('../helpers/error');
-const authService = require('./auth.service');
-// const cloudinary = require('../helpers/cloudinary');
+const authService = require('./auth.services');
+const cloudinary = require('../helpers/cloudinary');
 
 // const { sendOTP } = require('../helpers/email');
 
@@ -68,29 +68,6 @@ const login = catchAsync((req, res, next) => {
   })(req, res, next);
 });
 
-const forgotPassword = async (req, res) => {
-  const { email, userPin } = await authService.getUserByMail(req.body.email);
-  let data = { email, userPin };
-  const token = await tokenService.generateAuthTokens(data);
-
-  res.status(200).json({
-    status: true,
-    message: 'You have just been sent an OTP to your email... Please confirm',
-    token: token.access.token,
-  });
-};
-
-const confirmOTP = catchAsync(async (req, res) => {
-  if (!req.body.OTP) {
-    throw new ApiError(400, 'An OTP is required here...');
-  }
-
-  const user = await authService.confirmOTP(req.user.userPin, req.body.OTP);
-  res
-    .status(200)
-    .json({ status: true, message: 'Yeaa! OTP correctly inputted...' });
-});
-
 const changePassword = catchAsync(async (req, res) => {
   if (!req.body.password) {
     throw new ApiError(400, 'Kindly input the new desired password');
@@ -122,13 +99,14 @@ const editProfile = catchAsync(async (req, res) => {
     throw new ApiError(400, "You can't update your password Here!");
   }
   const updatedbody = req.body;
+  console.log(req.user);
 
   if (req.file) {
     const avatar = await cloudinary.uploader.upload(req.file.path);
     updatedbody.photo = avatar.secure_url;
   }
 
-  const user = await authService.editUserProfile(req.user._id, updatedbody);
+  const user = await authService.createProfile(req.user.id, updatedbody);
   res.status(200).json({
     status: 'success',
     message: 'Yeaa! Profile update successful!',
@@ -141,8 +119,6 @@ module.exports = {
   login,
   editProfile,
   registerAdmin,
-  forgotPassword,
-  confirmOTP,
   changePassword,
   updatePassword,
 };

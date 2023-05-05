@@ -3,6 +3,9 @@ const passport = require('passport');
 const { register, login } = require('./auth.controllers');
 const { registerValidator, loginValidator } = require('../helpers/validate');
 const { checkEmail } = require('../helpers/checkEmail');
+const { editProfile } = require('./auth.controllers');
+const { userAuthentication } = require('../helpers/auth');
+const upload = require('../helpers/multer');
 
 const router = Router();
 
@@ -20,6 +23,13 @@ router.post(
   checkEmail,
   passport.authenticate('organizer', { session: false }),
   register
+);
+
+router.put(
+  '/profile/setup',
+  userAuthentication,
+  upload.single('photo'),
+  editProfile
 );
 
 router.post('/login', loginValidator, login);

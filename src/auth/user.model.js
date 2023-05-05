@@ -50,6 +50,9 @@ const userSchema = new Schema(
       type: String,
       trim: true,
     },
+    pastEvents: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
+    },
   },
   { timestamps: true }
 );
