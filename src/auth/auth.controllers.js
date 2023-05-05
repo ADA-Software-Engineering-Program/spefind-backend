@@ -2,8 +2,7 @@ const catchAsync = require('express-async-handler');
 const tokenService = require('./token.service');
 const passport = require('passport');
 const ApiError = require('../helpers/error');
-const authService = require('./auth.services');
-const cloudinary = require('../helpers/cloudinary');
+const authService = require('../profile/profile.service');
 
 // const { sendOTP } = require('../helpers/email');
 
@@ -94,30 +93,9 @@ const updatePassword = catchAsync(async (req, res) => {
     .json({ status: 'success', message: 'Password Successfully Updated...' });
 });
 
-const editProfile = catchAsync(async (req, res) => {
-  if (req.body.password) {
-    throw new ApiError(400, "You can't update your password Here!");
-  }
-  const updatedbody = req.body;
-  console.log(req.user);
-
-  if (req.file) {
-    const avatar = await cloudinary.uploader.upload(req.file.path);
-    updatedbody.photo = avatar.secure_url;
-  }
-
-  const user = await authService.createProfile(req.user.id, updatedbody);
-  res.status(200).json({
-    status: 'success',
-    message: 'Yeaa! Profile update successful!',
-    user,
-  });
-});
-
 module.exports = {
   register,
   login,
-  editProfile,
   registerAdmin,
   changePassword,
   updatePassword,

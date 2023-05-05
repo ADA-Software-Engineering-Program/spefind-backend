@@ -25,13 +25,6 @@ router.post(
   register
 );
 
-router.put(
-  '/profile/setup',
-  userAuthentication,
-  upload.single('photo'),
-  editProfile
-);
-
 router.post('/login', loginValidator, login);
 
 module.exports = router;
