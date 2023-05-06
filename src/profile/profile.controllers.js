@@ -7,7 +7,6 @@ const editProfile = catchAsync(async (req, res) => {
     throw new ApiError(400, "You can't update your password Here!");
   }
   const updatedbody = req.body;
-  console.log(req.user);
 
   if (req.file) {
     const avatar = await cloudinary.uploader.upload(req.file.path);

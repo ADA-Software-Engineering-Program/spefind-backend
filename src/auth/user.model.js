@@ -53,6 +53,44 @@ const userSchema = new Schema(
     pastEvents: {
       type: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
     },
+    eventType: { type: [{ type: Schema.Types.ObjectId, ref: 'Event-Type' }] },
+    field: {
+      type: Schema.Types.ObjectId,
+      ref: 'Field',
+    },
+    education: {
+      type: String,
+      trim: true,
+    },
+    job: [
+      {
+        title: {
+          type: String,
+          trim: true,
+        },
+        yearsOfPractice: {
+          type: String,
+          trim: true,
+        },
+        jobDescription: {
+          type: String,
+          trim: true,
+        },
+        position: {
+          type: String,
+          trim: true,
+        },
+      },
+    ],
+    language: {
+      type: String,
+      enum: ['English', 'French', 'others'],
+    },
+
+    state: {
+      type: Schema.Types.ObjectId,
+      ref: 'State',
+    },
   },
   { timestamps: true }
 );
