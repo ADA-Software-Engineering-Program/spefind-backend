@@ -87,11 +87,21 @@ const userSchema = new Schema(
       enum: ['English', 'French', 'others'],
     },
 
-    state: {
+    state: { type: [{ type: Schema.Types.ObjectId, ref: 'Event-Type' }] },
+    pricing: {
       type: Schema.Types.ObjectId,
-      ref: 'State',
+      ref: 'Pricing',
+    },
+    isVolunteer: {
+      type: Boolean,
+      default: false,
+    },
+    isVisible: {
+      type: Boolean,
+      default: false,
     },
   },
+
   { timestamps: true }
 );
 

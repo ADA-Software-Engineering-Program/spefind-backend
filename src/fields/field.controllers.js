@@ -39,7 +39,25 @@ const getStates = catchAsync(async (req, res) => {
   const data = await fieldService.getStates();
   res
     .status(201)
-    .json({ status: 'success', message: 'All event types retrieved...', data });
+    .json({ status: 'success', message: 'All states retrieved...', data });
+});
+
+const createPricing = catchAsync(async (req, res) => {
+  const data = await fieldService.createPricing(req.body);
+  res
+    .status(201)
+    .json({ status: 'success', message: 'Pricing range now created...', data });
+});
+
+const getPricing = catchAsync(async (req, res) => {
+  const data = await fieldService.getPricing();
+  res
+    .status(201)
+    .json({
+      status: 'success',
+      message: 'All pricing info now retrieved...',
+      data,
+    });
 });
 
 module.exports = {
@@ -49,4 +67,6 @@ module.exports = {
   getAllFields,
   getEventTypes,
   createEventType,
+  createPricing,
+  getPricing,
 };
