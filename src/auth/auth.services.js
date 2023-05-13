@@ -21,6 +21,7 @@ const registerUser = async (data) => {
       { new: true }
     );
   });
+  console.log(returnedData);
 
   return returnedData;
 };

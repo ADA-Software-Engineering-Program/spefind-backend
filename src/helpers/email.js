@@ -21,7 +21,7 @@ var mailGenerator = new Mailgen({
 });
 
 const sendOTP = async (userMail, userPin) => {
-  const email_sender = 'info@davayte.net';
+  const email_sender = 'ayooluwa@ourpass.co';
   const subject_matter = 'Account Verification';
   const email = {
     body: {
