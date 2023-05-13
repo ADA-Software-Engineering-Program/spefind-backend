@@ -11,7 +11,6 @@ const {
   updateField,
   changePassword,
   resetPassword,
-  editProfile,
 } = require('./auth.controllers');
 const { checkEmail, checkUserName } = require('../helpers/checkUser');
 // const { registerValidator, loginValidator } = require('../helpers/validate');
