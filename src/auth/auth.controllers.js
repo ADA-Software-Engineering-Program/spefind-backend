@@ -46,6 +46,7 @@ const setupProfile = catchAsync(async (req, res) => {
   if (req.file) {
     const avatar = await cloudinary.uploader.upload(req.file.path);
     requestBody.photo = avatar.secure_url;
+    console.log(requestBody);
   }
   const data = await authService.setProfile(req.user._id, requestBody);
   res.status(201).json({

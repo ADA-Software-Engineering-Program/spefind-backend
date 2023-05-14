@@ -14,7 +14,8 @@ const checkEmail = async (req, res, next) => {
 };
 
 const checkUserName = async (req, res, next) => {
-  const userName = req.body.username.toLowerCase();
+  let userName;
+  if (req.body.username) userName = req.body.username.toLowerCase();
   let user = await User.findOne({ username: userName });
   if (user) {
     res.status(400).json({

@@ -29,8 +29,10 @@ const registerUser = async (data) => {
 const setProfile = async (userId, data) => {
   try {
     const rawData = data;
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-    if (data.password) rawData.password = hashedPassword;
+    let hashedPassword;
+
+    if (data.password) hashedPassword = await bcrypt.hash(data.password, 10);
+    rawData.password = hashedPassword;
     const { followings, ...refinedData } = data;
 
     await Following.findOneAndUpdate(
