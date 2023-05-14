@@ -26,17 +26,28 @@ const registerUser = async (data) => {
   return returnedData;
 };
 
-const nameInput = async (userId, data) => {
-  const rawData = data;
-  const hashedPassword = await bcrypt.hash(data.password, 10);
-  rawData.password = hashedPassword;
-
+const setProfile = async (userId, data) => {
   try {
-    return await User.findByIdAndUpdate(
+    const rawData = data;
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+    if (data.password) rawData.password = hashedPassword;
+    const { followings, ...refinedData } = data;
+
+    await Following.findOneAndUpdate(
+      { userId: userId },
+      { following: followings },
+      {
+        new: true,
+      }
+    );
+
+    const outputData = await User.findByIdAndUpdate(
       userId,
-      { $set: rawData },
+      { $set: refinedData },
       { new: true }
     );
+
+    return outputData;
   } catch (error) {
     throw new ApiError(400, 'Unable to input user information');
   }
@@ -157,7 +168,7 @@ const updateField = async (userId, data) => {
 module.exports = {
   registerUser,
   updateField,
-  nameInput,
+  setProfile,
   userBio,
   editUserProfile,
   confirmOTP,

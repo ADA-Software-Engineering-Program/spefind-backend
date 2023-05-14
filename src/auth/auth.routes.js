@@ -6,7 +6,7 @@ const {
   forgotPassword,
   confirmOTP,
   resendOTP,
-  nameInput,
+  setupProfile,
   editProfile,
   updateField,
   changePassword,
@@ -31,12 +31,12 @@ const router = Router();
 router.post('/register', emailValidator, checkEmail, register);
 
 router.put(
-  '/name/input',
-  nameValidator,
+  '/profile/setup',
   checkUserName,
   userAuthentication,
   verifiedEmailAuthorization,
-  nameInput
+  upload.single('photo'),
+  setupProfile
 );
 
 router.post('/confirm/otp', userAuthentication, confirmOTP);

@@ -41,11 +41,16 @@ const resendOTP = catchAsync(async (req, res) => {
   });
 });
 
-const nameInput = catchAsync(async (req, res) => {
-  const data = await authService.nameInput(req.user._id, req.body);
+const setupProfile = catchAsync(async (req, res) => {
+  let requestBody = req.body;
+  if (req.file) {
+    const avatar = await cloudinary.uploader.upload(req.file.path);
+    requestBody.photo = avatar.secure_url;
+  }
+  const data = await authService.setProfile(req.user._id, requestBody);
   res.status(201).json({
     status: 'success',
-    message: 'First, Last Name, Username & Password now Updated...',
+    message: 'First, Last Name, Username & Password et al. now Updated...',
     data,
   });
 });
@@ -128,9 +133,9 @@ const changePassword = catchAsync(async (req, res) => {
 });
 
 const editProfile = catchAsync(async (req, res) => {
-  if (req.body.password) {
-    throw new ApiError(400, "You can't update your password Here!");
-  }
+  // if (req.body.password) {
+  //   throw new ApiError(400, "You can't update your password Here!");
+  // }
   const updatedbody = req.body;
 
   if (req.file) {
@@ -158,7 +163,7 @@ const updateField = catchAsync(async (req, res) => {
 module.exports = {
   register,
   updateField,
-  nameInput,
+  setupProfile,
   login,
   editProfile,
   forgotPassword,

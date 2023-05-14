@@ -22,6 +22,23 @@ const nameSchema = Joi.object({
     .required()
     .trim()
     .error(new ApiError(400, 'Kindly input a valid string as username...')),
+  // email: Joi.string()
+  //   .email()
+  //   .trim()
+  //   .required()
+  //   .error(new ApiError(400, 'Oops! A valid email is actually required here!')),
+
+  password: Joi.string()
+    .min(5)
+    .max(30)
+    .required()
+    .trim()
+    .error(
+      new ApiError(
+        400,
+        'Kindly input a password between 5 and 30 characters...'
+      )
+    ),
 });
 
 const emailSchema = Joi.object({

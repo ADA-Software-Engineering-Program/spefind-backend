@@ -46,6 +46,10 @@ const userSchema = new Schema(
       type: String,
       trim: true,
     },
+    areasOfInterest: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'Field' }],
+      trim: true,
+    },
 
     isAccountConfirmed: {
       type: Boolean,
