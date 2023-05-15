@@ -9,7 +9,7 @@ const registerUser = async (data) => {
   const code = Math.floor(Math.random() * (999999 - 100000) + 100000);
   data.userPin = code;
   const rawData = JSON.parse(JSON.stringify(data));
-  const returnedData = await User.create(rawData);
+  const returnedData = await User.create(data);
   const user = { userId: returnedData._id };
   await Follow.create(user);
   await Following.create(user);
