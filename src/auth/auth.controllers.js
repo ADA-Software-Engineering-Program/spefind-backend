@@ -7,7 +7,7 @@ const authService = require('./auth.services');
 const { sendOTP, resendOTPMail } = require('../helpers/email');
 const cloudinary = require('../helpers/cloudinary');
 
-const register = async (req, res) => {
+const register = catchAsync(async (req, res) => {
   const data = await authService.registerUser(req.body);
   const authToken = await tokenService.generateAuthTokens(data);
   const token = authToken.access.token;
@@ -19,7 +19,7 @@ const register = async (req, res) => {
     data,
     token,
   });
-};
+});
 
 const confirmOTP = catchAsync(async (req, res) => {
   if (!req.body.OTP) {
