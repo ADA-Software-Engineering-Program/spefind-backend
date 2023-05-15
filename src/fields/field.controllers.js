@@ -7,6 +7,18 @@ const createField = catchAsync(async (req, res) => {
   res.status(200).json({ status: true, message: 'Field now seeded', data });
 });
 
+const createSubfield = async (req, res) => {
+  const data = await fieldService.createSubfield(req.body);
+  res.status(200).json({ status: true, message: 'Subfield now created', data });
+};
+
+const getSubfields = catchAsync(async (req, res) => {
+  const data = await fieldService.getSubfields();
+  res
+    .status(201)
+    .json({ status: true, message: 'All subfields now retrieved', data });
+});
+
 const getAllFields = catchAsync(async (req, res) => {
   const data = await fieldService.getFields();
   res
@@ -51,13 +63,11 @@ const createPricing = catchAsync(async (req, res) => {
 
 const getPricing = catchAsync(async (req, res) => {
   const data = await fieldService.getPricing();
-  res
-    .status(201)
-    .json({
-      status: 'success',
-      message: 'All pricing info now retrieved...',
-      data,
-    });
+  res.status(201).json({
+    status: 'success',
+    message: 'All pricing info now retrieved...',
+    data,
+  });
 });
 
 module.exports = {
@@ -65,8 +75,10 @@ module.exports = {
   createState,
   getStates,
   getAllFields,
+  getSubfields,
   getEventTypes,
   createEventType,
   createPricing,
+  createSubfield,
   getPricing,
 };

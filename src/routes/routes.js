@@ -6,6 +6,7 @@ const {
   getEventTypes,
   createState,
   createPricing,
+  getPricing,
   getStates,
 } = require('../fields/field.controllers');
 
@@ -28,5 +29,7 @@ router.post('/state/add', createState);
 router.get('/state/all', getStates);
 
 router.post('/pricing/create', createPricing);
+
+router.get('/pricing/all', getPricing);
 
 module.exports = router;

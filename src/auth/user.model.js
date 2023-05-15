@@ -22,9 +22,8 @@ const userSchema = new Schema(
       type: String,
       trim: true,
     },
-    state: {
-      type: String,
-      trim: true,
+    availableTo: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'State' }],
     },
     biography: {
       type: String,
@@ -58,36 +57,46 @@ const userSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Field',
     },
+    subField: {
+      type: Schema.Types.ObjectId,
+      ref: 'SubField',
+    },
     education: {
       type: String,
       trim: true,
     },
-    job: [
-      {
-        title: {
-          type: String,
-          trim: true,
-        },
-        yearsOfPractice: {
-          type: String,
-          trim: true,
-        },
-        jobDescription: {
-          type: String,
-          trim: true,
-        },
-        position: {
-          type: String,
-          trim: true,
-        },
+    job: {
+      title: {
+        type: String,
+        trim: true,
       },
-    ],
+      yearsOfPractice: {
+        type: Number,
+        trim: true,
+      },
+      jobDescription: {
+        type: String,
+        trim: true,
+      },
+      position: {
+        type: String,
+        trim: true,
+      },
+    },
+
     language: {
       type: String,
       enum: ['English', 'French', 'others'],
     },
 
-    state: { type: [{ type: Schema.Types.ObjectId, ref: 'Event-Type' }] },
+    city: {
+      type: String,
+      trim: true,
+    },
+    country: {
+      type: String,
+      trim: true,
+    },
     pricing: {
       type: Schema.Types.ObjectId,
       ref: 'Pricing',

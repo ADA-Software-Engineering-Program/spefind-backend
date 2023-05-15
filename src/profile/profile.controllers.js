@@ -12,7 +12,6 @@ const editProfile = catchAsync(async (req, res) => {
     const avatar = await cloudinary.uploader.upload(req.file.path);
     updatedbody.photo = avatar.secure_url;
   }
-
   const user = await profileService.createProfile(req.user.id, updatedbody);
   res.status(200).json({
     status: 'success',

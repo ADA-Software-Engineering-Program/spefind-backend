@@ -2,9 +2,18 @@ const Field = require('./field.model');
 const EventType = require('../events/event-type.model');
 const State = require('../events/state.model');
 const Pricing = require('../events/pricing.model');
+const SubField = require('./sub.field.model');
 
 const seedField = async (data) => {
   return await Field.create(data);
+};
+
+const createSubfield = async (data) => {
+  return await SubField.create(data);
+};
+
+const getSubfields = async () => {
+  return await SubField.find();
 };
 
 const getFields = async () => {
@@ -43,6 +52,8 @@ module.exports = {
   createState,
   createEventType,
   createPricing,
+  getSubfields,
   getPricing,
   getEventTypes,
+  createSubfield,
 };
