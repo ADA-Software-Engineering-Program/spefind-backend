@@ -14,13 +14,13 @@ const registerUser = async (data) => {
   await Follow.create(user);
   await Following.create(user);
   const refreshCode = Math.floor(Math.random() * (999999 - 100000) + 100000);
-  cron.schedule('*/5 * * * *', async () => {
-    await User.findByIdAndUpdate(
-      returnedData._id,
-      { userPin: refreshCode },
-      { new: true }
-    );
-  });
+  // cron.schedule('*/5 * * * *', async () => {
+  //   await User.findByIdAndUpdate(
+  //     returnedData._id,
+  //     { userPin: refreshCode },
+  //     { new: true }
+  //   );
+  // });
   return returnedData;
 };
 
