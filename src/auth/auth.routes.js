@@ -28,7 +28,7 @@ const upload = require('../helpers/multer');
 const passport = require('passport');
 const router = Router();
 
-router.post('/register', emailValidator, register);
+router.post('/register', emailValidator, checkEmail, register);
 
 router.put(
   '/profile/setup',
