@@ -11,7 +11,7 @@ const register = catchAsync(async (req, res) => {
   const data = await authService.registerUser(req.body);
   const authToken = await tokenService.generateAuthTokens(data);
   const token = authToken.access.token;
-  // sendOTP(data.email, data.userPin);
+  sendOTP(data.email, data.userPin);
   res.status(201).json({
     status: true,
     message:

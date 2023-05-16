@@ -21,8 +21,8 @@ var mailGenerator = new Mailgen({
 });
 
 const sendOTP = async (userMail, userPin) => {
-  const email_sender = 'ayooluwa@ourpass.co';
-  const subject_matter = 'Account Verification';
+  const email_sender = 'info@spefind.com';
+  const subject_matter = 'Corddit Account Verification';
   const email = {
     body: {
       greeting: `Heyy There`,
@@ -42,7 +42,7 @@ const sendOTP = async (userMail, userPin) => {
   const msg = {
     // Change to your recipient
     from: email_sender,
-    from_name: 'MeetUp Support',
+    from_name: 'Corddit Support Team',
     to: userMail,
     subject: subject_matter,
     body_text: mailGenerator.generatePlaintext(email),
