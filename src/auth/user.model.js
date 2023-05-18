@@ -102,12 +102,12 @@ const userSchema = new Schema(
       ref: 'Pricing',
     },
     isVolunteer: {
-      type: Boolean,
-      default: false,
+      type: String,
+      default: 'false',
     },
     isVisible: {
-      type: Boolean,
-      default: false,
+      type: String,
+      default: 'false',
     },
   },
 

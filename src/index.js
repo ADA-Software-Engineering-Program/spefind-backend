@@ -5,7 +5,7 @@ const passport = require('passport');
 const logger = require('./helpers/logger');
 const cors = require('cors');
 require('dotenv').config();
-const PORT = process.env.PORT;
+const { PORT } = require('./config/keys');
 const app = express();
 app.use(cors());
 app.use(json());
