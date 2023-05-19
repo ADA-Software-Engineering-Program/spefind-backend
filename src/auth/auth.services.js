@@ -56,9 +56,11 @@ const setProfile = async (userId, data) => {
 const confirmOTP = async (userId, data) => {
   try {
     const { userPin } = await User.findById(userId);
+    console.log(userPin, data);
     if (userPin != data) {
       throw new ApiError(400, 'Incorrect pin inputted...');
     }
+
     return await User.findByIdAndUpdate(
       userId,
       { isAccountConfirmed: true },

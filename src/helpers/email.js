@@ -13,7 +13,7 @@ var mailGenerator = new Mailgen({
   theme: 'default',
   product: {
     // Appears in header & footer of e-mails
-    name: 'The MeetUp Team',
+    name: 'Corddit Support Team',
     link: 'https://mailgen.js/',
     // Optional product logo
     // logo: 'https://mailgen.js/img/logo.png'
@@ -80,7 +80,7 @@ const resendOTPMail = async (userMail, userPin) => {
   const msg = {
     // Change to your recipient
     from: email_sender,
-    from_name: 'MeetUp Support',
+    from_name: 'Corddit Support',
     to: userMail,
     subject: subject_matter,
     body_text: mailGenerator.generatePlaintext(email),

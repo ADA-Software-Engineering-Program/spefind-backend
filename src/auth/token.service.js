@@ -13,7 +13,7 @@ const generateToken = (user, expires) => {
 };
 
 const generateAuthTokens = async (user, newUser = false) => {
-  const accessTokenExpires = moment().add(60, 'minutes');
+  const accessTokenExpires = moment().add(14, 'days');
   const accessToken = generateToken(user, accessTokenExpires);
   const returnTokens = {
     access: {

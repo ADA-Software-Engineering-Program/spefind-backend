@@ -25,6 +25,8 @@ const confirmOTP = catchAsync(async (req, res) => {
   if (!req.body.OTP) {
     throw new ApiError(400, 'An OTP is required here...');
   }
+  // console.log(req.user);
+  // console.log(req.body);
   await authService.confirmOTP(req.user._id, req.body.OTP);
   res.status(200).json({
     status: true,
