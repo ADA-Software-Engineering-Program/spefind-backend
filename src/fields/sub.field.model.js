@@ -4,8 +4,8 @@ const { Schema } = mongoose;
 
 const subfieldSchema = new Schema({
   field: {
-    type: Schema.Types.ObjectId,
-    ref: 'Field',
+    type: String,
+    trim: true,
   },
   subfield: {
     type: String,

@@ -32,4 +32,18 @@ const createPastEvent = catchAsync(async (req, res) => {
     .json({ status: true, message: 'Past event successfully added...', data });
 });
 
-module.exports = { editProfile, createPastEvent };
+const getCurrentUser = catchAsync(async (req, res) => {
+  let user;
+
+  if (req.query.userId) {
+    user = await profileService.getUserById(req.query.userId);
+  } else {
+    user = await profileService.getUserById(req.user.id);
+  }
+
+  res
+    .status(200)
+    .json({ status: true, message: 'User now retrieved... ', user });
+});
+
+module.exports = { editProfile, createPastEvent, getCurrentUser };

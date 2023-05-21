@@ -17,4 +17,12 @@ const createEvent = async (userId, data) => {
   }).populate('pastEvents');
 };
 
-module.exports = { createProfile, createEvent };
+const getUserById = async (id) => {
+  try {
+    return await User.findById(id);
+  } catch (error) {
+    throw new ApiError(400, 'Unable to get user');
+  }
+};
+
+module.exports = { createProfile, createEvent, getUserById };
