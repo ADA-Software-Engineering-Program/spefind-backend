@@ -54,12 +54,12 @@ const userSchema = new Schema(
     },
     eventType: { type: [{ type: Schema.Types.ObjectId, ref: 'Event-Type' }] },
     field: {
-      type: Schema.Types.ObjectId,
-      ref: 'Field',
+      type: String,
+      trim: true,
     },
     subField: {
-      type: Schema.Types.ObjectId,
-      ref: 'SubField',
+      type: String,
+      trim: true,
     },
     education: {
       type: String,
