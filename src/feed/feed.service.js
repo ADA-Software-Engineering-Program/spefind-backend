@@ -1,6 +1,7 @@
 const Feed = require('./feed.model');
 const ApiError = require('../helpers/error');
 const Following = require('../user/following.model');
+const Comment = require('../comments/comment.model');
 const moment = require('moment');
 
 const createFeed = async (userId, data) => {
@@ -8,14 +9,16 @@ const createFeed = async (userId, data) => {
     const feed = data;
     feed.author = userId;
     const rawFeed = JSON.parse(JSON.stringify(feed));
-    return (await Feed.create(rawFeed)).populate('author');
+    return await Feed.create(rawFeed).populate('author');
   } catch (error) {
     throw new ApiError(400, 'Unable to create feed...');
   }
 };
 
 const getFeeds = async (userId) => {
-  // const data = await Feed.find({ isPublic: true }).sort({ _id: -1 });
+  return await Feed.find({ isPublic: true })
+    .sort({ _id: -1 })
+    .populate('comments');
   let feedList = [];
   const { following } = await Following.findOne({ userId: userId });
 
@@ -60,4 +63,74 @@ const unlikeFeed = async (feedId) => {
   }
 };
 
-module.exports = { createFeed, getFeeds, likeFeed, unlikeFeed };
+const getFeed = async (feedId) => {
+  try {
+    const { numberOfViews } = await Feed.findById(feedId);
+
+    const newNumberOfViews = numberOfViews + 1;
+
+    await Feed.findByIdAndUpdate(
+      feedId,
+      { numberOfViews: newNumberOfViews },
+      { new: true }
+    );
+
+    return await Feed.findById(feedId)
+      .populate('author')
+      .populate([
+        {
+          path: 'author',
+          model: 'User',
+          populate: { path: 'discipline', model: 'Field' },
+        },
+      ])
+      .populate([
+        {
+          path: 'comments',
+          model: 'Comment',
+          populate: { path: 'author', model: 'User' },
+        },
+      ])
+      .populate([
+        {
+          path: 'comments',
+          model: 'Comment',
+
+          populate: {
+            path: 'replies',
+            model: 'Reply',
+            populate: { path: 'replyBy', model: 'User' },
+          },
+        },
+      ]);
+  } catch (error) {
+    throw new ApiError(400, 'Unable to retrieve feed...');
+  }
+};
+
+const editFeed = async (feedId, feedData) => {
+  try {
+    return await Feed.findByIdAndUpdate(feedId, feedData, { new: true });
+  } catch (error) {
+    throw new ApiError(400, 'Unable to edit feed...');
+  }
+};
+
+const deleteFeed = async (feedId) => {
+  try {
+    await Comment.deleteMany({ feed: feedId });
+    return await Feed.findByIdAndDelete(feedId);
+  } catch (error) {
+    throw new ApiError(400, 'Unable to delete feed...');
+  }
+};
+
+module.exports = {
+  createFeed,
+  editFeed,
+  getFeed,
+  getFeeds,
+  likeFeed,
+  unlikeFeed,
+  deleteFeed,
+};

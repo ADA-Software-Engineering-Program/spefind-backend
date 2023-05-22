@@ -15,6 +15,14 @@ const commentSchema = new Schema({
     type: String,
     trim: true,
   },
+  likes: {
+    type: Number,
+    trim: true,
+  },
+  replies: {
+    type: [{ type: Schema.Types.ObjectId, ref: 'Reply' }],
+    trim: true,
+  },
 });
 
 const Comment = mongoose.model('Comment', commentSchema);

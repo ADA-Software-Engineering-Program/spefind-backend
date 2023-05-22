@@ -4,8 +4,11 @@ const {
   getFeeds,
   likeFeed,
   unlikeFeed,
+  getFeed,
+  editFeed,
+  deleteFeed,
 } = require('./feed.controllers');
-const { userAuthentication } = require('../helpers/auth');
+const { feedAuthorization } = require('../helpers/auth');
 const router = Router();
 const upload = require('../helpers/multer');
 
@@ -16,5 +19,11 @@ router.put('/like', likeFeed);
 router.put('/unlike', unlikeFeed);
 
 router.get('/all', getFeeds);
+
+router.get('/:_id', getFeed);
+
+router.put('/edit', feedAuthorization, editFeed);
+
+router.delete('/delete/_:id', feedAuthorization, deleteFeed);
 
 module.exports = router;

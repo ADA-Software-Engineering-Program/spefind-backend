@@ -7,7 +7,7 @@ router.use('/auth', require('../auth/auth.routes'));
 
 router.use('/feed', userAuthentication, require('../feed/feed.routes'));
 
-router.use('/fields', require('../fields/field.routes'));
+router.use('/fields', userAuthentication, require('../fields/field.routes'));
 
 router.use('/user', userAuthentication, require('../user/user.routes'));
 

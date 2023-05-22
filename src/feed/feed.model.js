@@ -19,6 +19,16 @@ const feedSchema = new Schema({
   comments: {
     type: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
   },
+  numberOfComments: {
+    type: Number,
+    trim: true,
+    default: 0,
+  },
+  numberOfViews: {
+    type: Number,
+    trim: true,
+    default: 0,
+  },
   isPublic: {
     type: Boolean,
     default: true,

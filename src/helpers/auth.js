@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/keys');
 const User = require('../auth/user.model');
+const Feed = require('../feed/feed.model');
 
 const userAuthentication = (req, res, next) => {
   const bearerHeader = req.headers.authorization;
@@ -43,6 +44,18 @@ const verifiedEmailAuthorization = async (req, res, next) => {
   next();
 };
 
+const feedAuthorization = async (req, res, next) => {
+  const { author } = await Feed.findById(req.query.feedId);
+  if (!req.user || req.user._id != author) {
+    res.status(403).json({
+      status: 'access forbidden',
+      message: 'only author of feed is allowed permission here...',
+    });
+    return;
+  }
+  next();
+};
+
 const adminAuthorization = async (req, res, next) => {
   if (!req.user || req.user.userRole !== 'admin') {
     res.status(403).json({
@@ -57,6 +70,7 @@ const adminAuthorization = async (req, res, next) => {
 
 module.exports = {
   userAuthentication,
+  feedAuthorization,
   verifiedEmailAuthorization,
   adminAuthorization,
 };

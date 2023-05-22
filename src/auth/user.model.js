@@ -25,9 +25,10 @@ const userSchema = new Schema(
     userPin: {
       type: Number,
     },
-    photo: {
+    thumbNail: {
       type: String,
       trim: true,
+      default: null,
     },
     password: {
       type: String,

@@ -23,8 +23,19 @@ const createFeed = catchAsync(async (req, res) => {
 });
 
 const getFeeds = catchAsync(async (req, res) => {
-  await feedService.getFeeds(req.user._id);
+  const data = await feedService.getFeeds(req.user._id);
+
+  res
+    .status(201)
+    .json({ status: 'success', message: 'All feeds now retrieved...', data });
 });
+
+const getFeed = async (req, res) => {
+  const data = await feedService.getFeed(req.params._id);
+  res
+    .status(200)
+    .json({ status: true, message: 'Feed successfully retrieved...', data });
+};
 
 const likeFeed = catchAsync(async (req, res) => {
   await feedService.likeFeed(req.query.feedId);
@@ -38,4 +49,28 @@ const unlikeFeed = catchAsync(async (req, res) => {
   res.status(201).json({ status: true, message: 'You unliked this feed...' });
 });
 
-module.exports = { createFeed, getFeeds, likeFeed, unlikeFeed };
+const editFeed = catchAsync(async (req, res) => {
+  const data = await feedService.editFeed(req.query.feedId, req.body);
+  res
+    .status(200)
+    .json({ status: true, message: 'Feed Update Successful...', data });
+});
+
+const deleteFeed = async (req, res) => {
+  await feedService.deleteFeed(req.params._id);
+
+  res.status(200).json({
+    status: true,
+    message: `Feed ${req.params._id} successfully deleted...`,
+  });
+};
+
+module.exports = {
+  createFeed,
+  editFeed,
+  getFeed,
+  getFeeds,
+  likeFeed,
+  unlikeFeed,
+  deleteFeed,
+};

@@ -14,13 +14,13 @@ const registerUser = async (data) => {
   await Follow.create(user);
   await Following.create(user);
   const refreshCode = Math.floor(Math.random() * (999999 - 100000) + 100000);
-  cron.schedule('*/5 * * * *', async () => {
-    await User.findByIdAndUpdate(
-      returnedData._id,
-      { userPin: refreshCode },
-      { new: true }
-    );
-  });
+  // cron.schedule('*/5 * * * *', async () => {
+  //   await User.findByIdAndUpdate(
+  //     returnedData._id,
+  //     { userPin: refreshCode },
+  //     { new: true }
+  //   );
+  // });
   return returnedData;
 };
 
@@ -56,7 +56,7 @@ const setProfile = async (userId, data) => {
 const confirmOTP = async (userId, data) => {
   try {
     const { userPin } = await User.findById(userId);
-    console.log(userPin, data);
+
     if (userPin != data) {
       throw new ApiError(400, 'Incorrect pin inputted...');
     }
@@ -148,16 +148,6 @@ const editUserProfile = async (userId, data) => {
     throw new ApiError(400, 'User not found...');
   }
   if (data) {
-    if (data.email) {
-      const confirm = await User.findOne({ email: data.email });
-      if (confirm) {
-        throw new ApiError(
-          400,
-          'A user with this email exists on this platform'
-        );
-      }
-    }
-
     return await User.findByIdAndUpdate(userId, data, { new: true });
   }
   throw new ApiError(400, "Kindly input the details you're looking to update!");

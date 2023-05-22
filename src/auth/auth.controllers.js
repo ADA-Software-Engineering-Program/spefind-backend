@@ -136,14 +136,17 @@ const changePassword = catchAsync(async (req, res) => {
 });
 
 const editProfile = catchAsync(async (req, res) => {
-  // if (req.body.password) {
-  //   throw new ApiError(400, "You can't update your password Here!");
-  // }
+  if (req.body.email) {
+    throw new ApiError(400, " Oops! You can't update your email Here!");
+  }
+  if (req.body.password) {
+    throw new ApiError(400, "You can't update your password Here!");
+  }
   const updatedbody = req.body;
 
   if (req.file) {
     const avatar = await cloudinary.uploader.upload(req.file.path);
-    updatedbody.photo = avatar.secure_url;
+    updatedbody.thumbNail = avatar.secure_url;
   }
 
   const user = await authService.editUserProfile(req.user._id, updatedbody);

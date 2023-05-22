@@ -35,7 +35,7 @@ router.put(
   checkUserName,
   userAuthentication,
   verifiedEmailAuthorization,
-  upload.single('photo'),
+  upload.single('thumbNail'),
   setupProfile
 );
 
@@ -57,7 +57,7 @@ router.put(
   '/profile/edit',
   userAuthentication,
   verifiedEmailAuthorization,
-  upload.single('photo'),
+  upload.single('thumbNail'),
   editProfile
 );
 
