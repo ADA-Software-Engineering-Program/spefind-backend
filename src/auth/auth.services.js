@@ -30,6 +30,10 @@ const setProfile = async (userId, data) => {
     const rawData = data;
     let hashedPassword;
 
+    if (data.thumbNail) {
+      return await User.findByIdAndUpdate(userId, data, { new: true });
+    }
+
     if (data.password) hashedPassword = await bcrypt.hash(data.password, 10);
     rawData.password = hashedPassword;
     const { followings, ...refinedData } = data;
@@ -60,7 +64,7 @@ const setProfile = async (userId, data) => {
       );
 
       const { firstName, email } = await User.findById(followings[i]);
-      // const { firstName, lastName } = await User.findById(userId);
+
       followNotification(email, firstName, data.firstName, data.lastName);
     }
 
@@ -79,7 +83,7 @@ const setProfile = async (userId, data) => {
     );
 
     return {
-      userId: outputData._id,
+      _id: outputData._id,
       email: outputData.email,
       firstName: outputData.firstName,
       lastName: outputData.lastName,
@@ -177,8 +181,6 @@ const editUserProfile = async (userId, data) => {
   if (!user) {
     throw new ApiError(400, 'User not found...');
   }
-
-  console.log(data);
   // return await User.findByIdAndUpdate(userId, data, { new: true });
 
   // throw new ApiError(400, "Kindly input the details you're looking to update!");

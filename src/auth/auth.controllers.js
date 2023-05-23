@@ -43,11 +43,11 @@ const resendOTP = catchAsync(async (req, res) => {
   });
 });
 
-const setupProfile = catchAsync(async (req, res) => {
+const setupProfile = async (req, res) => {
   let requestBody = req.body;
   if (req.file) {
     const avatar = await cloudinary.uploader.upload(req.file.path);
-    requestBody.photo = avatar.secure_url;
+    requestBody.thumbNail = avatar.secure_url;
   }
   const data = await authService.setProfile(req.user._id, requestBody);
   const token = await tokenService.generateAuthTokens(data);
@@ -57,7 +57,8 @@ const setupProfile = catchAsync(async (req, res) => {
     data,
     token: token.access.token,
   });
-});
+};
+
 const login = catchAsync((req, res, next) => {
   passport.authenticate('login', async (err, user, info) => {
     try {

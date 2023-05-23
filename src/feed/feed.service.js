@@ -2,6 +2,7 @@ const Feed = require('./feed.model');
 const ApiError = require('../helpers/error');
 const Following = require('../user/following.model');
 const Comment = require('../comments/comment.model');
+const User = require('../auth/user.model');
 const moment = require('moment');
 
 const createFeed = async (userId, data) => {
@@ -9,7 +10,20 @@ const createFeed = async (userId, data) => {
     const feed = data;
     feed.author = userId;
     const rawFeed = JSON.parse(JSON.stringify(feed));
-    return await Feed.create(rawFeed).populate('author');
+
+    const rawData = (await Feed.create(rawFeed)).populate('author');
+
+    const { numberOfPosts } = await User.findById(userId);
+
+    const newNumberOfPosts = numberOfPosts + 1;
+
+    await User.findByIdAndUpdate(
+      userId,
+      { numberOfPosts: newNumberOfPosts },
+      { new: true }
+    );
+
+    return rawData;
   } catch (error) {
     throw new ApiError(400, 'Unable to create feed...');
   }
@@ -19,18 +33,18 @@ const getFeeds = async (userId) => {
   return await Feed.find({ isPublic: true })
     .sort({ _id: -1 })
     .populate('comments');
-  let feedList = [];
-  const { following } = await Following.findOne({ userId: userId });
+  // let feedList = [];
+  // const { following } = await Following.findOne({ userId: userId });
 
-  const time = moment()
-    .startOf('hour')
-    .fromNow();
-  console.log(time);
-  for (let i = 0; i < following.length; i++) {
-    // console.log(following[i]);
-    const followerFeed = await Feed.find({ author: following[i] });
-    console.log(followerFeed);
-  }
+  // const time = moment()
+  //   .startOf('hour')
+  //   .fromNow();
+  // console.log(time);
+  // for (let i = 0; i < following.length; i++) {
+  //   // console.log(following[i]);
+  //   const followerFeed = await Feed.find({ author: following[i] });
+  //   console.log(followerFeed);
+  // }
 };
 
 const likeFeed = async (feedId) => {

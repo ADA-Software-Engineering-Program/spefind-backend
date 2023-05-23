@@ -4,7 +4,7 @@ const catchAsync = require('express-async-handler');
 const fs = require('fs');
 const { cloudinaryImageUploadMethod } = require('../helpers/image_upload');
 
-const createFeed = catchAsync(async (req, res) => {
+const createFeed = async (req, res) => {
   const requestBody = req.body;
 
   const imageUrlList = [];
@@ -16,11 +16,12 @@ const createFeed = catchAsync(async (req, res) => {
     }
     requestBody.feedPhotos = imageUrlList;
   }
+
   const data = await feedService.createFeed(req.user._id, requestBody);
   res
     .status(201)
     .json({ status: 'success', message: 'Post successfully made...', data });
-});
+};
 
 const getFeeds = catchAsync(async (req, res) => {
   const data = await feedService.getFeeds(req.user._id);
