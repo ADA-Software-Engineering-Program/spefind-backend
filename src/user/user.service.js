@@ -54,4 +54,8 @@ const unfollow = async (follower, followed) => {
   }
 };
 
-module.exports = { follow, getUserById, unfollow };
+const getUsers = async () => {
+  return await User.find();
+};
+
+module.exports = { follow, getUsers, getUserById, unfollow };

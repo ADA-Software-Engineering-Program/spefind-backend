@@ -32,4 +32,12 @@ const getCurrentUser = catchAsync(async (req, res) => {
     .json({ status: true, message: 'User now retrieved... ', user });
 });
 
-module.exports = { follow, getCurrentUser, unfollow };
+const getAllUsers = catchAsync(async (req, res) => {
+  const data = await userService.getUsers();
+
+  res
+    .status(201)
+    .json({ status: true, message: 'All users retrieved...', data });
+});
+
+module.exports = { follow, getAllUsers, getCurrentUser, unfollow };
