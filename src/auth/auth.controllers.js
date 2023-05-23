@@ -48,13 +48,14 @@ const setupProfile = catchAsync(async (req, res) => {
   if (req.file) {
     const avatar = await cloudinary.uploader.upload(req.file.path);
     requestBody.photo = avatar.secure_url;
-    console.log(requestBody);
   }
   const data = await authService.setProfile(req.user._id, requestBody);
+  const token = await tokenService.generateAuthTokens(data);
   res.status(201).json({
     status: 'success',
     message: 'First, Last Name, Username & Password et al. now Updated...',
     data,
+    token: token.access.token,
   });
 });
 const login = catchAsync((req, res, next) => {

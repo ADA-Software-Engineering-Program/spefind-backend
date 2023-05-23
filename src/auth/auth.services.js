@@ -4,6 +4,7 @@ const Following = require('../user/following.model');
 const Follow = require('../user/follow.model');
 const bcrypt = require('bcryptjs');
 const cron = require('node-cron');
+const { followNotification } = require('../helpers/email');
 
 const registerUser = async (data) => {
   const code = Math.floor(Math.random() * (999999 - 100000) + 100000);
@@ -33,6 +34,36 @@ const setProfile = async (userId, data) => {
     rawData.password = hashedPassword;
     const { followings, ...refinedData } = data;
 
+    for (let i = 0; i < followings.length; i++) {
+      await Follow.findOneAndUpdate(
+        { userId: followings[i] },
+        { $push: { followers: userId } },
+        { new: true }
+      );
+
+      const newNumberOfFollowings = followings.length;
+
+      await User.findByIdAndUpdate(
+        userId,
+        { numberOfFollowings: newNumberOfFollowings },
+        { new: true }
+      );
+
+      const { numberOfFollowers } = await User.findById(followings[i]);
+
+      const newNumberOfFollowers = numberOfFollowers + 1;
+
+      await User.findByIdAndUpdate(
+        followings[i],
+        { numberOfFollowers: newNumberOfFollowers },
+        { new: true }
+      );
+
+      const { firstName, email } = await User.findById(followings[i]);
+      // const { firstName, lastName } = await User.findById(userId);
+      followNotification(email, firstName, data.firstName, data.lastName);
+    }
+
     await Following.findOneAndUpdate(
       { userId: userId },
       { following: followings },
@@ -47,7 +78,14 @@ const setProfile = async (userId, data) => {
       { new: true }
     );
 
-    return outputData;
+    return {
+      userId: outputData._id,
+      email: outputData.email,
+      firstName: outputData.firstName,
+      lastName: outputData.lastName,
+      thumbNail: outputData.thumbNail,
+      username: outputData.username,
+    };
   } catch (error) {
     throw new ApiError(400, 'Unable to input user information');
   }
@@ -134,39 +172,25 @@ const comparePassword = async (entered, password) => {
   }
 };
 
-const uploadPhoto = async (userId, data) => {
-  try {
-    return await updateUserById(userId, data);
-  } catch (error) {
-    throw new ApiError(400, 'Unable to upload photo');
-  }
-};
-
 const editUserProfile = async (userId, data) => {
-  const user = await User.findOne({ id: userId });
+  const user = await User.findOne({ _id: userId });
   if (!user) {
     throw new ApiError(400, 'User not found...');
   }
-  if (data) {
-    return await User.findByIdAndUpdate(userId, data, { new: true });
-  }
-  throw new ApiError(400, "Kindly input the details you're looking to update!");
-};
 
-const updateField = async (userId, data) => {
-  return await User.findOneAndUpdate({ _id: userId }, data, { new: true });
+  console.log(data);
+  // return await User.findByIdAndUpdate(userId, data, { new: true });
+
+  // throw new ApiError(400, "Kindly input the details you're looking to update!");
 };
 
 module.exports = {
   registerUser,
-  updateField,
   setProfile,
   userBio,
   editUserProfile,
   confirmOTP,
   getUserByMail,
-  updateField,
   resendOTP,
-  uploadPhoto,
   changePassword,
 };

@@ -10,18 +10,19 @@ const createComment = async (userId, data, feedId) => {
     commentData.feed = feedId;
     const comment = await Comment.create(commentData);
 
+    await Feed.findByIdAndUpdate(
+      feedId,
+      { $push: { comments: comment._id } },
+      { new: true }
+    );
+
     const { numberOfComments } = await Feed.findById(feedId);
 
     const newNumberOfComments = numberOfComments + 1;
 
-    await Feed.findByIdAndUpdate(
-      feedId,
-      { numberOfComments: newNumberOfComments },
-      { new: true }
-    );
     return await Feed.findByIdAndUpdate(
       feedId,
-      { $push: { comments: comment._id } },
+      { numberOfComments: newNumberOfComments },
       { new: true }
     );
   } catch (error) {
@@ -30,23 +31,31 @@ const createComment = async (userId, data, feedId) => {
 };
 
 const likeComment = async (commentId) => {
-  const { likes } = await Comment.findById(commentId);
-  const newNumberOfLikes = likes + 1;
-  return await Comment.findByIdAndUpdate(
-    commentId,
-    { likes: newNumberOfLikes },
-    { new: true }
-  );
+  try {
+    const { likes } = await Comment.findById(commentId);
+    const newNumberOfLikes = likes + 1;
+    return await Comment.findByIdAndUpdate(
+      commentId,
+      { likes: newNumberOfLikes },
+      { new: true }
+    );
+  } catch (error) {
+    throw new ApiError(400, 'Unable to like comment...');
+  }
 };
 
 const unlikeComment = async (commentId) => {
-  const { likes } = await Comment.findById(commentId);
-  const newNumberOfLikes = likes - 1;
-  return await Comment.findByIdAndUpdate(
-    commentId,
-    { likes: newNumberOfLikes },
-    { new: true }
-  );
+  try {
+    const { likes } = await Comment.findById(commentId);
+    const newNumberOfLikes = likes - 1;
+    return await Comment.findByIdAndUpdate(
+      commentId,
+      { likes: newNumberOfLikes },
+      { new: true }
+    );
+  } catch (error) {
+    throw new ApiError(400, 'Unable to like comment...');
+  }
 };
 
 const replyComment = async (userId, commentId, reply) => {

@@ -33,7 +33,7 @@ const userAuthentication = (req, res, next) => {
 
 const verifiedEmailAuthorization = async (req, res, next) => {
   const { isAccountConfirmed } = await User.findById(req.user._id);
-  if (!req.user || isAccountConfirmed !== true) {
+  if (!req.user || isAccountConfirmed === false) {
     res.status(403).json({
       status: 'access denied',
       message:

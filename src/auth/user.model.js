@@ -38,6 +38,21 @@ const userSchema = new Schema(
       type: String,
       trim: true,
     },
+    numberOfPosts: {
+      type: Number,
+      trim: true,
+      default: 0,
+    },
+    numberOfFollowers: {
+      type: Number,
+      trim: true,
+      default: 0,
+    },
+    numberOfFollowings: {
+      type: Number,
+      trim: true,
+      default: 0,
+    },
 
     discipline: {
       type: Schema.Types.ObjectId,

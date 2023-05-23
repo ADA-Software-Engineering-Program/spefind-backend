@@ -57,6 +57,43 @@ const sendOTP = async (userMail, userPin) => {
   });
 };
 
+const followNotification = async (userMail, username, firstName, lastName) => {
+  const email_sender = 'info@spefind.com';
+  const subject_matter = 'Corddit Notification';
+  const email = {
+    body: {
+      greeting: `Heyy ${username}`,
+      intro: [``],
+
+      action: {
+        instructions: `${firstName} ${lastName} started following you.`,
+        button: {
+          color: '', // Optional action button color
+          text: '',
+          link: '',
+        },
+      },
+      outro: '',
+    },
+  };
+  const msg = {
+    // Change to your recipient
+    from: email_sender,
+    from_name: 'Corddit Support Team',
+    to: userMail,
+    subject: subject_matter,
+    body_text: mailGenerator.generatePlaintext(email),
+    // html: mailGenerator.generate(email),
+  };
+  client.mailer.send(msg, function(err, result) {
+    if (err) {
+      return console.error(err);
+    }
+
+    // console.log(result);
+  });
+};
+
 const resendOTPMail = async (userMail, userPin) => {
   console.log(userMail, userPin);
   const email_sender = 'info@davayte.net';
@@ -95,4 +132,4 @@ const resendOTPMail = async (userMail, userPin) => {
   });
 };
 
-module.exports = { sendOTP, resendOTPMail };
+module.exports = { sendOTP, followNotification, resendOTPMail };
