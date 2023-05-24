@@ -45,7 +45,7 @@ const login = catchAsync((req, res, next) => {
       req.login(user, { session: false }, async (err) => {
         if (err) return next(err);
         const data = {
-          id: user._id,
+          _id: user._id,
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
