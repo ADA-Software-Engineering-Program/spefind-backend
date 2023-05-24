@@ -82,7 +82,6 @@ const changePassword = catchAsync(async (req, res) => {
 });
 
 const updatePassword = catchAsync(async (req, res) => {
-  console.log(req.user);
   await authService.updatePassword(
     req.user.email,
     req.body.oldPassword,

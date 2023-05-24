@@ -18,18 +18,22 @@ module.exports = (passport) => {
           const transformedMail = email.toLowerCase();
           data.email = transformedMail;
           const hashedPassword = await bcrypt.hash(password, 10);
+          data.firstName = req.body.firstName;
+          data.lastName = req.body.lastName;
           data.password = hashedPassword;
           data.userRole = 'speaker';
           const user = await User.create(data);
-          let createdObject = {};
-          createdObject.email = user.email;
-          data.firstName = req.body.firstName;
-          data.lastName = req.body.lastName;
-          createdObject.userRole = user.userRole;
-          createdObject.createdAt = user.createdAt;
-          createdObject.updatedAt = user.updatedAt;
+          const userData = await User.findById(user._id).select('-password');
+          // let createdObject = {};
+          // createdObject._id = user._id;
+          // createdObject.email = user.email;
+          // createdObject.firstName = user.firstName;
+          // createdObject.lastName = user.lastName;
+          // createdObject.userRole = user.userRole;
+          // createdObject.createdAt = user.createdAt;
+          // createdObject.updatedAt = user.updatedAt;
 
-          return done(null, createdObject);
+          return done(null, userData);
         } catch (err) {
           done(err);
         }
@@ -56,14 +60,15 @@ module.exports = (passport) => {
           data.userRole = 'organizer';
 
           const user = await User.create(data);
-          let createdObject = {};
-          createdObject.email = user.email;
-          createdObject.firstName = user.firstName;
-          createdObject.lastName = user.lastName;
-          createdObject.userRole = user.userRole;
-          createdObject.createdAt = user.createdAt;
-          createdObject.updatedAt = user.updatedAt;
-          return done(null, createdObject);
+          const userData = await User.findById(user._id).select('-password');
+          // let createdObject = {};
+          // createdObject.email = user.email;
+          // createdObject.firstName = user.firstName;
+          // createdObject.lastName = user.lastName;
+          // createdObject.userRole = user.userRole;
+          // createdObject.createdAt = user.createdAt;
+          // createdObject.updatedAt = user.updatedAt;
+          return done(null, userData);
         } catch (err) {
           done(err);
         }

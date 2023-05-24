@@ -1,5 +1,6 @@
 const User = require('../auth/user.model');
 const Event = require('../events/event.model');
+const ApiError = require('../helpers/error');
 
 const createProfile = async (userId, data) => {
   const { pastEvent, ...userData } = data;
@@ -19,7 +20,7 @@ const createEvent = async (userId, data) => {
 
 const getUserById = async (id) => {
   try {
-    return await User.findById(id);
+    return await User.findById(id).select('-password');
   } catch (error) {
     throw new ApiError(400, 'Unable to get user');
   }

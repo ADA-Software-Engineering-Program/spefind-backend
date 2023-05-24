@@ -1,6 +1,7 @@
 const catchAsync = require('express-async-handler');
 const cloudinary = require('../helpers/cloudinary');
 const profileService = require('./profile.service');
+const ApiError = require('../helpers/error');
 
 const editProfile = catchAsync(async (req, res) => {
   if (req.body.password) {
@@ -38,7 +39,7 @@ const getCurrentUser = catchAsync(async (req, res) => {
   if (req.query.userId) {
     user = await profileService.getUserById(req.query.userId);
   } else {
-    user = await profileService.getUserById(req.user.id);
+    user = await profileService.getUserById(req.user._id);
   }
 
   res
