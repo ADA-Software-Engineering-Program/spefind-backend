@@ -47,4 +47,26 @@ const getCurrentUser = catchAsync(async (req, res) => {
     .json({ status: true, message: 'User now retrieved... ', user });
 });
 
-module.exports = { editProfile, createPastEvent, getCurrentUser };
+const emailSubscribe = catchAsync(async (req, res) => {
+  await profileService.emailSubscribe(req.body.email);
+
+  res.status(201).json({
+    status: 'success',
+    message: 'Email successfully added to mailing list...',
+  });
+});
+
+const allSubscribers = catchAsync(async (req, res) => {
+  const data = await profileService.allSubscribers();
+  res
+    .status(200)
+    .json({ status: true, message: 'All subscribers now fetched...', data });
+});
+
+module.exports = {
+  editProfile,
+  createPastEvent,
+  getCurrentUser,
+  emailSubscribe,
+  allSubscribers,
+};

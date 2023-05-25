@@ -1,6 +1,7 @@
 const User = require('../auth/user.model');
 const Event = require('../events/event.model');
 const ApiError = require('../helpers/error');
+const EmailSubscribe = require('../events/email.subscribe.model');
 
 const createProfile = async (userId, data) => {
   const { pastEvent, ...userData } = data;
@@ -15,7 +16,7 @@ const createEvent = async (userId, data) => {
   const event = await Event.create(data);
   return await User.findByIdAndUpdate(userId, {
     $push: { pastEvents: event._id },
-  }).populate('pastEvents');
+  });
 };
 
 const getUserById = async (id) => {
@@ -26,4 +27,27 @@ const getUserById = async (id) => {
   }
 };
 
-module.exports = { createProfile, createEvent, getUserById };
+const emailSubscribe = async (data) => {
+  console.log(data);
+  try {
+    return await EmailSubscribe.create({ email: data });
+  } catch (error) {
+    throw new ApiError(400, 'Unable to add user to mailing list');
+  }
+};
+
+const allSubscribers = async () => {
+  try {
+    return await EmailSubscribe.find();
+  } catch (error) {
+    throw new ApiError(400, 'Unable to fetch all subscribers...');
+  }
+};
+
+module.exports = {
+  allSubscribers,
+  createProfile,
+  createEvent,
+  emailSubscribe,
+  getUserById,
+};
