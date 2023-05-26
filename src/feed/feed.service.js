@@ -32,7 +32,8 @@ const createFeed = async (userId, data) => {
 const getFeeds = async (userId) => {
   return await Feed.find({ isPublic: true })
     .sort({ _id: -1 })
-    .populate('comments');
+    .populate('comments')
+    .populate('author');
   // let feedList = [];
   // const { following } = await Following.findOne({ userId: userId });
 

@@ -3,9 +3,8 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const replySchema = new Schema({
-  replyBy: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
+  author: {
+    type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   },
   commentId: {
     type: Schema.Types.ObjectId,
