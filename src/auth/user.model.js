@@ -101,6 +101,10 @@ const userSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Pricing',
     },
+    isProfileCreated: {
+      type: Boolean,
+      default: false,
+    },
     isVolunteer: {
       type: String,
       default: 'false',

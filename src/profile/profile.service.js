@@ -8,6 +8,7 @@ const createProfile = async (userId, data) => {
   pastEvent.userId = userId;
   const event = await Event.create(pastEvent);
   userData.pastEvents = event._id;
+  userData.isProfileCreated = true;
   return await User.findByIdAndUpdate(userId, userData, { new: true });
 };
 
@@ -28,7 +29,6 @@ const getUserById = async (id) => {
 };
 
 const emailSubscribe = async (data) => {
-  console.log(data);
   try {
     return await EmailSubscribe.create({ email: data });
   } catch (error) {
