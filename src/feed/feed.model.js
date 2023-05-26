@@ -4,8 +4,7 @@ const { Schema } = mongoose;
 
 const feedSchema = new Schema({
   author: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
+    type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   },
   content: {
     type: String,

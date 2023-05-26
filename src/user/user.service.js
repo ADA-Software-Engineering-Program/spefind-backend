@@ -35,7 +35,7 @@ const unfollow = async (follower, followed) => {
   const { following } = await Following.findOne({ userId: follower });
   for (let i = 0; i < following.length; i++) {
     if (followed != following[i]) {
-      throw new ApiError(400, 'Ooops, You already follower this user!');
+      throw new ApiError(400, 'Ooops, You already follow this user!');
     }
   }
   try {
@@ -50,7 +50,7 @@ const unfollow = async (follower, followed) => {
       { new: true }
     );
   } catch (error) {
-    throw new ApiError(400, 'Unable to unfollow this user');
+    throw new ApiError(400, 'Unable to unfollow user');
   }
 };
 
