@@ -6,10 +6,6 @@ const User = require('../auth/user.model');
 const moment = require('moment');
 
 const createFeed = async (userId, data) => {
-  const checkUser = await User.findById(userId);
-  if (!checkUser) {
-    throw new ApiError(400, 'Oops! This user does not exist...');
-  }
   try {
     const feed = data;
     feed.author = userId;
