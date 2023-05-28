@@ -32,20 +32,33 @@ const createFeed = async (userId, data) => {
 const getFeeds = async (userId) => {
   return await Feed.find({ isPublic: true })
     .sort({ _id: -1 })
-    .populate('comments')
-    .populate('author');
-  // let feedList = [];
-  // const { following } = await Following.findOne({ userId: userId });
+    .populate('author')
+    .populate([
+      {
+        path: 'author',
+        model: 'User',
+        populate: { path: 'discipline', model: 'Field' },
+      },
+    ])
+    .populate([
+      {
+        path: 'comments',
+        model: 'Comment',
+        populate: { path: 'author', model: 'User' },
+      },
+    ])
+    .populate([
+      {
+        path: 'comments',
+        model: 'Comment',
 
-  // const time = moment()
-  //   .startOf('hour')
-  //   .fromNow();
-  // console.log(time);
-  // for (let i = 0; i < following.length; i++) {
-  //   // console.log(following[i]);
-  //   const followerFeed = await Feed.find({ author: following[i] });
-  //   console.log(followerFeed);
-  // }
+        populate: {
+          path: 'replies',
+          model: 'Reply',
+          populate: { path: 'replyBy', model: 'User' },
+        },
+      },
+    ]);
 };
 
 const likeFeed = async (feedId) => {
