@@ -4,7 +4,7 @@ const catchAsync = require('express-async-handler');
 const fs = require('fs');
 const { cloudinaryImageUploadMethod } = require('../helpers/image_upload');
 
-const createFeed = async (req, res) => {
+const createFeed = catchAsync(async (req, res) => {
   const requestBody = req.body;
 
   const imageUrlList = [];
@@ -21,22 +21,22 @@ const createFeed = async (req, res) => {
   res
     .status(201)
     .json({ status: 'success', message: 'Post successfully made...', data });
-};
+});
 
-const getFeeds = async (req, res) => {
+const getFeeds = catchAsync(async (req, res) => {
   const data = await feedService.getFeeds(req.user._id);
 
   res
     .status(201)
     .json({ status: 'success', message: 'All feeds now retrieved...', data });
-};
+});
 
-const getFeed = async (req, res) => {
+const getFeed = catchAsync(async (req, res) => {
   const data = await feedService.getFeed(req.params._id);
   res
     .status(200)
     .json({ status: true, message: 'Feed successfully retrieved...', data });
-};
+});
 
 const likeFeed = catchAsync(async (req, res) => {
   await feedService.likeFeed(req.query.feedId);
@@ -57,14 +57,14 @@ const editFeed = catchAsync(async (req, res) => {
     .json({ status: true, message: 'Feed Update Successful...', data });
 });
 
-const deleteFeed = async (req, res) => {
+const deleteFeed = catchAsync(async (req, res) => {
   await feedService.deleteFeed(req.params._id);
 
   res.status(200).json({
     status: true,
     message: `Feed ${req.params._id} successfully deleted...`,
   });
-};
+});
 
 module.exports = {
   createFeed,
