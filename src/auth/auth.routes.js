@@ -32,10 +32,10 @@ router.post('/register', emailValidator, checkEmail, register);
 
 router.put(
   '/profile/setup',
-  checkUserName,
-  userAuthentication,
-  verifiedEmailAuthorization,
   upload.single('thumbNail'),
+  userAuthentication,
+  checkUserName,
+  verifiedEmailAuthorization,
   setupProfile
 );
 
