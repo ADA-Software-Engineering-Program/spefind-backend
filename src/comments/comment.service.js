@@ -61,7 +61,7 @@ const unlikeComment = async (commentId) => {
 const replyComment = async (userId, commentId, reply) => {
   try {
     const replyData = {};
-    replyData.replyBy = userId;
+    replyData.author = userId;
     replyData.commentId = commentId;
     replyData.reply = reply;
     const replyResponse = await Reply.create(replyData);

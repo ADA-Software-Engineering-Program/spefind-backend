@@ -1,7 +1,7 @@
 const moment = require('moment');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../config/keys');
-const JWT_STRING = JWT_SECRET;
+
 const generateToken = (user, expires) => {
   const payload = {
     sub: user.id,
@@ -9,7 +9,7 @@ const generateToken = (user, expires) => {
     iat: moment().unix(),
     exp: expires.unix(),
   };
-  return jwt.sign(payload, JWT_STRING);
+  return jwt.sign(payload, JWT_SECRET);
 };
 
 const generateAuthTokens = async (user, newUser = false) => {

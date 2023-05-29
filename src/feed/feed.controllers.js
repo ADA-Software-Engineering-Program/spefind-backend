@@ -23,13 +23,13 @@ const createFeed = async (req, res) => {
     .json({ status: 'success', message: 'Post successfully made...', data });
 };
 
-const getFeeds = catchAsync(async (req, res) => {
+const getFeeds = async (req, res) => {
   const data = await feedService.getFeeds(req.user._id);
 
   res
     .status(201)
     .json({ status: 'success', message: 'All feeds now retrieved...', data });
-});
+};
 
 const getFeed = async (req, res) => {
   const data = await feedService.getFeed(req.params._id);

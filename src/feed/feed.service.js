@@ -30,8 +30,7 @@ const createFeed = async (userId, data) => {
 };
 
 const getFeeds = async (userId) => {
-  return await Feed.find({ isPublic: true })
-    .sort({ _id: -1 })
+  return await Feed.find()
     .populate('author')
     .populate([
       {
@@ -44,7 +43,7 @@ const getFeeds = async (userId) => {
       {
         path: 'comments',
         model: 'Comment',
-        populate: { path: 'author', model: 'User' },
+        populate: [{ path: 'author', model: 'User' }],
       },
     ])
     .populate([
@@ -55,7 +54,7 @@ const getFeeds = async (userId) => {
         populate: {
           path: 'replies',
           model: 'Reply',
-          populate: { path: 'replyBy', model: 'User' },
+          populate: [{ path: 'author', model: 'User' }],
         },
       },
     ]);

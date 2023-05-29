@@ -6,6 +6,7 @@ const {
   unlikeComment,
   likeReply,
 } = require('./comment.controllers');
+const { userAuthentication } = require('../helpers/auth');
 const router = Router();
 
 router.post('/make', createComment);

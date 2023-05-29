@@ -6,10 +6,10 @@ const replySchema = new Schema({
   author: {
     type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   },
-  commentId: {
-    type: Schema.Types.ObjectId,
-    ref: 'Comment',
-  },
+  // commentId: {
+  //   type: Schema.Types.ObjectId,
+  //   ref: 'Comment',
+  // },
   reply: {
     type: String,
     trim: true,
