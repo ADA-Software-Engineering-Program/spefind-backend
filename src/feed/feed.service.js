@@ -30,34 +30,7 @@ const createFeed = async (userId, data) => {
 };
 
 const getFeeds = async (userId) => {
-  return await Feed.find()
-    .populate('author')
-    .populate([
-      {
-        path: 'author',
-        model: 'User',
-        populate: { path: 'discipline', model: 'Field' },
-      },
-    ])
-    .populate([
-      {
-        path: 'comments',
-        model: 'Comment',
-        populate: [{ path: 'author', model: 'User' }],
-      },
-    ])
-    .populate([
-      {
-        path: 'comments',
-        model: 'Comment',
-
-        populate: {
-          path: 'replies',
-          model: 'Reply',
-          populate: [{ path: 'author', model: 'User' }],
-        },
-      },
-    ]);
+  return await Feed.find().populate('author');
 };
 
 const likeFeed = async (feedId) => {
@@ -115,7 +88,7 @@ const getFeed = async (feedId) => {
         {
           path: 'comments',
           model: 'Comment',
-          populate: { path: 'author', model: 'User' },
+          populate: [{ path: 'author', model: 'User' }],
         },
       ])
       .populate([
@@ -126,7 +99,7 @@ const getFeed = async (feedId) => {
           populate: {
             path: 'replies',
             model: 'Reply',
-            populate: { path: 'replyBy', model: 'User' },
+            populate: [{ path: 'author', model: 'User' }],
           },
         },
       ]);

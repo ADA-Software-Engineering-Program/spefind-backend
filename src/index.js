@@ -4,6 +4,7 @@ const { json, urlencoded } = express;
 const { PORT } = require('./config/keys');
 const { connectToDatabase } = require('./config/mongoose');
 const { errorConverter, errorHandler } = require('./helpers/asyncError');
+const socket = require('socket.io');
 const logger = require('./helpers/logger');
 const Sentry = require('@sentry/node');
 require('./auth/auth.service')(passport);
@@ -47,6 +48,10 @@ app.use(errorHandler);
 
 connectToDatabase();
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   logger.info(`Server is now live at port ${PORT}`);
 });
+
+const io = socket(server);
+
+const instance = require('./config/socket')(io);
