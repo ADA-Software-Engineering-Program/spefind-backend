@@ -5,11 +5,14 @@ const {
   replyComment,
   unlikeComment,
   likeReply,
+  getAllComments,
 } = require('./comment.controllers');
 const { userAuthentication } = require('../helpers/auth');
 const router = Router();
 
 router.post('/make', createComment);
+
+router.get('/all', getAllComments);
 
 router.put('/like', likeComment);
 

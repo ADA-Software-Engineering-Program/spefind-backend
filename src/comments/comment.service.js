@@ -30,6 +30,23 @@ const createComment = async (userId, data, feedId) => {
   }
 };
 
+const getComments = async (feedId) => {
+  try {
+    return await Comment.find({ feed: feedId })
+      .populate('author')
+      .populate('replies')
+      .populate([
+        {
+          path: 'replies',
+          model: 'Reply',
+          populate: { path: 'author', model: 'User' },
+        },
+      ]);
+  } catch (error) {
+    throw new ApiError(400, 'Unable to get all comments...');
+  }
+};
+
 const likeComment = async (commentId) => {
   try {
     const { likes } = await Comment.findById(commentId);
@@ -102,6 +119,7 @@ const unlikeReply = async (userId, replyId) => {
 module.exports = {
   createComment,
   likeComment,
+  getComments,
   likeReply,
   unlikeComment,
   replyComment,

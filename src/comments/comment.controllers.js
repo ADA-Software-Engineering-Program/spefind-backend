@@ -8,6 +8,15 @@ const createComment = catchAsync(async (req, res) => {
     .json({ status: 'success', message: 'comment successfully added...' });
 });
 
+const getAllComments = catchAsync(async (req, res) => {
+  const data = await commentService.getComments(req.query.feedId);
+  res.status(202).json({
+    status: true,
+    message: 'All comments for feed retrieved...',
+    data,
+  });
+});
+
 const likeComment = catchAsync(async (req, res) => {
   await commentService.likeComment(req.params._id);
   res
@@ -43,4 +52,5 @@ module.exports = {
   likeReply,
   likeComment,
   unlikeComment,
+  getAllComments,
 };
