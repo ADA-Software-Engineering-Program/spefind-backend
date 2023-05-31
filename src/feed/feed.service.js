@@ -132,7 +132,19 @@ const repostFeed = async (userId, feedId, commentary) => {
     rawData.repostAuthor = userId;
     rawData.repostCommentary = commentary;
     rawData.feed = feedId;
+
     const data = await Repost.create(rawData);
+
+    const { numberOfReposts } = await Feed.findById(feedId);
+
+    const newNumberOfReposts = numberOfReposts + 1;
+
+    await Feed.findByIdAndUpdate(
+      feedId,
+      { numberOfReposts: newNumberOfReposts },
+      { new: true }
+    );
+
     return Repost.findById(data._id)
       .populate('repostAuthor')
       .populate('feed')
