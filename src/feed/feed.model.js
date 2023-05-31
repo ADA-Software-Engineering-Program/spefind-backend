@@ -23,6 +23,11 @@ const feedSchema = new Schema({
     trim: true,
     default: 0,
   },
+  numberOfReposts: {
+    type: Number,
+    trim: true,
+    default: 0,
+  },
   numberOfViews: {
     type: Number,
     trim: true,
