@@ -3,6 +3,7 @@ const ApiError = require('../helpers/error');
 const Following = require('../user/following.model');
 const Comment = require('../comments/comment.model');
 const User = require('../auth/user.model');
+const Repost = require('./repost.model');
 const moment = require('moment');
 
 const createFeed = async (userId, data) => {
@@ -125,12 +126,50 @@ const deleteFeed = async (feedId) => {
   }
 };
 
+const repostFeed = async (userId, feedId, commentary) => {
+  try {
+    let rawData = {};
+    rawData.repostAuthor = userId;
+    rawData.repostCommentary = commentary;
+    rawData.feed = feedId;
+    const data = await Repost.create(rawData);
+    return Repost.findById(data._id)
+      .populate('repostAuthor')
+      .populate('feed')
+      .populate([
+        {
+          path: 'feed',
+          model: 'Feed',
+          populate: { path: 'author', model: 'User' },
+        },
+      ]);
+  } catch (error) {
+    throw new ApiError(400, 'Unable to repost feed...');
+  }
+};
+const likeFeedRepost = async (feedId) => {
+  try {
+    const { likes } = await Repost.findById(feedId);
+    const newNumberOfLikes = likes + 1;
+
+    return await Repost.findByIdAndUpdate(
+      feedId,
+      { likes: newNumberOfLikes },
+      { new: true }
+    );
+  } catch (error) {
+    throw new ApiError(400, 'Unable to like this feed...');
+  }
+};
+
 module.exports = {
   createFeed,
   editFeed,
   getFeed,
   getFeeds,
   likeFeed,
+  likeFeedRepost,
   unlikeFeed,
   deleteFeed,
+  repostFeed,
 };

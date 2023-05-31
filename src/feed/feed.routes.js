@@ -6,6 +6,8 @@ const {
   unlikeFeed,
   getFeed,
   editFeed,
+  repostFeed,
+  likeFeedRepost,
   deleteFeed,
 } = require('./feed.controllers');
 const { feedAuthorization } = require('../helpers/auth');
@@ -25,5 +27,9 @@ router.get('/:_id', getFeed);
 router.put('/edit', feedAuthorization, editFeed);
 
 router.delete('/delete/_:id', feedAuthorization, deleteFeed);
+
+router.post('/repost', repostFeed);
+
+router.post('/repost/like', likeFeedRepost);
 
 module.exports = router;

@@ -14,6 +14,10 @@ const commentSchema = new Schema({
     type: String,
     trim: true,
   },
+  repost: {
+    type: Schema.Types.ObjectId,
+    ref: 'Repost',
+  },
   likes: {
     type: Number,
     trim: true,

@@ -66,12 +66,32 @@ const deleteFeed = catchAsync(async (req, res) => {
   });
 });
 
+const repostFeed = catchAsync(async (req, res) => {
+  const data = await feedService.repostFeed(
+    req.user._id,
+    req.query.feedId,
+    req.body.commentary
+  );
+  res
+    .status(201)
+    .json({ status: 'success', message: 'Repost Successful!', data });
+});
+
+const likeFeedRepost = catchAsync(async (req, res) => {
+  await feedService.likeFeedRepost(req.query.repostId);
+
+  res
+    .status(201)
+    .json({ status: true, message: 'You liked this feed repost...' });
+});
 module.exports = {
   createFeed,
   editFeed,
   getFeed,
   getFeeds,
   likeFeed,
+  likeFeedRepost,
   unlikeFeed,
+  repostFeed,
   deleteFeed,
 };
