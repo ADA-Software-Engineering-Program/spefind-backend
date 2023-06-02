@@ -23,7 +23,8 @@ const userSchema = new Schema(
       trim: true,
     },
     availableTo: {
-      type: [{ type: Schema.Types.ObjectId, ref: 'State' }],
+      type: String,
+      trim: true,
     },
     biography: {
       type: String,
@@ -52,7 +53,10 @@ const userSchema = new Schema(
     pastEvents: {
       type: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
     },
-    eventType: { type: [{ type: Schema.Types.ObjectId, ref: 'Event-Type' }] },
+    eventType: {
+      type: String,
+      trim: true,
+    },
     field: {
       type: String,
       trim: true,
