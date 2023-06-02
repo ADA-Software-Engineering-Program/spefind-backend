@@ -14,7 +14,7 @@ const replySchema = new Schema({
     type: String,
     trim: true,
   },
-  likes: {
+  replyLikes: {
     type: Number,
     trim: true,
     default: 0,

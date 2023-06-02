@@ -14,7 +14,7 @@ router.post('/make', createComment);
 
 router.get('/all', getAllComments);
 
-router.put('/like', likeComment);
+router.put('/like/:_id', likeComment);
 
 router.put('/unlike', unlikeComment);
 

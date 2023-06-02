@@ -18,9 +18,10 @@ const commentSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Repost',
   },
-  likes: {
+  commentLikes: {
     type: Number,
     trim: true,
+    default: 0,
   },
   replies: {
     type: [{ type: Schema.Types.ObjectId, ref: 'Reply' }],

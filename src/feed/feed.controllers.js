@@ -39,13 +39,13 @@ const getFeed = catchAsync(async (req, res) => {
 });
 
 const likeFeed = catchAsync(async (req, res) => {
-  await feedService.likeFeed(req.query.feedId);
+  await feedService.likeFeed(req.user._id, req.query.feedId);
 
   res.status(201).json({ status: true, message: 'You liked this feed...' });
 });
 
 const unlikeFeed = catchAsync(async (req, res) => {
-  await feedService.unlikeFeed(req.query.feedId);
+  await feedService.unlikeFeed(req.user._id, req.query.feedId);
 
   res.status(201).json({ status: true, message: 'You unliked this feed...' });
 });

@@ -34,14 +34,20 @@ const getFeeds = async (userId) => {
   return await Feed.find().populate('author');
 };
 
-const likeFeed = async (feedId) => {
+const likeFeed = async (userId, feedId) => {
   try {
-    const { likes } = await Feed.findById(feedId);
-    const newNumberOfLikes = likes + 1;
+    const { feedLikes } = await Feed.findById(feedId);
+    const newNumberOfLikes = feedLikes + 1;
+
+    await Feed.findByIdAndUpdate(
+      feedId,
+      { $push: { likedBy: [userId] } },
+      { new: true }
+    );
 
     return await Feed.findByIdAndUpdate(
       feedId,
-      { likes: newNumberOfLikes },
+      { feedLikes: newNumberOfLikes },
       { new: true }
     );
   } catch (error) {
@@ -49,14 +55,20 @@ const likeFeed = async (feedId) => {
   }
 };
 
-const unlikeFeed = async (feedId) => {
+const unlikeFeed = async (userId, feedId) => {
   try {
-    const { likes } = await Feed.findById(feedId);
-    const newNumberOfLikes = likes - 1;
+    const { feedLikes } = await Feed.findById(feedId);
+    const newNumberOfLikes = feedLikes - 1;
+
+    await Feed.findByIdAndUpdate(
+      feedId,
+      { $pull: { likedBy: userId } },
+      { new: true }
+    );
 
     return await Feed.findByIdAndUpdate(
       feedId,
-      { likes: newNumberOfLikes },
+      { feedLikes: newNumberOfLikes },
       { new: true }
     );
   } catch (error) {

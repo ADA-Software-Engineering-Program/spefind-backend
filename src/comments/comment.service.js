@@ -49,11 +49,11 @@ const getComments = async (feedId) => {
 
 const likeComment = async (commentId) => {
   try {
-    const { likes } = await Comment.findById(commentId);
-    const newNumberOfLikes = likes + 1;
+    const { commentLikes } = await Comment.findById(commentId);
+    const newNumberOfLikes = commentLikes + 1;
     return await Comment.findByIdAndUpdate(
       commentId,
-      { likes: newNumberOfLikes },
+      { commentLikes: newNumberOfLikes },
       { new: true }
     );
   } catch (error) {
@@ -79,14 +79,13 @@ const replyComment = async (userId, commentId, reply) => {
   try {
     const replyData = {};
     replyData.author = userId;
-    replyData.commentId = commentId;
     replyData.reply = reply;
     const replyResponse = await Reply.create(replyData);
     return await Comment.findByIdAndUpdate(
       commentId,
-      { $push: { replies: replyResponse._id } },
+      { $push: { replies: [replyResponse._id] } },
       { new: true }
-    );
+    ).populate('author');
   } catch (error) {
     throw new ApiError(400, 'Unable to reply comment...');
   }

@@ -11,7 +11,8 @@ const feedSchema = new Schema({
     trim: true,
   },
   feedPhotos: { type: [String], trim: true },
-  likes: {
+
+  feedLikes: {
     type: Number,
     default: 0,
   },
@@ -27,6 +28,9 @@ const feedSchema = new Schema({
     type: Number,
     trim: true,
     default: 0,
+  },
+  likedBy: {
+    type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   },
   numberOfViews: {
     type: Number,
