@@ -7,7 +7,7 @@ const repostSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
   },
-  repostCommentary: {
+  content: {
     type: String,
     trim: true,
   },
