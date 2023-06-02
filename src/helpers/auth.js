@@ -31,6 +31,19 @@ const userAuthentication = (req, res, next) => {
   // console.log(bearer[1]);
 };
 
+const checkUserExistence = async (req, res, next) => {
+  const checkUser = await User.findById(req.user._id);
+  if (!checkUser) {
+    res.status(403).json({
+      status: 'access denied',
+      message:
+        'Ooppss! You no longer have an account with us... Kindly register!',
+    });
+    return;
+  }
+  next();
+};
+
 const verifiedEmailAuthorization = async (req, res, next) => {
   const { isAccountConfirmed } = await User.findById(req.user._id);
   if (!req.user || isAccountConfirmed === false) {
@@ -73,4 +86,5 @@ module.exports = {
   feedAuthorization,
   verifiedEmailAuthorization,
   adminAuthorization,
+  checkUserExistence,
 };

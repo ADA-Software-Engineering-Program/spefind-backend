@@ -31,7 +31,13 @@ const createFeed = async (userId, data) => {
 };
 
 const getFeeds = async (userId) => {
-  return await Feed.find().populate('author');
+  const repostData = await Repost.find({ repostAuthor: userId })
+    .populate('repostAuthor')
+    .populate('feed');
+  const feedData = await Feed.find().populate('author');
+
+  const returnedData = [...repostData, ...feedData];
+  return returnedData;
 };
 
 const likeFeed = async (userId, feedId) => {

@@ -34,12 +34,15 @@ const getComments = async (feedId) => {
   try {
     return await Comment.find({ feed: feedId })
       .populate('author')
-      .populate('replies')
       .populate([
         {
           path: 'replies',
           model: 'Reply',
-          populate: { path: 'author', model: 'User' },
+
+          populate: {
+            path: 'author',
+            model: 'User',
+          },
         },
       ]);
   } catch (error) {
@@ -85,7 +88,7 @@ const replyComment = async (userId, commentId, reply) => {
       commentId,
       { $push: { replies: [replyResponse._id] } },
       { new: true }
-    ).populate('author');
+    );
   } catch (error) {
     throw new ApiError(400, 'Unable to reply comment...');
   }

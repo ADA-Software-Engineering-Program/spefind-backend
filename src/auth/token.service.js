@@ -6,10 +6,10 @@ const generateToken = (user, expires) => {
   const payload = {
     sub: user.id,
     user,
-    iat: moment().unix(),
-    exp: expires.unix(),
+    // iat: moment().unix(),
+    // exp: expires.unix(),
   };
-  return jwt.sign(payload, JWT_SECRET);
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '14d' });
 };
 
 const generateAuthTokens = async (user, newUser = false) => {

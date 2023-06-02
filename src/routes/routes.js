@@ -1,15 +1,30 @@
 const { Router } = require('express');
 
 const router = Router();
-const { userAuthentication } = require('../helpers/auth');
+const { userAuthentication, checkUserExistence } = require('../helpers/auth');
 
 router.use('/auth', require('../auth/auth.routes'));
 
-router.use('/feed', userAuthentication, require('../feed/feed.routes'));
+router.use(
+  '/feed',
+  userAuthentication,
+  checkUserExistence,
+  require('../feed/feed.routes')
+);
 
-router.use('/fields', userAuthentication, require('../fields/field.routes'));
+router.use(
+  '/fields',
+  userAuthentication,
+  checkUserExistence,
+  require('../fields/field.routes')
+);
 
-router.use('/user', userAuthentication, require('../user/user.routes'));
+router.use(
+  '/user',
+  userAuthentication,
+  checkUserExistence,
+  require('../user/user.routes')
+);
 
 router.use(
   '/comment',

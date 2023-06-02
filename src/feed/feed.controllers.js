@@ -67,6 +67,7 @@ const deleteFeed = catchAsync(async (req, res) => {
 });
 
 const repostFeed = catchAsync(async (req, res) => {
+  console.log(req.user);
   const data = await feedService.repostFeed(
     req.user._id,
     req.query.feedId,
