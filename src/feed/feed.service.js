@@ -163,7 +163,7 @@ const repostFeed = async (userId, feedId, commentary) => {
       { new: true }
     );
 
-    return Repost.findById(data._id)
+    return await Repost.findById(data._id)
       .populate('repostAuthor')
       .populate('feed')
       .populate([
