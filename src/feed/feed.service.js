@@ -148,7 +148,7 @@ const repostFeed = async (userId, feedId, commentary) => {
   try {
     let rawData = {};
     rawData.repostAuthor = userId;
-    rawData.repostCommentary = commentary;
+    rawData.repostContent = commentary;
     rawData.feed = feedId;
 
     const data = await Repost.create(rawData);

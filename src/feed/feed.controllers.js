@@ -71,7 +71,7 @@ const repostFeed = catchAsync(async (req, res) => {
   const data = await feedService.repostFeed(
     req.user._id,
     req.query.feedId,
-    req.body.commentary
+    req.body.repostContent
   );
   res
     .status(201)
