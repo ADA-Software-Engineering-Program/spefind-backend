@@ -7,9 +7,10 @@ const repostSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
   },
-  content: {
+  repostContent: {
     type: String,
     trim: true,
+    default: null,
   },
   feed: {
     type: Schema.Types.ObjectId,
