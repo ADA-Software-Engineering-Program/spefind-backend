@@ -179,16 +179,16 @@ const repostFeed = async (userId, feedId, commentary) => {
 };
 const likeFeedRepost = async (feedId) => {
   try {
-    const { likes } = await Repost.findById(feedId);
-    const newNumberOfLikes = likes + 1;
+    const { repostLikes } = await Feed.findById(feedId);
+    const newNumberOfLikes = repostLikes + 1;
 
-    return await Repost.findByIdAndUpdate(
+    return await Feed.findByIdAndUpdate(
       feedId,
-      { likes: newNumberOfLikes },
+      { repostLikes: newNumberOfLikes },
       { new: true }
     );
   } catch (error) {
-    throw new ApiError(400, 'Unable to like this feed...');
+    throw new ApiError(400, 'Unable to like reposted feed...');
   }
 };
 

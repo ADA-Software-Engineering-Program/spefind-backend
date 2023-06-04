@@ -16,6 +16,11 @@ const feedSchema = new Schema({
     type: Number,
     default: 0,
   },
+  repostLikes: {
+    type: Number,
+    default: 0,
+    trim: true,
+  },
   comments: {
     type: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
   },

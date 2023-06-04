@@ -16,11 +16,6 @@ const repostSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Feed',
   },
-  repostLikes: {
-    type: Number,
-    default: 0,
-    trim: true,
-  },
 });
 
 const Repost = mongoose.model('Repost', repostSchema);
