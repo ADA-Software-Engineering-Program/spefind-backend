@@ -79,7 +79,7 @@ const repostFeed = catchAsync(async (req, res) => {
 });
 
 const likeFeedRepost = catchAsync(async (req, res) => {
-  await feedService.likeFeedRepost(req.query.repostId);
+  await feedService.likeFeedRepost(req.user._id, req.query.repostId);
 
   res
     .status(201)

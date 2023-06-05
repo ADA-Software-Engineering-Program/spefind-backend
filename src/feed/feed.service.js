@@ -177,10 +177,16 @@ const repostFeed = async (userId, feedId, commentary) => {
     throw new ApiError(400, 'Unable to repost feed...');
   }
 };
-const likeFeedRepost = async (feedId) => {
+const likeFeedRepost = async (userId, feedId) => {
   try {
     const { repostLikes } = await Feed.findById(feedId);
     const newNumberOfLikes = repostLikes + 1;
+
+    await Repost.findOneAndUpdate(
+      { feed: feedId },
+      { $push: { likedBy: [userId] } },
+      { new: true }
+    );
 
     return await Feed.findByIdAndUpdate(
       feedId,

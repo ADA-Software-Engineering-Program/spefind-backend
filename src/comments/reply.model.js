@@ -2,24 +2,27 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const replySchema = new Schema({
-  author: {
-    type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+const replySchema = new Schema(
+  {
+    author: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    },
+    // commentId: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'Comment',
+    // },
+    reply: {
+      type: String,
+      trim: true,
+    },
+    replyLikes: {
+      type: Number,
+      trim: true,
+      default: 0,
+    },
   },
-  // commentId: {
-  //   type: Schema.Types.ObjectId,
-  //   ref: 'Comment',
-  // },
-  reply: {
-    type: String,
-    trim: true,
-  },
-  replyLikes: {
-    type: Number,
-    trim: true,
-    default: 0,
-  },
-});
+  { timestamps: true }
+);
 
 const Reply = mongoose.model('Reply', replySchema);
 
