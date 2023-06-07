@@ -21,6 +21,17 @@ const editProfile = catchAsync(async (req, res) => {
   });
 });
 
+const addCoverBanner = async (req, res) => {
+  let coverBanner;
+  const avatar = await cloudinary.uploader.upload(req.file.path);
+  coverBanner = avatar.secure_url;
+  await profileService.addCoverBanner(req.user._id, coverBanner);
+  res.status(201).json({
+    status: 'success',
+    message: 'Cover Banner Update Successful!',
+  });
+};
+
 const createPastEvent = catchAsync(async (req, res) => {
   let requestBody = req.body;
   if (req.file) {
@@ -64,9 +75,11 @@ const allSubscribers = catchAsync(async (req, res) => {
 });
 
 module.exports = {
+  addCoverBanner,
   editProfile,
   createPastEvent,
   getCurrentUser,
+  addCoverBanner,
   emailSubscribe,
   allSubscribers,
 };

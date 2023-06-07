@@ -23,7 +23,7 @@ const userSchema = new Schema(
       trim: true,
     },
     availableTo: {
-      type: String,
+      type: [String],
       trim: true,
     },
     biography: {
@@ -46,6 +46,10 @@ const userSchema = new Schema(
       type: String,
       trim: true,
     },
+    coverBanner: {
+      type: String,
+      trim: true,
+    },
     password: {
       type: String,
       trim: true,
@@ -54,7 +58,7 @@ const userSchema = new Schema(
       type: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
     },
     eventType: {
-      type: String,
+      type: [String],
       trim: true,
     },
     field: {

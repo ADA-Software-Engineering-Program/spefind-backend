@@ -12,6 +12,14 @@ const createProfile = async (userId, data) => {
   return await User.findByIdAndUpdate(userId, userData, { new: true });
 };
 
+const addCoverBanner = async (userId, data) => {
+  return await User.findByIdAndUpdate(
+    userId,
+    { coverBanner: data },
+    { new: true }
+  );
+};
+
 const createEvent = async (userId, data) => {
   data.userId = userId;
   const event = await Event.create(data);
@@ -49,5 +57,6 @@ module.exports = {
   createProfile,
   createEvent,
   emailSubscribe,
+  addCoverBanner,
   getUserById,
 };
