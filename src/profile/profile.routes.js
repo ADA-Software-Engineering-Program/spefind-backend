@@ -4,7 +4,6 @@ const {
   getCurrentUser,
   createPastEvent,
   addCoverBanner,
-  coverBanner,
 } = require('./profile.controllers');
 const upload = require('../helpers/multer');
 const router = Router();
