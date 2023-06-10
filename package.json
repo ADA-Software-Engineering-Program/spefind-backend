@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@sentry/node": "^7.51.2",
+    "agora-access-token": "^2.0.4",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.35.0",
     "dotenv": "^16.0.3",

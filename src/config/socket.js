@@ -1,5 +1,7 @@
 const User = require('../auth/user.model');
 const Chat = require('../user/chat.model');
+const { RtcRole, RtcTokenBuilder } = require('agora-access-token');
+const { AGORA_APP_ID, AGORA_CERTIFICATE } = require('../config/keys');
 const { addUsers } = require('./socket.helpers');
 const moment = require('moment');
 
@@ -75,6 +77,23 @@ module.exports = (io) => {
         );
         socket.emit('message', { ...returnedData });
       }
+    });
+    socket.on('generateAgoraToken', () => {
+      let code = Math.floor(Math.random() * (9999 - 1000) + 1000);
+      let channelName = `CORDDIT-${code}`;
+      let UIDCode = Math.floor(Math.random() * (9999 - 1000) + 1000);
+      let UID = UIDCode;
+      let role = 'publisher';
+      let expiry = 3600;
+      let token = RtcTokenBuilder.buildTokenWithAccount(
+        AGORA_APP_ID,
+        AGORA_CERTIFICATE,
+        channelName,
+        role,
+        expiry
+      );
+      let generatedToken = { channelName, UID, token };
+      socket.emit('generatedToken', { ...generatedToken });
     });
   });
 };
