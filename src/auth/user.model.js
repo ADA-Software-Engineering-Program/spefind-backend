@@ -106,8 +106,8 @@ const userSchema = new Schema(
       trim: true,
     },
     pricing: {
-      type: Schema.Types.ObjectId,
-      ref: 'Pricing',
+      type: String,
+      trim: true,
     },
     isProfileCreated: {
       type: Boolean,
