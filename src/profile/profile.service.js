@@ -30,7 +30,9 @@ const createEvent = async (userId, data) => {
 
 const getUserById = async (id) => {
   try {
-    return await User.findById(id).select('-password');
+    return await User.findById(id)
+      .select('-password')
+      .populate('pastEvents');
   } catch (error) {
     throw new ApiError(400, 'Unable to get user');
   }

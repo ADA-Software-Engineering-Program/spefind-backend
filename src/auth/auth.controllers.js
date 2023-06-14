@@ -29,7 +29,7 @@ const registerAdmin = catchAsync(async (req, res) => {
   });
 });
 
-const login = catchAsync((req, res, next) => {
+const login = (req, res, next) => {
   passport.authenticate('login', async (err, user, info) => {
     try {
       if (err) {
@@ -66,7 +66,7 @@ const login = catchAsync((req, res, next) => {
       return next(error);
     }
   })(req, res, next);
-});
+};
 
 const changePassword = catchAsync(async (req, res) => {
   if (!req.body.password) {

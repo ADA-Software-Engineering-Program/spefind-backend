@@ -1,6 +1,7 @@
 const express = require('express');
 const { json, urlencoded } = express;
 const { connectToDatabase } = require('./config/mongoose');
+const { errorConverter, errorHandler } = require('./helpers/asyncError');
 const passport = require('passport');
 const logger = require('./helpers/logger');
 const cors = require('cors');
@@ -23,6 +24,9 @@ app.get('/', (req, res) => {
     .status(200)
     .json({ status: true, message: 'Welcome to SPEFIND index page' });
 });
+
+app.use(errorConverter);
+app.use(errorHandler);
 
 connectToDatabase();
 
