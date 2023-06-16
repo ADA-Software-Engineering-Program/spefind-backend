@@ -43,7 +43,7 @@ const resendOTP = catchAsync(async (req, res) => {
   });
 });
 
-const setupProfile = async (req, res) => {
+const setupProfile = catchAsync(async (req, res) => {
   let requestBody = req.body;
   if (req.file) {
     const avatar = await cloudinary.uploader.upload(req.file.path);
@@ -57,7 +57,7 @@ const setupProfile = async (req, res) => {
     data,
     token: token.access.token,
   });
-};
+});
 
 const login = catchAsync((req, res, next) => {
   passport.authenticate('login', async (err, user, info) => {

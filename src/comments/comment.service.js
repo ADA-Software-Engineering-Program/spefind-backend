@@ -2,6 +2,7 @@ const Comment = require('./comment.model');
 const ApiError = require('../helpers/error');
 const Feed = require('../feed/feed.model');
 const Reply = require('./reply.model');
+const CommentLike = require('./comment.like');
 
 const createComment = async (userId, data, feedId) => {
   try {
@@ -50,18 +51,26 @@ const getComments = async (feedId) => {
   }
 };
 
-const likeComment = async (commentId) => {
-  try {
-    const { commentLikes } = await Comment.findById(commentId);
-    const newNumberOfLikes = commentLikes + 1;
-    return await Comment.findByIdAndUpdate(
-      commentId,
-      { commentLikes: newNumberOfLikes },
-      { new: true }
-    );
-  } catch (error) {
-    throw new ApiError(400, 'Unable to like comment...');
+const likeComment = async (userId, commentId) => {
+  const checkComment = await Comment.findById(commentId);
+  if (!checkComment) {
+    throw new ApiError(400, ' Oops! This comment no longer exists!');
   }
+
+  const createCommentLike = {
+    likedBy: userId,
+    commentary: commentId,
+    isLiked: true,
+  };
+  await CommentLike.create(createCommentLike);
+
+  const { commentLikes } = await Comment.findById(commentId);
+  const newNumberOfLikes = commentLikes + 1;
+  return await Comment.findByIdAndUpdate(
+    commentId,
+    { commentLikes: newNumberOfLikes },
+    { new: true }
+  );
 };
 
 const unlikeComment = async (commentId) => {

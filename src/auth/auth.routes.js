@@ -16,8 +16,10 @@ const { checkEmail, checkUserName } = require('../helpers/checkUser');
 // const { registerValidator, loginValidator } = require('../helpers/validate');
 const {
   emailValidator,
+  productValidator,
   nameValidator,
   passwordValidator,
+  profileValidator,
 } = require('../helpers/validator');
 const { loginValidator } = require('../helpers/validate');
 const {
@@ -35,6 +37,7 @@ router.put(
   upload.single('thumbNail'),
   userAuthentication,
   checkUserName,
+  // profileValidator,
   verifiedEmailAuthorization,
   setupProfile
 );

@@ -52,6 +52,11 @@ const setProfile = async (userId, data) => {
         { numberOfFollowings: newNumberOfFollowings },
         { new: true }
       );
+      await User.findByIdAndUpdate(
+        userId,
+        { isProfileCreationComplete: true },
+        { new: true }
+      );
 
       const { numberOfFollowers } = await User.findById(followings[i]);
 

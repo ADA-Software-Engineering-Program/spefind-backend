@@ -53,7 +53,10 @@ const userSchema = new Schema(
       trim: true,
       default: 0,
     },
-
+    isProfileCreationComplete: {
+      type: Boolean,
+      default: false,
+    },
     discipline: {
       type: Schema.Types.ObjectId,
       ref: 'Field',

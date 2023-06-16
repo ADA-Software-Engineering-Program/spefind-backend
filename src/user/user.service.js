@@ -55,7 +55,7 @@ const unfollow = async (follower, followed) => {
 };
 
 const getUsers = async () => {
-  return await User.find();
+  return await User.find({ isProfileCreationComplete: true });
 };
 
 module.exports = { follow, getUsers, getUserById, unfollow };

@@ -134,6 +134,27 @@ const productSchema = Joi.object({
     ),
 });
 
+const profileValidatorSchema = Joi.object({
+  firstName: Joi.string()
+    .min(3)
+    .max(30)
+    .required()
+    .trim()
+    .error(new ApiError(400, "Oops! You're required to input a first name...")),
+  lastName: Joi.string()
+    .trim()
+    .required()
+    .error(new ApiError(400, "Oops! You're required to input a last name...")),
+  username: Joi.string()
+    .min(3)
+    .optional()
+    .error(new ApiError(400, "Oops! You're required to input a username...")),
+
+  password: Joi.number()
+    .optional()
+    .error(new ApiError(400, "Oops! You're required to input a password...")),
+});
+
 const productValidator = async (req, res, next) => {
   const data = req.body;
   try {
@@ -143,10 +164,20 @@ const productValidator = async (req, res, next) => {
     next(error);
   }
 };
+const profileValidator = async (req, res, next) => {
+  const data = req.body;
+  try {
+    await profileValidatorSchema.validateAsync(data);
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   productValidator,
   passwordValidator,
+  profileValidator,
   nameValidator,
   emailValidator,
 };

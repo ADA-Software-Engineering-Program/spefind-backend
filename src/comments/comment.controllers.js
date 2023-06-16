@@ -18,7 +18,7 @@ const getAllComments = catchAsync(async (req, res) => {
 });
 
 const likeComment = catchAsync(async (req, res) => {
-  await commentService.likeComment(req.params._id);
+  await commentService.likeComment(req.user._id, req.params._id);
   res
     .status(200)
     .json({ status: 'success', message: 'You liked this comment...' });

@@ -13,6 +13,22 @@ const repostSchema = new Schema(
       trim: true,
       default: null,
     },
+    repostLikes: {
+      type: Number,
+      default: 0,
+      trim: true,
+    },
+    repostComments: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
+    },
+    numberOfRepostComments: {
+      type: Number,
+      trim: true,
+      default: 0,
+    },
+    likedBy: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    },
     feed: {
       type: Schema.Types.ObjectId,
       ref: 'Feed',

@@ -32,33 +32,40 @@ const createFeed = async (userId, data) => {
 
 const getFeeds = async (userId) => {
   const repostData = await Repost.find({ repostAuthor: userId })
+    .sort({ createdAt: -1 })
     .populate('repostAuthor')
     .populate('feed');
-  const feedData = await Feed.find().populate('author');
+  const feedData = await Feed.find()
+    .sort({ createdAt: -1 })
+    .populate('author');
 
   const returnedData = [...repostData, ...feedData];
   return returnedData;
+  ``;
 };
 
 const likeFeed = async (userId, feedId) => {
-  try {
-    const { feedLikes } = await Feed.findById(feedId);
-    const newNumberOfLikes = feedLikes + 1;
+  const { feedLikes } = await Feed.findById(feedId);
+  const newNumberOfLikes = feedLikes + 1;
 
-    await Feed.findByIdAndUpdate(
-      feedId,
-      { $push: { likedBy: [userId] } },
-      { new: true }
-    );
+  const { likedBy } = await Feed.findById(feedId);
 
-    return await Feed.findByIdAndUpdate(
-      feedId,
-      { feedLikes: newNumberOfLikes },
-      { new: true }
-    );
-  } catch (error) {
-    throw new ApiError(400, 'Unable to like this feed...');
+  for (let i = 0; i <= likedBy.length; i++) {
+    if (userId == likedBy[i]) {
+      throw new ApiError(400, 'Oops! You already liked this feed...');
+    }
   }
+  await Feed.findByIdAndUpdate(
+    feedId,
+    { $push: { likedBy: [userId] } },
+    { new: true }
+  );
+
+  return await Feed.findByIdAndUpdate(
+    feedId,
+    { feedLikes: newNumberOfLikes },
+    { new: true }
+  );
 };
 
 const unlikeFeed = async (userId, feedId) => {
