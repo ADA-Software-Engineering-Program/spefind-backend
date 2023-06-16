@@ -15,6 +15,24 @@ module.exports = (io) => {
       // socket.emit('message', 'All is well everyday...');
     });
 
+    const generateTokenDetails = () => {
+      let code = Math.floor(Math.random() * (9999 - 1000) + 1000);
+      let channelName = `CORDDIT-${code}`;
+      let UIDCode = Math.floor(Math.random() * (9999 - 1000) + 1000);
+      let UID = UIDCode;
+      let role = 'publisher';
+      let expiry = 3600;
+      let token = RtcTokenBuilder.buildTokenWithAccount(
+        AGORA_APP_ID,
+        AGORA_CERTIFICATE,
+        channelName,
+        role,
+        expiry
+      );
+      let generatedToken = { channelName, UID, token };
+      return generatedToken;
+    };
+
     socket.on('getAllChats', async ({ userId }) => {
       let allChats = [];
       const checkChat = await Chat.find({ senderID: userId });
@@ -78,21 +96,9 @@ module.exports = (io) => {
         socket.emit('message', { ...returnedData });
       }
     });
-    socket.on('generateAgoraToken', async () => {
-      let code = Math.floor(Math.random() * (9999 - 1000) + 1000);
-      let channelName = `CORDDIT-${code}`;
-      let UIDCode = Math.floor(Math.random() * (9999 - 1000) + 1000);
-      let UID = UIDCode;
-      let role = 'publisher';
-      let expiry = 3600;
-      let token = await RtcTokenBuilder.buildTokenWithAccount(
-        AGORA_APP_ID,
-        AGORA_CERTIFICATE,
-        channelName,
-        role,
-        expiry
-      );
-      let generatedToken = { channelName, UID, token };
+    socket.on('generateAgoraToken', () => {
+      let generatedToken = generateTokenDetails();
+      console.log('talkie');
       socket.emit('generatedToken', { ...generatedToken });
     });
   });
