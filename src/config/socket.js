@@ -78,14 +78,14 @@ module.exports = (io) => {
         socket.emit('message', { ...returnedData });
       }
     });
-    socket.on('generateAgoraToken', () => {
+    socket.on('generateAgoraToken', async () => {
       let code = Math.floor(Math.random() * (9999 - 1000) + 1000);
       let channelName = `CORDDIT-${code}`;
       let UIDCode = Math.floor(Math.random() * (9999 - 1000) + 1000);
       let UID = UIDCode;
       let role = 'publisher';
       let expiry = 3600;
-      let token = RtcTokenBuilder.buildTokenWithAccount(
+      let token = await RtcTokenBuilder.buildTokenWithAccount(
         AGORA_APP_ID,
         AGORA_CERTIFICATE,
         channelName,
