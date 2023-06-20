@@ -22,17 +22,17 @@ module.exports = (io) => {
       let code = Math.floor(Math.random() * (9999 - 1000) + 1000);
       let channelName = `CORDDIT-${code}`;
       let UIDCode = Math.floor(Math.random() * (9999 - 1000) + 1000);
-      let UID = UIDCode;
-      let role = 'publisher';
+      let UID = `${UIDCode}`;
+      let role = RtcRole.PUBLISHER;
       const currentTime = Math.floor(Date.now() / 1000);
       let expireTime = 3600;
       const privilegeExpireTime = currentTime + expireTime;
 
-      let token = await RtcTokenBuilder.buildTokenWithAccount(
+      let token = await RtcTokenBuilder.buildTokenWithUid(
         agoraAppID,
         agoraCertificate,
         channelName,
-        'userAccount',
+        UID,
         role,
         privilegeExpireTime
       );
