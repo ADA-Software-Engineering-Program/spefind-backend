@@ -33,7 +33,6 @@ const createComment = async (userId, data, feedId) => {
 
 const getComments = async (userId, feedId) => {
   try {
-    // console.log(userId, feedId);
     const checkComments = await Comment.find({ feed: feedId });
     if (checkComments.length === 0) {
       throw new ApiError(400, 'There are no comments for this feed yet...');
@@ -52,13 +51,12 @@ const getComments = async (userId, feedId) => {
     );
 
     if (newComments.length != newCheckUserLike.length) {
-      console.log(true);
       for (let i = 0; i < newComments.length; i++) {
         const tellie = await CommentLike.findOne({
           likedBy: userId,
           commentary: newComments[i],
         });
-        // console.log(tellie);
+
         if (!tellie) {
           await CommentLike.create({
             likedBy: userId,
@@ -92,13 +90,12 @@ const getComments = async (userId, feedId) => {
 };
 
 const likeComment = async (userId, commentId) => {
-  console.log(userId, commentId);
   const checkComment = await Comment.findById(commentId);
   if (!checkComment) {
     throw new ApiError(400, ' Oops! This comment no longer exists!');
   }
 
-  const tell = await CommentLike.findOneAndUpdate(
+  await CommentLike.findOneAndUpdate(
     {
       likedBy: userId,
       commentary: commentId,
@@ -106,7 +103,6 @@ const likeComment = async (userId, commentId) => {
     { isLiked: true },
     { new: true }
   );
-  console.log(tell);
 
   const { commentLikes } = await Comment.findById(commentId);
   const newNumberOfLikes = commentLikes + 1;

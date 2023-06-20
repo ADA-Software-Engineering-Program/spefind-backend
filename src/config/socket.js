@@ -1,11 +1,13 @@
 const User = require('../auth/user.model');
 const Chat = require('../user/chat.model');
 const { RtcRole, RtcTokenBuilder } = require('agora-access-token');
+const RandomMeet = require('../meet/meet.model');
 const { AGORA_APP_ID, AGORA_CERTIFICATE } = require('../config/keys');
-const { addUsers } = require('./socket.helpers');
+const { addUsers, SocketAuth } = require('./socket.helpers');
 const moment = require('moment');
 
 module.exports = (io) => {
+  io.use(SocketAuth);
   io.on('connection', (socket) => {
     console.log('Sockets now connected...', socket.id);
 
@@ -103,6 +105,57 @@ module.exports = (io) => {
       let generatedToken = await generateTokenDetails();
       console.log('talkie');
       socket.emit('generatedToken', { ...generatedToken });
+    });
+
+    socket.on('availableToPair', async () => {
+      const checkUser = await RandomMeet.findOne({
+        participant: socket.user.user._id,
+      });
+
+      const checkPairing = await RandomMeet.findOne({
+        isAvailable: true,
+        isPaired: false,
+      });
+      const criteria = { isAvailable: true, isPaired: false };
+      if (!checkPairing) {
+        socket.emit('message', {
+          response:
+            'There is no available user to be paired with at the moment..',
+        });
+      } else {
+        console.log(checkPairing);
+        const checkList = await RandomMeet.find({
+          socketId: { $not: socket.id },
+          isAvailable: true,
+          isPaired: false,
+        });
+        console.log(checkList);
+      }
+
+      if (checkUser) {
+        await RandomMeet.findOneAndUpdate(
+          { participant: socket.user.user._id },
+          { socketId: socket.id },
+          { new: true }
+        );
+      } else {
+        await RandomMeet.create({
+          participant: socket.user.user._id,
+          isAvailable: true,
+          socketId: socket.id,
+        });
+      }
+
+      socket.emit('message', {
+        response:
+          'Your indication to pair was received! You will be paired shortly...',
+      });
+    });
+    socket.on('disconnect', async () => {
+      await RandomMeet.findOneAndUpdate(
+        { socketId: socket.id },
+        { isAvailable: false, isPaired: false }
+      );
     });
   });
 };

@@ -1,5 +1,9 @@
 const Chat = require('../user/chat.model');
 const User = require('../auth/user.model');
+const ApiError = require('../helpers/error');
+const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = require('./keys');
+
 const moment = require('moment');
 
 const addUsers = async ({ senderID, receiverID }, socket) => {
@@ -32,6 +36,31 @@ const addUsers = async ({ senderID, receiverID }, socket) => {
   }
 };
 
+const SocketAuth = (socket, next) => {
+  try {
+    const token = socket.handshake.headers.access_token ?? '';
+    if (token === '') {
+      socket.emit('message', {
+        response: 'Oops! Your token is required here...',
+      });
+      throw new ApiError('Oops! Your token is required here...');
+    }
+    const decodedToken = jwt.verify(
+      token,
+      JWT_SECRET,
+      (error, decodedToken) => {
+        if (error) {
+          throw new ApiError(400, 'Ooopss! Your token is probably expired...');
+        } else {
+          socket.user = decodedToken;
+          // console.log(socket.user);
+          next();
+        }
+      }
+    );
+  } catch (error) {}
+};
+
 // console.log(senderID, receiverID, message);
 
-module.exports = { addUsers };
+module.exports = { addUsers, SocketAuth };

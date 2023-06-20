@@ -18,7 +18,7 @@ const repostSchema = new Schema(
       default: 0,
       trim: true,
     },
-    repostComments: {
+    comments: {
       type: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
     },
     numberOfRepostComments: {
