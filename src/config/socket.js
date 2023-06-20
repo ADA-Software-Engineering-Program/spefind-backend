@@ -5,8 +5,8 @@ const RandomMeet = require('../meet/meet.model');
 const { AGORA_APP_ID, AGORA_CERTIFICATE } = require('../config/keys');
 const { addUsers, SocketAuth } = require('./socket.helpers');
 const moment = require('moment');
-const agoraAppID = Buffer.from(AGORA_APP_ID).toString('base64');
-const agoraCertificate = Buffer.from(AGORA_CERTIFICATE).toString('base64');
+const agoraAppID = Buffer.from(AGORA_APP_ID);
+const agoraCertificate = Buffer.from(AGORA_CERTIFICATE);
 module.exports = (io) => {
   io.use(SocketAuth);
   io.on('connection', (socket) => {
@@ -29,7 +29,7 @@ module.exports = (io) => {
       const privilegeExpireTime = currentTime + expireTime;
 
       let token = await RtcTokenBuilder.buildTokenWithAccount(
-        '051b0194877844b0967c97fb030d723e',
+        agoraAppID,
         agoraCertificate,
         channelName,
         role,
