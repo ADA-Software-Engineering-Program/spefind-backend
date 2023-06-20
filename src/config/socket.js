@@ -18,7 +18,7 @@ module.exports = (io) => {
       // socket.emit('message', 'All is well everyday...');
     });
 
-    const generateTokenDetails = async () => {
+    const generateTokenDetails = () => {
       let code = Math.floor(Math.random() * (9999 - 1000) + 1000);
       let channelName = `CORDDIT-${code}`;
       let UIDCode = Math.floor(Math.random() * (9999 - 1000) + 1000);
@@ -28,7 +28,7 @@ module.exports = (io) => {
       let expireTime = 3600;
       const privilegeExpireTime = currentTime + expireTime;
 
-      let token = await RtcTokenBuilder.buildTokenWithUid(
+      let token = RtcTokenBuilder.buildTokenWithUid(
         agoraAppID,
         agoraCertificate,
         channelName,
