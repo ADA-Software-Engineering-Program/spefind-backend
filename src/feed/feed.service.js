@@ -169,16 +169,15 @@ const repostFeed = async (userId, feedId, commentary) => {
       { new: true }
     );
 
-    return await Repost.findById(data._id)
-      .populate('repostAuthor')
-      .populate('feed')
-      .populate([
-        {
-          path: 'feed',
-          model: 'Feed',
-          populate: { path: 'author', model: 'User' },
-        },
-      ]);
+    return await Repost.findById(data._id).populate('repostAuthor');
+    // .populate('feed')
+    // .populate([
+    //   {
+    //     path: 'feed',
+    //     model: 'Feed',
+    //     populate: { path: 'author', model: 'User' },
+    //   },
+    // ]);
   } catch (error) {
     throw new ApiError(400, 'Unable to repost feed...');
   }
