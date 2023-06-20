@@ -5,7 +5,8 @@ const RandomMeet = require('../meet/meet.model');
 const { AGORA_APP_ID, AGORA_CERTIFICATE } = require('../config/keys');
 const { addUsers, SocketAuth } = require('./socket.helpers');
 const moment = require('moment');
-
+const agoraAppID = Buffer.from(AGORA_APP_ID).toString('base64');
+const agoraCertificate = Buffer.from(AGORA_CERTIFICATE).toString('base64');
 module.exports = (io) => {
   io.use(SocketAuth);
   io.on('connection', (socket) => {
@@ -28,8 +29,8 @@ module.exports = (io) => {
       const privilegeExpireTime = currentTime + expireTime;
 
       let token = await RtcTokenBuilder.buildTokenWithAccount(
-        AGORA_APP_ID,
-        AGORA_CERTIFICATE,
+        agoraAppID,
+        agoraCertificate,
         channelName,
         role,
         privilegeExpireTime
@@ -117,20 +118,34 @@ module.exports = (io) => {
         isPaired: false,
       });
       const criteria = { isAvailable: true, isPaired: false };
+      let pairedUser;
       if (!checkPairing) {
         socket.emit('message', {
           response:
             'There is no available user to be paired with at the moment..',
         });
       } else {
-        console.log(checkPairing);
         const checkList = await RandomMeet.find({
-          socketId: { $not: socket.id },
           isAvailable: true,
           isPaired: false,
         });
-        console.log(checkList);
+        console.log(checkList[0]);
+        pairedUser = checkList[0].participant;
       }
+      await RandomMeet.findOneAndUpdate(
+        { participant: pairedUser },
+        { isPaired: true },
+        { new: true }
+      );
+      const { socketId } = await RandomMeet.findOne({
+        participant: pairedUser,
+      });
+
+      io.sockets
+        .socket(socketId)
+        .emit('message', 'You have just been paired for a random meet');
+
+      console.log(pairedUser);
 
       if (checkUser) {
         await RandomMeet.findOneAndUpdate(
@@ -147,8 +162,7 @@ module.exports = (io) => {
       }
 
       socket.emit('message', {
-        response:
-          'Your indication to pair was received! You will be paired shortly...',
+        response: `Your indication to pair was received! You have just been paired with ${pairedUser}. `,
       });
     });
     socket.on('disconnect', async () => {

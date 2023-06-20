@@ -18,10 +18,13 @@ const repostSchema = new Schema(
       default: 0,
       trim: true,
     },
-    comments: {
-      type: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
-    },
+
     numberOfRepostComments: {
+      type: Number,
+      trim: true,
+      default: 0,
+    },
+    numberOfTimesReposted: {
       type: Number,
       trim: true,
       default: 0,

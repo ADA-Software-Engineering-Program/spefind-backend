@@ -33,7 +33,8 @@ const createFeed = async (userId, data) => {
 const getFeeds = async (userId) => {
   const repostData = await Repost.find({ repostAuthor: userId })
     .sort({ createdAt: -1 })
-    .populate('repostAuthor');
+    .populate('repostAuthor')
+    .populate('feed');
   const feedData = await Feed.find()
     .sort({ createdAt: -1 })
     .populate('author');
