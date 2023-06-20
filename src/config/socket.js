@@ -29,7 +29,7 @@ module.exports = (io) => {
       const privilegeExpireTime = currentTime + expireTime;
 
       let token = await RtcTokenBuilder.buildTokenWithAccount(
-        agoraAppID,
+        '051b0194877844b0967c97fb030d723e',
         agoraCertificate,
         channelName,
         role,
