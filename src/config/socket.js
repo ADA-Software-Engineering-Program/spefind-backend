@@ -5,8 +5,8 @@ const RandomMeet = require('../meet/meet.model');
 const { AGORA_APP_ID, AGORA_CERTIFICATE } = require('../config/keys');
 const { addUsers, SocketAuth } = require('./socket.helpers');
 const moment = require('moment');
-const agoraAppID = Buffer.from(AGORA_APP_ID);
-const agoraCertificate = Buffer.from(AGORA_CERTIFICATE);
+const agoraAppID = Buffer.from(JSON.stringify(AGORA_APP_ID));
+const agoraCertificate = Buffer.from(JSON.stringify(AGORA_CERTIFICATE));
 module.exports = (io) => {
   io.use(SocketAuth);
   io.on('connection', (socket) => {
