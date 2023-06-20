@@ -11,6 +11,10 @@ const commentLikeSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Comment',
   },
+  feed: {
+    type: Schema.Types.ObjectId,
+    ref: 'Feed',
+  },
   isLiked: {
     type: Boolean,
     default: false,

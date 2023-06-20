@@ -21,13 +21,16 @@ module.exports = (io) => {
       let UIDCode = Math.floor(Math.random() * (9999 - 1000) + 1000);
       let UID = UIDCode;
       let role = 'publisher';
-      let expiry = 3600;
+      const currentTime = Math.floor(Date.now() / 1000);
+      let expireTime = 3600;
+      const privilegeExpireTime = currentTime + expireTime;
+
       let token = await RtcTokenBuilder.buildTokenWithAccount(
         AGORA_APP_ID,
         AGORA_CERTIFICATE,
         channelName,
         role,
-        expiry
+        privilegeExpireTime
       );
       let generatedToken = { channelName, UID, token };
       return generatedToken;

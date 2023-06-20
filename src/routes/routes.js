@@ -26,7 +26,7 @@ router.use(
   require('../user/user.routes')
 );
 
-router.use('/random/meet', require('../meet/meet.routes'));
+router.use('/meet', require('../meet/meet.routes'));
 
 router.use(
   '/comment',

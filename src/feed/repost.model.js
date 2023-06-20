@@ -33,9 +33,6 @@ const repostSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Feed',
     },
-    likedBy: {
-      type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-    },
   },
   { timestamps: true }
 );

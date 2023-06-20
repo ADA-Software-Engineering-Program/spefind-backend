@@ -9,7 +9,7 @@ const createComment = catchAsync(async (req, res) => {
 });
 
 const getAllComments = catchAsync(async (req, res) => {
-  const data = await commentService.getComments(req.query.feedId);
+  const data = await commentService.getComments(req.user._id, req.query.feedId);
   res.status(202).json({
     status: true,
     message: 'All comments for feed retrieved...',
@@ -25,7 +25,7 @@ const likeComment = catchAsync(async (req, res) => {
 });
 
 const unlikeComment = catchAsync(async (req, res) => {
-  await commentService.unlikeComment(req.params._id);
+  await commentService.unlikeComment(req.user._id, req.params._id);
   res
     .status(200)
     .json({ status: 'success', message: 'You unliked this comment...' });
