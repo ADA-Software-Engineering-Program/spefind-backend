@@ -125,14 +125,13 @@ module.exports = (io) => {
           response:
             'There is no available user to be paired with at the moment..',
         });
-      } else {
-        const checkList = await RandomMeet.find({
-          isAvailable: true,
-          isPaired: false,
-        });
-        console.log(checkList[0]);
-        pairedUser = checkList[0].participant;
       }
+      const checkList = await RandomMeet.find({
+        isAvailable: true,
+        isPaired: false,
+      });
+      // console.log(checkList[0]);
+      // pairedUser = checkList[0].participant;
       await RandomMeet.findOneAndUpdate(
         { participant: pairedUser },
         { isPaired: true },
@@ -142,11 +141,14 @@ module.exports = (io) => {
         participant: pairedUser,
       });
 
-      io.sockets
-        .socket(socketId)
-        .emit('message', 'You have just been paired for a random meet');
+      const generatedAgoraInfo = generateTokenDetails();
 
-      console.log(pairedUser);
+      io.to(socketId).emit('message', {
+        response: 'You have just been paired for a random meet',
+        meetInfo: generatedAgoraInfo,
+      });
+
+      // console.log(pairedUser);
 
       if (checkUser) {
         await RandomMeet.findOneAndUpdate(
@@ -164,7 +166,16 @@ module.exports = (io) => {
 
       socket.emit('message', {
         response: `Your indication to pair was received! You have just been paired with ${pairedUser}. `,
+        meetInfo: generatedAgoraInfo,
       });
+      await RandomMeet.findOneAndUpdate(
+        {
+          participant: socket.user.user._id,
+          socketId: socket.id,
+        },
+        { isPaired: true },
+        { new: true }
+      );
     });
     socket.on('disconnect', async () => {
       await RandomMeet.findOneAndUpdate(
