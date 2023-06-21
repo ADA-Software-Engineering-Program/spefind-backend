@@ -44,6 +44,10 @@ const likeFeed = catchAsync(async (req, res) => {
   res.status(201).json({ status: true, message: 'You liked this feed...' });
 });
 
+const editRepost = catchAsync(async (req, res) => {
+  const data = await feedService.editRepost(req.query.repostId, req.body);
+});
+
 const unlikeFeed = catchAsync(async (req, res) => {
   await feedService.unlikeFeed(req.user._id, req.query.feedId);
 

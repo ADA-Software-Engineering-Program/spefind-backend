@@ -68,6 +68,14 @@ const likeFeed = async (userId, feedId) => {
   );
 };
 
+const editRepost = async (repostId, content) => {
+  await Repost.findByIdAndUpdate(
+    repostId,
+    { repostContent: content },
+    { new: true }
+  );
+};
+
 const unlikeFeed = async (userId, feedId) => {
   try {
     const { feedLikes } = await Feed.findById(feedId);
@@ -210,6 +218,7 @@ module.exports = {
   getFeed,
   getFeeds,
   likeFeed,
+  editRepost,
   likeFeedRepost,
   unlikeFeed,
   deleteFeed,

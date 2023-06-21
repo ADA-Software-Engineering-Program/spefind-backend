@@ -32,4 +32,6 @@ router.post('/repost', repostFeed);
 
 router.post('/repost/like', likeFeedRepost);
 
+router.put('/edit');
+
 module.exports = router;

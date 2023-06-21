@@ -36,6 +36,11 @@ const repostSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Feed',
     },
+    numberOfViews: {
+      type: Number,
+      trim: true,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
