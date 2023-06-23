@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const { FEED_TYPE, getEnumsArray } = require('../helpers/enums');
 const { Schema } = mongoose;
 
 const feedSchema = new Schema(
@@ -16,6 +16,16 @@ const feedSchema = new Schema(
     feedLikes: {
       type: Number,
       default: 0,
+    },
+    feedType: {
+      type: String,
+      enum: [...getEnumsArray(FEED_TYPE)],
+      trim: true,
+    },
+    feed: {
+      type: Schema.Types.ObjectId,
+      ref: 'Feed',
+      default: null,
     },
 
     numberOfComments: {

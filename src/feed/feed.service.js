@@ -10,6 +10,7 @@ const createFeed = async (userId, data) => {
   try {
     const feed = data;
     feed.author = userId;
+    feed.feedType = 'original';
     const rawFeed = JSON.parse(JSON.stringify(feed));
 
     const rawData = (await Feed.create(rawFeed)).populate('author');
@@ -30,18 +31,17 @@ const createFeed = async (userId, data) => {
   }
 };
 
-const getFeeds = async (userId) => {
-  const repostData = await Repost.find({ repostAuthor: userId })
+const getFeeds = async () => {
+  // const repostData = await Repost.find({ repostAuthor: userId })
+  //   .sort({ createdAt: -1 })
+  //   .populate('repostAuthor')
+  //   .populate('feed');
+  const returnedData = await Feed.find()
     .sort({ createdAt: -1 })
-    .populate('repostAuthor')
+    .populate('author')
     .populate('feed');
-  const feedData = await Feed.find()
-    .sort({ createdAt: -1 })
-    .populate('author');
 
-  const returnedData = [...repostData, ...feedData];
   return returnedData;
-  ``;
 };
 
 const likeFeed = async (userId, feedId) => {
@@ -159,14 +159,16 @@ const deleteFeed = async (feedId) => {
   }
 };
 
-const repostFeed = async (userId, feedId, commentary) => {
+const repostFeed = async (userId, feedType, feedId, commentary) => {
+  console.log(userId, feedType, feedId, commentary);
   try {
     let rawData = {};
-    rawData.repostAuthor = userId;
-    rawData.repostContent = commentary;
+    rawData.author = userId;
+    rawData.content = commentary;
     rawData.feed = feedId;
+    rawData.feedType = feedType;
 
-    const data = await Repost.create(rawData);
+    const data = await Feed.create(rawData);
 
     const { numberOfReposts } = await Feed.findById(feedId);
 
@@ -178,7 +180,7 @@ const repostFeed = async (userId, feedId, commentary) => {
       { new: true }
     );
 
-    return await Repost.findById(data._id).populate('repostAuthor');
+    return await Feed.findById(data._id).populate('author');
     // .populate('feed')
     // .populate([
     //   {

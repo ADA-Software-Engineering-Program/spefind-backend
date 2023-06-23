@@ -10,4 +10,10 @@ const TRANSACTION_STATUS = Object.freeze({
   FAILED: 'failed',
 });
 
-module.exports = { USER_ROLE, TRANSACTION_STATUS, getEnumsArray };
+const FEED_TYPE = Object.freeze({
+  ORIGINAL: 'original',
+  REPOST: 'repost',
+  SECOND_REPOST: 'second_repost',
+});
+
+module.exports = { USER_ROLE, FEED_TYPE, TRANSACTION_STATUS, getEnumsArray };

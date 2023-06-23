@@ -1,6 +1,7 @@
 const feedService = require('./feed.service');
 const cloudinary = require('../helpers/cloudinary');
 const catchAsync = require('express-async-handler');
+const ApiError = require('../helpers/error');
 const fs = require('fs');
 const { cloudinaryImageUploadMethod } = require('../helpers/image_upload');
 
@@ -24,7 +25,7 @@ const createFeed = catchAsync(async (req, res) => {
 });
 
 const getFeeds = catchAsync(async (req, res) => {
-  const data = await feedService.getFeeds(req.user._id);
+  const data = await feedService.getFeeds();
 
   res
     .status(201)
@@ -46,6 +47,8 @@ const likeFeed = catchAsync(async (req, res) => {
 
 const editRepost = catchAsync(async (req, res) => {
   const data = await feedService.editRepost(req.query.repostId, req.body);
+
+  res.status(200).json({ status: 'success', message: '' });
 });
 
 const unlikeFeed = catchAsync(async (req, res) => {
@@ -71,11 +74,27 @@ const deleteFeed = catchAsync(async (req, res) => {
 });
 
 const repostFeed = catchAsync(async (req, res) => {
-  const data = await feedService.repostFeed(
-    req.user._id,
-    req.query.feedId,
-    req.body.repostContent
-  );
+  let { _repostType } = req.params;
+  let data;
+  console.log(typeof _repostType);
+  if (
+    !_repostType &&
+    _repostType != 'repost' &&
+    _repostType != 'second_repost'
+  ) {
+    throw new ApiError(
+      400,
+      'Kindly indicate the sort of repost you are trying to make...'
+    );
+  } else {
+    data = await feedService.repostFeed(
+      req.user._id,
+      req.params._repostType,
+      req.query.feedId,
+      req.body.repostContent
+    );
+  }
+
   res
     .status(201)
     .json({ status: 'success', message: 'Repost Successful!', data });
@@ -91,6 +110,7 @@ const likeFeedRepost = catchAsync(async (req, res) => {
 module.exports = {
   createFeed,
   editFeed,
+  editRepost,
   getFeed,
   getFeeds,
   likeFeed,

@@ -28,7 +28,7 @@ router.put('/edit', feedAuthorization, editFeed);
 
 router.delete('/delete/_:id', feedAuthorization, deleteFeed);
 
-router.post('/repost', repostFeed);
+router.post('/:_repostType', repostFeed);
 
 router.post('/repost/like', likeFeedRepost);
 
