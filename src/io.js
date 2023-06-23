@@ -63,28 +63,33 @@ const onConnection = async (socket) => {
     initializeSocketListeners(socket);
 };
 
-// Create http server with express app
-const httpServer = createServer(app);
-const io = new Server(httpServer, {
-    cors: {
-        origin: 'http://localhost:3000',
-    }
-});
 
-io.use(socketWrapper((socket, next) => {
-    const { origin } = socket.handshake.headers;
+const webServer = (app) => { 
+    // Create http server with express app
+    const httpServer = createServer(app);
+    const io = new Server(httpServer, {
+        cors: {
+            origin: 'http://localhost:3000',
+        }
+    });
+    
+    io.use(socketWrapper((socket, next) => {
+        const { origin } = socket.handshake.headers;
+    
+        const allowed_origins = ['http://localhost:3000', 'http://localhost:3001'];
+    
+        if (allowed_origins.includes(origin)) next();
+        else next(new Error('Not allowed by CORS'));
+    }));
+    
+    io.on('connection', socketWrapper(onConnection));
+    
+    io.on('error', socketWrapper((error) => {
+        console.log(error);
+        io.close();
+    }));
 
-    const allowed_origins = ['http://localhost:3000', 'http://localhost:3001'];
+    return httpServer
+}
 
-    if (allowed_origins.includes(origin)) next();
-    else next(new Error('Not allowed by CORS'));
-}));
-
-io.on('connection', socketWrapper(onConnection));
-
-io.on('error', socketWrapper((error) => {
-    console.log(error);
-    io.close();
-}));
-
-module.exports = httpServer;
+module.exports = webServer;
