@@ -5,7 +5,6 @@ const { randomUUID } = require('crypto');
 const socketWrapper = require('./websocket/middlewares/wrapper');
 const authenticate = require('./websocket/middlewares/auth');
 const { addClient, removeClient } = require('./websocket/clients');
-const app = require("./app");
 
 const initializeSocketEventHandlers = (socket) => {
     // Initialize socket event handlers
@@ -62,7 +61,6 @@ const onConnection = async (socket) => {
     // Initialize socket listeners
     initializeSocketListeners(socket);
 };
-
 
 const webServer = (app) => { 
     // Create http server with express app
