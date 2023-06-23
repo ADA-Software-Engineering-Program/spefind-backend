@@ -4,8 +4,16 @@ const ApiError = require('../helpers/error');
 const EmailSubscribe = require('../events/email.subscribe.model');
 
 const createProfile = async (userId, data) => {
+  console.log(userId, data);
   const { pastEvent, ...userData } = data;
   pastEvent.userId = userId;
+  if (data.photo) {
+    return await User.findByIdAndUpdate(
+      userId,
+      { photo: data.photo },
+      { new: true }
+    );
+  }
   const event = await Event.create(pastEvent);
   userData.pastEvents = event._id;
   userData.isProfileCreated = true;
@@ -13,11 +21,11 @@ const createProfile = async (userId, data) => {
 };
 
 const addCoverBanner = async (userId, data) => {
-  return await User.findByIdAndUpdate(
-    userId,
-    { coverBanner: data },
-    { new: true }
-  );
+  try {
+    return await User.findByIdAndUpdate(userId, data, { new: true });
+  } catch (error) {
+    throw new ApiError(400, 'Unable to update profile...');
+  }
 };
 
 const createEvent = async (userId, data) => {
@@ -26,6 +34,27 @@ const createEvent = async (userId, data) => {
   return await User.findByIdAndUpdate(userId, {
     $push: { pastEvents: event._id },
   });
+};
+
+const editEvent = async (eventId, editedBody) => {
+  try {
+    return await Event.findByIdAndUpdate(eventId, editedBody, { new: true });
+  } catch (error) {
+    throw new ApiError(400, 'Unable to edit event...');
+  }
+};
+
+const deleteEvent = async (userId, eventId) => {
+  try {
+    await User.findByIdAndUpdate(
+      userId,
+      { $pull: { pastEvents: eventId } },
+      { new: true }
+    );
+    return await Event.findByIdAndDelete(eventId);
+  } catch (error) {
+    throw new ApiError(400, 'Unable to delete event...');
+  }
 };
 
 const getUserById = async (id) => {
@@ -58,6 +87,8 @@ module.exports = {
   allSubscribers,
   createProfile,
   createEvent,
+  editEvent,
+  deleteEvent,
   emailSubscribe,
   addCoverBanner,
   getUserById,

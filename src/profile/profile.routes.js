@@ -3,6 +3,8 @@ const {
   editProfile,
   getCurrentUser,
   createPastEvent,
+  editEvent,
+  deleteEvent,
   addCoverBanner,
 } = require('./profile.controllers');
 const upload = require('../helpers/multer');
@@ -14,6 +16,10 @@ router.put('/setup', upload.single('photo'), editProfile);
 
 router.put('/cover/banner', upload.single('banner-cover'), addCoverBanner);
 
+router.patch('/event/edit/:_eventId', upload.single('eventPhoto'), editEvent);
+
 router.post('/event/add', upload.single('eventPhoto'), createPastEvent);
+
+router.delete('/event/delete', deleteEvent);
 
 module.exports = router;

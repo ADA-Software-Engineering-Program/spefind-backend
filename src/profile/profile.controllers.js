@@ -21,16 +21,16 @@ const editProfile = catchAsync(async (req, res) => {
   });
 });
 
-const addCoverBanner = async (req, res) => {
-  let coverBanner;
+const addCoverBanner = catchAsync(async (req, res) => {
+  let userInfo = req.body;
   const avatar = await cloudinary.uploader.upload(req.file.path);
-  coverBanner = avatar.secure_url;
-  await profileService.addCoverBanner(req.user._id, coverBanner);
+  userInfo.coverBanner = avatar.secure_url;
+  await profileService.addCoverBanner(req.user._id, userInfo);
   res.status(201).json({
     status: 'success',
-    message: 'Cover Banner Update Successful!',
+    message: 'Profile Update Successful!',
   });
-};
+});
 
 const createPastEvent = catchAsync(async (req, res) => {
   let requestBody = req.body;
@@ -42,6 +42,22 @@ const createPastEvent = catchAsync(async (req, res) => {
   res
     .status(201)
     .json({ status: true, message: 'Past event successfully added...', data });
+});
+
+const editEvent = catchAsync(async (req, res) => {
+  let requestBody = req.body;
+
+  if (req.file) {
+    const avatar = await cloudinary.uploader.upload(req.file.path);
+    requestBody.eventPhoto = avatar.secure_url;
+  }
+  const data = await profileService.editEvent(req.params._eventId, requestBody);
+  res.status(201).json({ status: true, message: 'Event Item updated...' });
+});
+
+const deleteEvent = catchAsync(async (req, res) => {
+  await profileService.deleteEvent(req.user._id, req.query.eventId);
+  res.status(200).json({ status: true, message: 'Event now deleted...' });
 });
 
 const getCurrentUser = catchAsync(async (req, res) => {
@@ -78,8 +94,10 @@ module.exports = {
   addCoverBanner,
   editProfile,
   createPastEvent,
+  deleteEvent,
   getCurrentUser,
   addCoverBanner,
   emailSubscribe,
   allSubscribers,
+  editEvent,
 };
