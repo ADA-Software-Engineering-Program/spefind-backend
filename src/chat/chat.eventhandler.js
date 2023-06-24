@@ -12,6 +12,12 @@ const initiateChat = async function (req, res) {
         return;
     }
 
+    const target_user = await User.findById(targetuser_id)
+    if (!target_user) {
+        res.send('Target user does not exist')
+        return 
+    }
+    
     const populate_config = {
         path: "messages",
         populate: { path: "sender", select: "email firstname lastname" },

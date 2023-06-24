@@ -67,6 +67,7 @@ async function addNewMessageToChatRoom(message_data) {
 
     return populated_message
 }
+
 module.exports = {
     joinRoom,
     getPreviousMessages,
