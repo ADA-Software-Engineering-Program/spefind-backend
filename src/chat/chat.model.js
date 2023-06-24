@@ -3,15 +3,8 @@ const Schema = mongoose.Schema;
 
 const chatRoomSchema = new Schema({
     users: { type: [Schema.Types.ObjectId], ref: 'User', required: true },
+    messages: { type: [Schema.Types.ObjectId], ref: 'Messages', default: [] }
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
-
-chatRoomSchema.virtual('messages', {
-    ref: 'Message',
-    localField: '_id',
-    foreignField: 'chat_room',
-    justOne: false,
-    options: { sort: { createdAt: -1 } },
-});
 
 const messageSchema = new Schema({
     sender: { type: Schema.Types.ObjectId, ref: 'User' },
