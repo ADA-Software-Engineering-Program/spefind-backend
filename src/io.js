@@ -1,11 +1,10 @@
 const { createServer } = require('http');
 const { Server } = require('socket.io');
-const { randomUUID } = require('crypto');
-
+const cors = require('cors')
 const socketWrapper = require('./websocket/middlewares/wrapper');
 const authenticate = require('./websocket/middlewares/auth');
 const { addClient, removeClient } = require('./websocket/clients');
-const app = require("./app");
+const logger = require('./helpers/logger');
 
 const initializeSocketEventHandlers = (socket) => {
     // Initialize socket event handlers
@@ -43,6 +42,8 @@ const initializeSocketListeners = (socket) => {
 
 let curr_client;
 const onConnection = async (socket) => {
+    logger.info('sending message')
+    socket.send('dfadf')
     // Authenticate socket
     const authenticated_socket = await authenticate(socket);
 
@@ -64,7 +65,7 @@ const onConnection = async (socket) => {
 };
 
 
-const webServer = (app) => { 
+const webServer = (app) => {
     // Create http server with express app
     const httpServer = createServer(app);
     const io = new Server(httpServer, {
@@ -72,20 +73,11 @@ const webServer = (app) => {
             origin: 'http://localhost:3000',
         }
     });
-    
-    io.use(socketWrapper((socket, next) => {
-        const { origin } = socket.handshake.headers;
-    
-        const allowed_origins = ['http://localhost:3000', 'http://localhost:3001'];
-    
-        if (allowed_origins.includes(origin)) next();
-        else next(new Error('Not allowed by CORS'));
-    }));
-    
+
     io.on('connection', socketWrapper(onConnection));
-    
+
     io.on('error', socketWrapper((error) => {
-        console.log(error);
+        logger.error(error);
         io.close();
     }));
 
