@@ -69,7 +69,15 @@ const getComments = async (userId, feedId) => {
     const allCommentLikes = await CommentLike.find(
       { feed: feedId },
       { likedBy: 0, feed: 0 }
-    ).populate('commentary');
+    )
+      .populate('commentary')
+      .populate([
+        {
+          path: 'commentary',
+          model: 'Comment',
+          populate: { path: 'author', model: 'User' },
+        },
+      ]);
     return allCommentLikes;
     // return allCommentLikes;
     // .populate('author')
@@ -117,7 +125,7 @@ const unlikeComment = async (userId, commentId) => {
   try {
     const checkComment = await Comment.findById(commentId);
     if (!checkComment) {
-      throw new ApiError(400, ' Oops! This comment no longer exists!');
+      throw new ApiError(400, 'Oops! This comment no longer exists!');
     }
 
     await CommentLike.findOneAndUpdate(
