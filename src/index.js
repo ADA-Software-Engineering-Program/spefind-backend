@@ -7,9 +7,11 @@ const { errorConverter, errorHandler } = require('./helpers/asyncError');
 const webServer = require('./io')
 const logger = require('./helpers/logger');
 const Sentry = require('@sentry/node');
+const morgan = require('morgan')
 require('./auth/auth.service')(passport);
 const app = express();
 
+app.use(morgan('dev'))
 app.use(json());
 app.use(urlencoded({ extended: true }));
 Sentry.init({
