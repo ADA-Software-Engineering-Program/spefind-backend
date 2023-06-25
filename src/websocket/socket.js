@@ -1,3 +1,4 @@
+const logger = require('../helpers/logger');
 const { ioWrapper } = require('./middlewares/wrapper')
 
 const initializeSocketEventHandlers = (io, socket) => {

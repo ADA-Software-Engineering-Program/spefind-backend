@@ -1,10 +1,10 @@
 const { createServer } = require('http');
 const { Server } = require('socket.io');
-const socketAsyncWrapper = require('./websocket/middlewares/wrapper').default
-const authenticate = require('./websocket/middlewares/auth');
-const { addClient, removeClient } = require('./websocket/clients');
-const { initializeSocketEventHandlers } = require('./websocket/socket');
-const logger = require('./helpers/logger');
+const socketAsyncWrapper = require('./middlewares/wrapper').default
+const authenticate = require('./middlewares/auth');
+const { addClient, removeClient } = require('./clients');
+const { initializeSocketEventHandlers } = require('./socket');
+const logger = require('../helpers/logger');
 
 let curr_client;
 const onConnection = async (socket) => {
@@ -48,6 +48,8 @@ const webServer = (app) => {
         logger.error(error);
         io.close();
     }));
+
+    global.io = io;
 
     return httpServer
 }
