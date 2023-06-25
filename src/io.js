@@ -1,7 +1,7 @@
 const { createServer } = require('http');
 const { Server } = require('socket.io');
-const cors = require('cors')
-const socketWrapper = require('./websocket/middlewares/wrapper');
+const socketAsyncWrapper = require('./websocket/middlewares/wrapper').default
+const { ioWrapper } = require('./websocket/middlewares/wrapper')
 const authenticate = require('./websocket/middlewares/auth');
 const { addClient, removeClient } = require('./websocket/clients');
 const logger = require('./helpers/logger');
@@ -12,61 +12,57 @@ const initializeSocketEventHandlers = (socket) => {
 }
 
 const initializeSocketListeners = (socket) => {
-    try {
-        // Initialize socket listeners
-        socket.on('message', (message) => {
-            console.log(message);
-        });
+    socket.on('message', ioWrapper(() => {
+        socket.send({ error: 'An error occured' })
+    }, socket));
 
-        socket.on('disconnect', () => {
-            console.log(socket.user.email + ': disconnected');
+    socket.on('error', ioWrapper(() => {
+        socket.send({ error: 'An error occured' })
+    }, socket));
 
-            // Remove client from clients map
-            removeClient(socket);
-        });
+    socket.on('disconnect', ioWrapper(() => {
+        logger.info(socket.user.email + ': disconnected');
 
-        socket.on('error', (error) => {
-            // Send error to client
-            console.log(error);
+        socket.disconnect();
+        removeClient(socket);
+    }, socket));
 
-            // Close connection
-            socket.disconnect();
-        });
-
-        // Initialize socket event handlers
-        initializeSocketEventHandlers(socket);
-    } catch (error) {
-        console.log(error);
-    }
+    // Initialize socket event handlers
+    initializeSocketEventHandlers(socket);
 };
 
 let curr_client;
 const onConnection = async (socket) => {
-    logger.info('sending message')
-    socket.send('dfadf')
-    // Authenticate socket
-    const authenticated_socket = await authenticate(socket);
+    try {
+        logger.info('sending message')
+        // Authenticate socket
+        const authenticated_socket = await authenticate(socket);
 
-    if (authenticated_socket instanceof Error) {
-        socket.emit('error', 'Authentication failed');
-        socket.disconnect();
+        if (authenticated_socket instanceof Error) {
+            socket.emit('error', 'Authentication failed');
+            socket.disconnect();
 
-        throw new Error('Authentication failed');
+            throw new Error('Authentication failed');
+        }
+
+        socket = authenticated_socket; curr_client = socket;
+        logger.info(`${socket.user.email}: connected`);
+
+        // Register client
+        addClient(curr_client);
+
+        // Initialize socket listeners
+        initializeSocketListeners(socket);
+    } catch (error) {
+        console.log(error.message)
+        socket.send({
+            error: 'An error occured'
+        })
     }
-
-    socket = authenticated_socket; curr_client = socket;
-    console.log(`${socket.user.email}: connected`);
-
-    // Register client
-    addClient(curr_client);
-
-    // Initialize socket listeners
-    initializeSocketListeners(socket);
 };
 
 
 const webServer = (app) => {
-    // Create http server with express app
     const httpServer = createServer(app);
     const io = new Server(httpServer, {
         cors: {
@@ -74,9 +70,9 @@ const webServer = (app) => {
         }
     });
 
-    io.on('connection', socketWrapper(onConnection));
+    io.on('connection', socketAsyncWrapper(onConnection));
 
-    io.on('error', socketWrapper((error) => {
+    io.on('error', socketAsyncWrapper((error) => {
         logger.error(error);
         io.close();
     }));
