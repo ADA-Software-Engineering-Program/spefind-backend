@@ -3,7 +3,7 @@ const { ioWrapper } = require('./middlewares/wrapper')
 
 const initializeSocketEventHandlers = (io, socket) => {
     socket.on('message', ioWrapper(() => {
-        socket.send({ error: 'An error occured' })
+        socket.send({ message: 'Welcome' })
     }, socket));
 
     socket.on('error', ioWrapper(() => {
