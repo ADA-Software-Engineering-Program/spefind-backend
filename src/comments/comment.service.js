@@ -75,7 +75,22 @@ const getComments = async (userId, feedId) => {
         {
           path: 'commentary',
           model: 'Comment',
-          populate: { path: 'author', model: 'User' },
+          populate: {
+            path: 'author',
+            model: 'User',
+            select: 'firstName lastName username thumbNail',
+          },
+        },
+      ])
+      .populate([
+        {
+          path: 'commentary',
+          model: 'Comment',
+          populate: {
+            path: 'feed',
+            model: 'Feed',
+            select: 'author content feedPhotos',
+          },
         },
       ]);
     return allCommentLikes;
