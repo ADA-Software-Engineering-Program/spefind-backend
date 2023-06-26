@@ -36,4 +36,11 @@ const expireUserToken = async (user, newUser = false) => {
   return returnTokens;
 };
 
-module.exports = { generateAuthTokens, generateToken, expireUserToken };
+const decodeToken = async (token) => {
+    return await jwt.verify(token, JWT_SECRET, (err, decoded) => {
+        if (err) {  return err }
+        return decoded;
+    });
+};
+
+module.exports = { generateAuthTokens, generateToken, expireUserToken, decodeToken };
