@@ -108,6 +108,21 @@ const getComments = async (userId, feedId) => {
             },
           },
         },
+        {
+          path: 'commentary',
+          model: 'Comment',
+          populate: {
+            path: 'replies',
+            model: 'Reply',
+            select: 'author reply replies replyLikes createdAt updatedAt',
+            populate: {
+              path: 'author',
+              model: 'User',
+              select:
+                'firstName lastName username thumbNail discipline areaOfSpecialty',
+            },
+          },
+        },
       ]);
     return allCommentLikes;
     // return allCommentLikes;
@@ -179,9 +194,13 @@ const unlikeComment = async (userId, commentId) => {
 
 const replyComment = async (userId, commentId, reply) => {
   try {
+    const { feed } = await Comment.findById(commentId);
     const replyData = {};
     replyData.author = userId;
     replyData.reply = reply;
+    replyData.comment = commentId;
+    replyData.feed = feed;
+
     const replyResponse = await Reply.create(replyData);
     return await Comment.findByIdAndUpdate(
       commentId,
@@ -217,9 +236,26 @@ const unlikeReply = async (userId, replyId) => {
   );
 };
 
+const deleteComment = async (commentId) => {
+  const data = await Reply.deleteMany({ comment: commentId });
+
+  await CommentLike.deleteMany({ commentary: commentId });
+  return Comment.findByIdAndDelete(commentId);
+};
+
+const deleteReply = async (replyId) => {
+  try {
+    return await Reply.findByIdAndDelete(replyId);
+  } catch (error) {
+    throw new ApiError(400, 'Unable to delete reply...');
+  }
+};
+
 module.exports = {
   createComment,
   likeComment,
+  deleteReply,
+  deleteComment,
   getComments,
   likeReply,
   unlikeComment,

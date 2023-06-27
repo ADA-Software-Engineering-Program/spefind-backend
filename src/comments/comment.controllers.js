@@ -46,6 +46,22 @@ const likeReply = catchAsync(async (req, res) => {
   res.status(201).json({ status: 'success', message: 'You liked a reply' });
 });
 
+const deleteComment = catchAsync(async (req, res) => {
+  await commentService.deleteComment(req.query.commentId);
+
+  res
+    .status(200)
+    .json({ status: 'success', message: 'Comment successfully deleted...' });
+});
+
+const deleteReply = catchAsync(async (req, res) => {
+  await commentService.deleteReply(req.query.replyId);
+
+  res
+    .status(200)
+    .json({ status: true, message: 'Reply successfully deleted...' });
+});
+
 module.exports = {
   createComment,
   replyComment,
@@ -53,4 +69,6 @@ module.exports = {
   likeComment,
   unlikeComment,
   getAllComments,
+  deleteComment,
+  deleteReply,
 };
