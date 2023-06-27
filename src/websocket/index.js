@@ -5,6 +5,7 @@ const authenticate = require('./middlewares/auth');
 const { addClient, removeClient } = require('./clients');
 const { initializeSocketEventHandlers } = require('./socket');
 const logger = require('../helpers/logger');
+const fs = require('fs')
 
 let curr_client;
 const onConnection = async (socket) => {
@@ -35,7 +36,19 @@ const onConnection = async (socket) => {
 
 
 const webServer = (app) => {
-    const httpServer = createServer(app);
+    logger.info('logging')
+    const deployed = process.env.DEPLOYED | true
+    const options = deployed ? {
+        cors: {
+            origin: 'http://localhost:3000',
+        }
+    } : {
+        key: fs.readFileSync('./server.key', 'utf-8'),
+        cert: fs.readFileSync('./server.cert', 'utf-8'),
+    }
+    logger.info(__dirname)
+
+    const httpServer = createServer(options, app);
     const io = new Server(httpServer, {
         cors: {
             origin: 'http://localhost:3000',
