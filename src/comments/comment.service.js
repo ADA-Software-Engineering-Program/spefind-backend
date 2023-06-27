@@ -78,7 +78,8 @@ const getComments = async (userId, feedId) => {
           populate: {
             path: 'author',
             model: 'User',
-            select: 'firstName lastName username thumbNail',
+            select:
+              'firstName lastName username discipline areaOfSpecialty thumbNail',
           },
         },
       ])
@@ -92,6 +93,32 @@ const getComments = async (userId, feedId) => {
             select: 'author content feedPhotos',
           },
         },
+        {
+          path: 'commentary',
+          model: 'Comment',
+          populate: {
+            path: 'feed',
+            model: 'Feed',
+            populate: {
+              path: 'author',
+              model: 'User',
+              select:
+                'firstName lastName username thumbNail discipline areaOfSpecialty ',
+            },
+          },
+        },
+
+        // }.populate([
+        //   {
+        //     path: 'commentary',
+        //     model: 'Comment',
+        //     populate: {
+        //       path: 'feed',
+        //       model: 'Feed',
+        //       populate: { path: 'author', model: 'User' },
+        //     },
+        //   },
+        // ]),
       ]);
     return allCommentLikes;
     // return allCommentLikes;
