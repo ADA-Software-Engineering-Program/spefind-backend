@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const { check, validationResult } = require('express-validator');
-const ApiError = require('./error');
+const ApiError = require('./error').default;
 
 const nameSchema = Joi.object({
   firstName: Joi.string()
