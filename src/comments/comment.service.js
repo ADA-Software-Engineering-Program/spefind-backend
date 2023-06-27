@@ -107,18 +107,6 @@ const getComments = async (userId, feedId) => {
             },
           },
         },
-
-        // }.populate([
-        //   {
-        //     path: 'commentary',
-        //     model: 'Comment',
-        //     populate: {
-        //       path: 'feed',
-        //       model: 'Feed',
-        //       populate: { path: 'author', model: 'User' },
-        //     },
-        //   },
-        // ]),
       ]);
     return allCommentLikes;
     // return allCommentLikes;
