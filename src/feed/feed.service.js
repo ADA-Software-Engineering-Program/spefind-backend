@@ -44,6 +44,7 @@ const getFeeds = async () => {
       firstName: 1,
       lastName: 1,
       areaOfSpecialty: 1,
+      discipline: 1,
     })
 
     .populate([
