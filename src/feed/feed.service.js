@@ -4,7 +4,9 @@ const Following = require('../user/following.model');
 const Comment = require('../comments/comment.model');
 const User = require('../auth/user.model');
 const Repost = require('./repost.model');
+const Reply = require('../comments/reply.model');
 const moment = require('moment');
+const CommentLike = require('../comments/comment.like');
 
 const createFeed = async (userId, data) => {
   try {
@@ -38,8 +40,43 @@ const getFeeds = async () => {
   //   .populate('feed');
   const returnedData = await Feed.find()
     .sort({ createdAt: -1 })
-    .populate('author')
-    .populate('feed');
+    .populate('author', {
+      email: 1,
+      thumbNail: 1,
+      firstName: 1,
+      lastName: 1,
+      areaOfSpecialty: 1,
+      discipline: 1,
+    })
+
+    .populate([
+      {
+        path: 'feed',
+        model: 'Feed',
+        populate: {
+          path: 'author',
+          model: 'User',
+          select:
+            'firstName lastName username thumbNail discipline areaOfSpecialty',
+        },
+      },
+    ])
+    .populate([
+      {
+        path: 'feed',
+        model: 'Feed',
+        populate: {
+          path: 'feed',
+          model: 'Feed',
+          populate: {
+            path: 'author',
+            model: 'User',
+            select:
+              'firstName lastName username thumbNail discipline areaOfSpecialty',
+          },
+        },
+      },
+    ]);
 
   return returnedData;
 };
@@ -153,6 +190,8 @@ const editFeed = async (feedId, feedData) => {
 const deleteFeed = async (feedId) => {
   try {
     await Comment.deleteMany({ feed: feedId });
+    await CommentLike.deleteMany({ feed: feedId });
+    await Reply.deleteMany({ feed: feedId });
     return await Feed.findByIdAndDelete(feedId);
   } catch (error) {
     throw new ApiError(400, 'Unable to delete feed...');
@@ -160,7 +199,6 @@ const deleteFeed = async (feedId) => {
 };
 
 const repostFeed = async (userId, feedType, feedId, commentary) => {
-  console.log(userId, feedType, feedId, commentary);
   try {
     let rawData = {};
     rawData.author = userId;

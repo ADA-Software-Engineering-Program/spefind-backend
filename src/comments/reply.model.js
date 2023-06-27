@@ -7,10 +7,14 @@ const replySchema = new Schema(
     author: {
       type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     },
-    // commentId: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: 'Comment',
-    // },
+    comment: {
+      type: Schema.Types.ObjectId,
+      ref: 'Comment',
+    },
+    feed: {
+      type: Schema.Types.ObjectId,
+      ref: 'Feed',
+    },
     reply: {
       type: String,
       trim: true,

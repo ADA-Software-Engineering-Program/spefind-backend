@@ -5,6 +5,8 @@ const {
   replyComment,
   unlikeComment,
   likeReply,
+  deleteReply,
+  deleteComment,
   getAllComments,
 } = require('./comment.controllers');
 const { userAuthentication } = require('../helpers/auth');
@@ -21,5 +23,9 @@ router.put('/unlike', unlikeComment);
 router.post('/reply/:_commentId', replyComment);
 
 router.put('/like/reply', likeReply);
+
+router.delete('/delete', deleteComment);
+
+router.delete('/reply/delete', deleteReply);
 
 module.exports = router;
