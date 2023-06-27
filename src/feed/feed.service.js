@@ -53,7 +53,8 @@ const getFeeds = async () => {
         populate: {
           path: 'author',
           model: 'User',
-          select: 'firstName lastName username thumbNail areaOfSpecialty',
+          select:
+            'firstName lastName username thumbNail discipline areaOfSpecialty',
         },
       },
     ])
@@ -67,7 +68,8 @@ const getFeeds = async () => {
           populate: {
             path: 'author',
             model: 'User',
-            select: 'firstName lastName username thumbNail areaOfSpecialty',
+            select:
+              'firstName lastName username thumbNail discipline areaOfSpecialty',
           },
         },
       },
