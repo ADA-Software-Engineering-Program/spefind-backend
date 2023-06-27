@@ -38,8 +38,40 @@ const getFeeds = async () => {
   //   .populate('feed');
   const returnedData = await Feed.find()
     .sort({ createdAt: -1 })
-    .populate('author')
-    .populate('feed');
+    .populate('author', {
+      email: 1,
+      thumbNail: 1,
+      firstName: 1,
+      lastName: 1,
+      areaOfSpecialty: 1,
+    })
+
+    .populate([
+      {
+        path: 'feed',
+        model: 'Feed',
+        populate: {
+          path: 'author',
+          model: 'User',
+          select: 'firstName lastName username thumbNail areaOfSpecialty',
+        },
+      },
+    ])
+    .populate([
+      {
+        path: 'feed',
+        model: 'Feed',
+        populate: {
+          path: 'feed',
+          model: 'Feed',
+          populate: {
+            path: 'author',
+            model: 'User',
+            select: 'firstName lastName username thumbNail areaOfSpecialty',
+          },
+        },
+      },
+    ]);
 
   return returnedData;
 };
