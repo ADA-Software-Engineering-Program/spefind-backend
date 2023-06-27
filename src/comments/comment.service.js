@@ -99,6 +99,7 @@ const getComments = async (userId, feedId) => {
           populate: {
             path: 'feed',
             model: 'Feed',
+            select: 'author content feedPhotos',
             populate: {
               path: 'author',
               model: 'User',
