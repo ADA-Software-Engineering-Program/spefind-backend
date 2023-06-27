@@ -27,7 +27,7 @@ const commentSchema = new Schema(
       default: 0,
     },
     replies: {
-      type: [{ type: Schema.Types.ObjectId, ref: 'Reply' }],
+      type: [{ type: Schema.Types.ObjectId, ref: 'ReplyLike' }],
       trim: true,
     },
   },

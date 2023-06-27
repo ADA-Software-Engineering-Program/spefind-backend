@@ -42,7 +42,7 @@ const replyComment = catchAsync(async (req, res) => {
 });
 
 const likeReply = catchAsync(async (req, res) => {
-  await commentService.likeReply(req.query.replyId);
+  await commentService.likeReply(req.user._id, req.query.replyId);
   res.status(201).json({ status: 'success', message: 'You liked a reply' });
 });
 
@@ -52,6 +52,18 @@ const deleteComment = catchAsync(async (req, res) => {
   res
     .status(200)
     .json({ status: 'success', message: 'Comment successfully deleted...' });
+});
+
+const getReplies = catchAsync(async (req, res) => {
+  const data = await commentService.getReplies(
+    req.user._id,
+    req.query.commentId
+  );
+  res.status(200).json({
+    status: true,
+    message: 'All replies for comments retrieved...',
+    data,
+  });
 });
 
 const deleteReply = catchAsync(async (req, res) => {
@@ -68,6 +80,7 @@ module.exports = {
   likeReply,
   likeComment,
   unlikeComment,
+  getReplies,
   getAllComments,
   deleteComment,
   deleteReply,

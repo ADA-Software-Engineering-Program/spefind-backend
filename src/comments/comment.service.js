@@ -3,6 +3,7 @@ const ApiError = require('../helpers/error');
 const Feed = require('../feed/feed.model');
 const Reply = require('./reply.model');
 const CommentLike = require('./comment.like');
+const ReplyLike = require('./reply.like');
 
 const createComment = async (userId, data, feedId) => {
   try {
@@ -108,21 +109,21 @@ const getComments = async (userId, feedId) => {
             },
           },
         },
-        {
-          path: 'commentary',
-          model: 'Comment',
-          populate: {
-            path: 'replies',
-            model: 'Reply',
-            select: 'author reply replies replyLikes createdAt updatedAt',
-            populate: {
-              path: 'author',
-              model: 'User',
-              select:
-                'firstName lastName username thumbNail discipline areaOfSpecialty',
-            },
-          },
-        },
+        // {
+        //   path: 'commentary',
+        //   model: 'Comment',
+        //   populate: {
+        //     path: 'replies',
+        //     model: 'Reply',
+        //     select: 'author reply replies replyLikes createdAt updatedAt',
+        //     populate: {
+        //       path: 'author',
+        //       model: 'User',
+        //       select:
+        //         'firstName lastName username thumbNail discipline areaOfSpecialty',
+        //     },
+        //   },
+        // },
       ]);
     return allCommentLikes;
     // return allCommentLikes;
@@ -140,6 +141,69 @@ const getComments = async (userId, feedId) => {
     // ]);
   } catch (error) {
     throw new ApiError(400, 'Unable to get all comments...');
+  }
+};
+
+const getReplies = async (userId, commentId) => {
+  try {
+    console.log(commentId);
+    const checkReplies = await Reply.find({ comment: commentId });
+    // console.log(checkReplies);
+    if (checkReplies.length === 0) {
+      throw new ApiError(400, 'There are no comments for this feed yet...');
+    }
+
+    const replies = await Reply.find({ comment: commentId });
+    const checkUserLike = await ReplyLike.find(
+      {
+        likedBy: userId,
+        commentary: commentId,
+      },
+      { commentary: 0 }
+    );
+
+    const { feed } = await Comment.findById(commentId);
+
+    const newReplies = replies.map((reply) => reply._id);
+
+    const newCheckUserLike = checkUserLike.map((usermake) => usermake.reply);
+    if (newReplies.length != newCheckUserLike.length) {
+      for (let i = 0; i < newReplies.length; i++) {
+        const tellie = await ReplyLike.findOne({
+          likedBy: userId,
+          commentary: newReplies[i],
+        });
+
+        if (!tellie) {
+          await ReplyLike.create({
+            likedBy: userId,
+            reply: newReplies[i],
+            feed: feed,
+          });
+        }
+      }
+    }
+    const allReplyLikes = await ReplyLike.find(
+      { comment: commentId },
+      { reply: 1, isLiked: 1 }
+    )
+      .populate('reply', { feed: 0 })
+      .populate([
+        {
+          path: 'reply',
+          model: 'Reply',
+          select: 'author reply replyLikes createdAt updatedAt',
+          populate: {
+            path: 'author',
+            model: 'User',
+            select:
+              'firstName lastName username thumbNail discipline areaOfSpecialty',
+          },
+        },
+      ]);
+    return allReplyLikes;
+  } catch (error) {
+    throw new ApiError(400, 'Unable to get replies...');
   }
 };
 
@@ -202,9 +266,18 @@ const replyComment = async (userId, commentId, reply) => {
     replyData.feed = feed;
 
     const replyResponse = await Reply.create(replyData);
+
+    const replyLikeData = {
+      likedBy: userId,
+      reply: replyResponse._id,
+      commentary: commentId,
+      feed: feed,
+    };
+    const createReplyLike = await ReplyLike.create(replyLikeData);
+
     return await Comment.findByIdAndUpdate(
       commentId,
-      { $push: { replies: [replyResponse._id] } },
+      { $push: { replies: [createReplyLike._id] } },
       { new: true }
     );
   } catch (error) {
@@ -212,10 +285,16 @@ const replyComment = async (userId, commentId, reply) => {
   }
 };
 
-const likeReply = async (replyId) => {
+const likeReply = async (userId, replyId) => {
   try {
     const { likes } = await Reply.findById(replyId);
     const newNumberOfLikes = likes + 1;
+
+    await ReplyLike.findOneAndUpdate(
+      { likedBy: userId, reply: replyId },
+      { isLiked: true },
+      { new: true }
+    );
     return await Reply.findByIdAndUpdate(
       replyId,
       { likes: newNumberOfLikes },
@@ -256,6 +335,7 @@ module.exports = {
   likeComment,
   deleteReply,
   deleteComment,
+  getReplies,
   getComments,
   likeReply,
   unlikeComment,

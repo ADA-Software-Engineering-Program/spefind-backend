@@ -7,12 +7,15 @@ const {
   likeReply,
   deleteReply,
   deleteComment,
+  getReplies,
   getAllComments,
 } = require('./comment.controllers');
 const { userAuthentication } = require('../helpers/auth');
 const router = Router();
 
 router.post('/make', createComment);
+
+router.get('/replies/all', getReplies);
 
 router.get('/all', getAllComments);
 
