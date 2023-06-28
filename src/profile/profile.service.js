@@ -38,7 +38,7 @@ const createEvent = async (userId, data) => {
 
 const getEvent = async (id) => {
   try {
-    return await Event.findById(id);
+    return await Event.findById(id).select('-userId');
   } catch (error) {
     throw new ApiError(400, 'Unable to get event...');
   }
