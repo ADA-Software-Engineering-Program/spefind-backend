@@ -6,11 +6,14 @@ const {
   editEvent,
   deleteEvent,
   addCoverBanner,
+  getEvent,
 } = require('./profile.controllers');
 const upload = require('../helpers/multer');
 const router = Router();
 
 router.get('/user', getCurrentUser);
+
+router.get('/event/:_eventId', getEvent);
 
 router.put('/setup', upload.single('photo'), editProfile);
 

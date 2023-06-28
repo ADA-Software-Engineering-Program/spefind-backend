@@ -36,6 +36,14 @@ const createEvent = async (userId, data) => {
   });
 };
 
+const getEvent = async (id) => {
+  try {
+    return await Event.findById(id);
+  } catch (error) {
+    throw new ApiError(400, 'Unable to get event...');
+  }
+};
+
 const editEvent = async (eventId, editedBody) => {
   try {
     return await Event.findByIdAndUpdate(eventId, editedBody, { new: true });
@@ -87,6 +95,7 @@ module.exports = {
   allSubscribers,
   createProfile,
   createEvent,
+  getEvent,
   editEvent,
   deleteEvent,
   emailSubscribe,

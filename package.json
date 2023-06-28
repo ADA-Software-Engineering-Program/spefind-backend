@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js",
-    "start:dev": "nodemon src/index.js"
+    "start:dev": "nodemon  NODE_ENV=dev src/index.js"
   },
   "keywords": [],
   "author": "Ayooluwa Adeleke",
@@ -22,6 +22,7 @@
     "jsonwebtoken": "^9.0.0",
     "moment": "^2.29.4",
     "mongoose": "^6.7.0",
+    "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",

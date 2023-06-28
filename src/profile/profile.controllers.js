@@ -83,6 +83,13 @@ const emailSubscribe = catchAsync(async (req, res) => {
   });
 });
 
+const getEvent = catchAsync(async (req, res) => {
+  const data = await profileService.getEvent(req.params._eventId);
+  res
+    .status(200)
+    .json({ status: true, message: 'Event now retrieved...', data });
+});
+
 const allSubscribers = catchAsync(async (req, res) => {
   const data = await profileService.allSubscribers();
   res
@@ -96,6 +103,7 @@ module.exports = {
   createPastEvent,
   deleteEvent,
   getCurrentUser,
+  getEvent,
   addCoverBanner,
   emailSubscribe,
   allSubscribers,
