@@ -38,7 +38,12 @@ const initiateChat = async function (req, res) {
     joinRoom(socket, chat_room._id)
 
     logger.info('sending chatroom invite')
-    sendChatRoomInviteToClient(targetuser_id, chat_room._id)
+    await sendChatRoomInviteToClient(targetuser_id, chat_room._id).catch((err) => {
+        logger.info('err')
+        if (err.message != 'Target client is not connected') {
+            throw err
+        }
+    })
 
     // Notify initiator of chat room id
     res.send(null, { chat_room_id: chat_room._id });
