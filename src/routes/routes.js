@@ -34,4 +34,10 @@ router.use(
   require('../comments/comment.routes')
 );
 
+router.use(
+    '/chat',
+    userAuthentication,
+    require('../chat/chat.routes')
+)
+
 module.exports = router;

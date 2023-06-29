@@ -48,7 +48,13 @@ const getChatRoomMessages = async (req, res, next) => {
     })
 }
 
+const getChatHistory = async (req, res, next) => {
+    const { user } = req
+
+    const chat_rooms = await ChatRoom.find({ users: { $in: [user._id] } })
+}
 module.exports = {
     createNewChatRoom,
+    getChatRoomMessages,
     getChatRoomMessages
 }
