@@ -54,25 +54,32 @@ const sendMessageToChatRoom = async function (req, res) {
     const socket = this
     const { chat_room_id, message } = req.data
 
+    if (!chat_room_id || !message) {
+        res.error('Missing required parameter in request')
+        return
+    }
+
     const chat_room = await ChatRoom.findById(chat_room_id)
     if (!chat_room) {
-        res.error('Chat room does not exist')
+        res.error('Chat room not found')
         return
     }
 
     // Check if user is part of chat room
     const user_in_chat_room = chat_room.users.includes(socket.user._id)
     if (!user_in_chat_room) {
-        res.error('User is not part of chat room')
+        res.error('Not a member of Chat room')
         return
     }
 
     const message_data = { sender_id: socket.user._id, chat_room_id, message }
+    console.log(message_data)
     const new_message = await addNewMessageToChatRoom(message_data)
 
     // Notify all users in chat room of new message
     let path = chat_room_id + ':chat:message:new'
 
+    logger.info('sending message')
     io.to(chat_room_id).emit(path, { message: new_message })
 
     res.send({ message: new_message })
