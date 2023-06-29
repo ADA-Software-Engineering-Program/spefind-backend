@@ -40,7 +40,9 @@ async function sendChatRoomInviteToClient(target_user_id, room_id) {
 
     // Send invite to target client if not already in room
     if (!client_in_chatroom) {
-        target_client.emit("chat:invitation", { data: { chat_room_id: room_id } });
+        target_client.emit("response:chat:invitation", { data: { chat_room_id: room_id } });
+    } else {
+        joinRoom(target_client, room_id)
     }
 
     return;

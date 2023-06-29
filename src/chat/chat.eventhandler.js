@@ -78,10 +78,7 @@ const sendMessageToChatRoom = async function (req, res) {
     const new_message = await addNewMessageToChatRoom(message_data)
 
     // Notify all users in chat room of new message
-    let path = 'chat:message:incoming:' + chat_room_id
-    logger.info('incomming messge path => ' + path)
-    logger.info('sending message')
-    io.to(chat_room_id).emit('message:incoming', { message: new_message })
+    io.to(chat_room_id).emit('response:message:incoming', { message: new_message })
 
     io.rooms
 
