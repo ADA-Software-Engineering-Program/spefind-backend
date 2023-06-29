@@ -77,10 +77,12 @@ const sendMessageToChatRoom = async function (req, res) {
     const new_message = await addNewMessageToChatRoom(message_data)
 
     // Notify all users in chat room of new message
-    let path = chat_room_id + ':chat:message:new'
-
+    let path = 'chat:message:incoming:' + chat_room_id
+    logger.info('incomming messge path => ' + path)
     logger.info('sending message')
-    io.to(chat_room_id).emit(path, { message: new_message })
+    io.to(chat_room_id).emit('message:incoming', { message: new_message })
+
+    io.rooms
 
     res.send({ message: new_message })
     return
@@ -163,54 +165,67 @@ const getPreviousChatRoomMessages = async function (req, res) {
     return
 }
 
-module.exports = (io, socket) => {
+const subscribeToUsersChatrooms = async function () {
+    logger.info('inside')
+    const socket = this
+    const { user } = socket
+
+    const chatrooms = await ChatRoom.find({ users: { $in: [user._id.toString()] } })
+
+    console.log(chatrooms)
+}
+
+class SocketResponseObject {
+    constructor(socket, path) {
+        this.socket = socket
+        this.response_path = 'response:' + path
+    }
+
+    send = (data) => {
+        logger.info(data)
+        const response_path = this.path
+        logger.info(response_path)
+        const response_data = { data }
+
+        this.socket.emit(this.response_path, response_data)
+    }
+
+    error = (err) => {
+        const response_path = this.path
+        const error = { error: err }
+
+        this.socket.emit(this.response_path, error)
+    }
+}
+module.exports = async (io, socket) => {
     try {
         global.io = io;
 
-        const res = new Map()
-        res.send = (data) => {
-            logger.info(data)
-            const response_path = res.path
-            logger.info(response_path)
-            const response_data = { data }
-
-            socket.emit(response_path, response_data)
-        }
-
-        res.error = (err) => {
-            const response_path = res.path
-            const error = { error: err }
-
-            socket.emit(response_path, error)
-        }
 
         async function socketHandlerMiddleware(data, path) {
             try {
                 const socket = this;
+                const res = new SocketResponseObject(socket, path)
 
                 // Get request handler from socket_paths
                 const socketRequestHandler = socket_paths[path];
 
-                const req = { user: socket.user, data, path }
-                res.path = 'response:' + path;
+                // TODO: Join all connected chatrooms
 
-                // Check if user is authenticated 
-                // if authenticated socket.user will be set by auth middleware
-                let response = null;
-                if (socket.user) {
-                    response = await socketRequestHandler.call(socket, req, res);
-                    return;
-                }
+                const req = { user: socket.user, data, path }
+
+                let response = socket.user
+                    ? await socketRequestHandler.call(socket, req, res)
+                    : null
+                    
                 if (response instanceof Error) { throw response };
 
-                res.send(res.path, { error: 'User is not authenticated' })
+                res.error('User is not authenticated')
             } catch (error) {
-                logger.info('handling error')
+                console.log(error)
                 res.error({ message: 'Something went wrong' })
-                logger.error(error)
             }
         }
-
         const socket_paths = {
             "chat:initiate": initiateChat,
             "chat:message:new": sendMessageToChatRoom,
@@ -218,6 +233,8 @@ module.exports = (io, socket) => {
             "chat:join": joinChatRoom,
             "chat:data": getChatRoomData
         };
+
+        await subscribeToUsersChatrooms.call(socket)
 
         socket.on("chat:initiate",
             (data) => socketHandlerMiddleware.call(socket, data, "chat:initiate"));
