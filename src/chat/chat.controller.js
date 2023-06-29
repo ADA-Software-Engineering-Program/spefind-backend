@@ -6,6 +6,10 @@ const { getPreviousMessages } = require("./chat.service")
 const createNewChatRoom = async (req, res, next) => {
     const { user_ids } = req.body
 
+    if (user_ids.length > 2) {
+        throw new BadRequestError('Only 2 users can be in a chat room')
+    }
+
     const existing_users = await User.find({ _id: { $in: user_ids } })
     const not_all_users_exist = existing_users.length < 2
     if (not_all_users_exist) {
