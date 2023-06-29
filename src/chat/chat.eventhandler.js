@@ -175,15 +175,17 @@ const subscribeToUsersChatrooms = async function (socket) {
 }
 
 class SocketResponseObject {
+    response_path
+
     constructor(socket, path) {
         this.socket = socket
         this.response_path = 'response:' + path
     }
 
     send = (data) => {
-        logger.info(data)
+        logger.info('data',data)
         const response_path = this.path
-        logger.info(response_path)
+        logger.info('responsepath', response_path)
         const response_data = { data }
 
         this.socket.emit(this.response_path, response_data)
@@ -217,6 +219,7 @@ class SocketRouter {
 
     handleSocketEvent(eventName, callback) {
         this.socket.on(eventName, (data) => {
+            console.log('eventname1', eventName)
             this.socketHandlerMiddleware(data, eventName);
         });
     }
@@ -231,17 +234,19 @@ class SocketRouter {
         }
     }
 
-    socketHandlerMiddleware(data, path) {
+    async socketHandlerMiddleware(data, path) {
         try {
             const socket = this.socket;
             const res = new SocketResponseObject(socket, path);
+            console.log(path)
             const req = new SocketRequestObject(socket, path, data);
 
             // Get request handler from route
             const socketRequestHandler = this.getSocketHandlerFunction(path);
 
             if (socket.user) {
-                socketRequestHandler.call(socket, req, res);
+                await socketRequestHandler.call(socket, req, res);
+                return
             } else {
                 res.error('User is not authenticated');
             }
