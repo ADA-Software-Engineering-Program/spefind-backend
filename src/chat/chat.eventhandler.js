@@ -99,8 +99,8 @@ const getChatRoomData = async function (req, res) {
     }
 
     // Check if user is part of chat room
-    const user_in_chat_room = chat_room.users.includes(socket.user._id)
-    if (user_in_chat_room) {
+    const user_in_chat_room = chat_room.users.includes(socket.user._id.toString())
+    if (!user_in_chat_room) {
         res.error('User is not a member of chat room')
         return
     }
@@ -111,7 +111,6 @@ const getChatRoomData = async function (req, res) {
 const joinChatRoom = async function (req, res) {
     const socket = this
     const { chat_room_id } = req.data
-    console.log(req)
 
     const chat_room = await
         ChatRoom
@@ -170,8 +169,6 @@ const subscribeToUsersChatrooms = async function (socket) {
     const { user } = socket
 
     const chatrooms = await ChatRoom.find({ users: { $in: [user._id.toString()] } })
-
-    console.log(chatrooms)
 }
 
 class SocketResponseObject {
@@ -180,6 +177,9 @@ class SocketResponseObject {
     constructor(socket, path) {
         this.socket = socket
         this.response_path = 'response:' + path
+
+        console.log('----> main ' + this.response_path)
+        console.log('----> main ' + path)
     }
 
     send = (data) => {
@@ -192,10 +192,10 @@ class SocketResponseObject {
     }
 
     error = (err) => {
-        const response_path = this.path
+        const response_path = this.response_path
         const error = { error: err }
 
-        this.socket.emit(this.response_path, error)
+        this.socket.emit(response_path, error)
     }
 }
 
