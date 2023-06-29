@@ -61,6 +61,20 @@ const getChatHistory = async (req, res, next) => {
         }
     })
 }
+
+const getSpecificChatHistory = async (req, res, next) => {
+    const { user } = req
+
+    const chat_rooms = await ChatRoom.find({ users: { $in: [user._id] } })
+
+    res.status(200).json({
+        success: true,
+        message: 'Chatroom data fetched successfully',
+        data: {
+            chat_rooms
+        }
+    })
+}
 module.exports = {
     createNewChatRoom,
     getChatRoomMessages,
