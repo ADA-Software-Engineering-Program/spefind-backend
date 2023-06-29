@@ -111,6 +111,7 @@ const getChatRoomData = async function (req, res) {
 const joinChatRoom = async function (req, res) {
     const socket = this
     const { chat_room_id } = req.data
+    console.log(req)
 
     const chat_room = await
         ChatRoom
@@ -165,9 +166,7 @@ const getPreviousChatRoomMessages = async function (req, res) {
     return
 }
 
-const subscribeToUsersChatrooms = async function () {
-    logger.info('inside')
-    const socket = this
+const subscribeToUsersChatrooms = async function (socket) {
     const { user } = socket
 
     const chatrooms = await ChatRoom.find({ users: { $in: [user._id.toString()] } })
@@ -197,57 +196,81 @@ class SocketResponseObject {
         this.socket.emit(this.response_path, error)
     }
 }
+
+class SocketRequestObject {
+    constructor(socket, path, data) {
+        this.user = socket.user
+        this.data = data
+        this.path = path
+    }
+
+    user = this.user
+    data = this.data
+    path = this.path
+}
+
+class SocketRouter {
+    constructor(socket) {
+        this.socket = socket;
+        this.route = {};
+    }
+
+    handleSocketEvent(eventName, callback) {
+        this.socket.on(eventName, (data) => {
+            this.socketHandlerMiddleware(data, eventName);
+        });
+    }
+
+    init(route) {
+        this.route = route;
+
+        for (const eventName in this.route) {
+            if (this.route.hasOwnProperty(eventName)) {
+                this.handleSocketEvent(eventName, this.route[eventName]);
+            }
+        }
+    }
+
+    socketHandlerMiddleware(data, path) {
+        try {
+            const socket = this.socket;
+            const res = new SocketResponseObject(socket, path);
+            const req = new SocketRequestObject(socket, path, data);
+
+            // Get request handler from route
+            const socketRequestHandler = this.getSocketHandlerFunction(path);
+
+            if (socket.user) {
+                socketRequestHandler.call(socket, req, res);
+            } else {
+                res.error('User is not authenticated');
+            }
+        } catch (error) {
+            res.error({ message: 'Something went wrong' });
+        }
+    }
+
+    getSocketHandlerFunction(path) {
+        return this.route[path] || null;
+    }
+}
+
 module.exports = async (io, socket) => {
     try {
         global.io = io;
 
+        await subscribeToUsersChatrooms(socket);
+        const router = new SocketRouter(socket);
 
-        async function socketHandlerMiddleware(data, path) {
-            try {
-                const socket = this;
-                const res = new SocketResponseObject(socket, path)
-
-                // Get request handler from socket_paths
-                const socketRequestHandler = socket_paths[path];
-
-                // TODO: Join all connected chatrooms
-
-                const req = { user: socket.user, data, path }
-
-                let response = socket.user
-                    ? await socketRequestHandler.call(socket, req, res)
-                    : null
-                    
-                if (response instanceof Error) { throw response };
-
-                res.error('User is not authenticated')
-            } catch (error) {
-                console.log(error)
-                res.error({ message: 'Something went wrong' })
-            }
-        }
-        const socket_paths = {
+        router.init({
             "chat:initiate": initiateChat,
             "chat:message:new": sendMessageToChatRoom,
             "chat:message:previous": getPreviousChatRoomMessages,
             "chat:join": joinChatRoom,
-            "chat:data": getChatRoomData
-        };
-
-        await subscribeToUsersChatrooms.call(socket)
-
-        socket.on("chat:initiate",
-            (data) => socketHandlerMiddleware.call(socket, data, "chat:initiate"));
-        socket.on("chat:message:new",
-            (data) => socketHandlerMiddleware.call(socket, data, "chat:message:new"));
-        socket.on("chat:message:previous",
-            (data) => socketHandlerMiddleware.call(socket, data, "chat:message:previous"));
-        socket.on("chat:data",
-            (data) => socketHandlerMiddleware.call(socket, data, "chat:data"));
-        socket.on("chat:join",
-            (data) => socketHandlerMiddleware.call(socket, data, "chat:join"))
+            "chat:data": getChatRoomData,
+        });
 
     } catch (error) {
-        logger.error(error)
+        logger.error(error);
     }
-}
+};
