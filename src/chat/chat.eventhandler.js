@@ -9,13 +9,13 @@ const initiateChat = async function (req, res) {
     const { targetuser_id } = req.data
 
     if (!targetuser_id) {
-        res.send("Missing required field: targetuser_id");
+        res.error("Missing required field: targetuser_id");
         return;
     }
 
     const target_user = await User.findById(targetuser_id)
     if (!target_user) {
-        res.send('Target user does not exist')
+        res.error('Target user does not exist')
         return
     }
 
@@ -39,14 +39,13 @@ const initiateChat = async function (req, res) {
 
     logger.info('sending chatroom invite')
     await sendChatRoomInviteToClient(targetuser_id, chat_room._id).catch((err) => {
-        logger.info('err')
         if (err.message != 'Target client is not connected') {
             throw err
         }
     })
 
     // Notify initiator of chat room id
-    res.send(null, { chat_room_id: chat_room._id });
+    res.send({ chat_room: chat_room });
 
     return;
 }
@@ -57,14 +56,14 @@ const sendMessageToChatRoom = async function (req, res) {
 
     const chat_room = await ChatRoom.findById(chat_room_id)
     if (!chat_room) {
-        res.send('Chat room does not exist')
+        res.error('Chat room does not exist')
         return
     }
 
     // Check if user is part of chat room
     const user_in_chat_room = chat_room.users.includes(socket.user._id)
     if (!user_in_chat_room) {
-        res.send('User is not part of chat room')
+        res.error('User is not part of chat room')
         return
     }
 
@@ -76,8 +75,27 @@ const sendMessageToChatRoom = async function (req, res) {
 
     io.to(chat_room_id).emit(path, { message: new_message })
 
-    res.send(null, { message: new_message })
+    res.send({ message: new_message })
     return
+}
+
+const getChatRoomData = async function (req, res) {
+    const socket = this
+    const { chat_room_id } = req.data
+
+    const chat_room = await ChatRoom.findById(chat_room_id)
+    if (!chat_room) {
+        res.error('Chat room does not exist')
+        return
+    }
+
+    // Check if user is part of chat room
+    const user_in_chat_room = chat_room.users.includes(socket.user._id)
+    if (!user_in_chat_room) {
+        res.error('User is not part of chat room')
+        return
+    }
+
 }
 
 const joinChatRoom = async function (req, res) {
@@ -140,12 +158,19 @@ module.exports = (io, socket) => {
         global.io = io;
 
         const res = new Map()
-        res.send = (error, data) => {
+        res.send = (data) => {
+            logger.info(data)
             const response_path = res.path
-            const response_data = { error, data }
+            const response_data = { data }
 
-            if (error) console.log(error);
             socket.emit(response_path, response_data)
+        }
+
+        res.error = (err) => {
+            const response_path = res.path
+            const error = { error: err }
+
+            socket.emit(response_path, error)
         }
 
         async function socketHandlerMiddleware(data, path) {
@@ -169,8 +194,9 @@ module.exports = (io, socket) => {
 
                 res.send(res.path, { error: 'User is not authenticated' })
             } catch (error) {
-                logger.error(error)
-                res.send(res.path, { error: 'Something went wrong' })
+                // logger.error(error)
+                logger.info('handling error')
+                res.error({ message: 'Something went wrong' })
             }
         }
 
@@ -179,6 +205,7 @@ module.exports = (io, socket) => {
             "chat:message:new": sendMessageToChatRoom,
             "chat:message:previous": getPreviousChatRoomMessages,
             "chat:join": joinChatRoom,
+            "chat:data": joinChatRoom
         };
 
         socket.on("chat:initiate",
@@ -187,6 +214,8 @@ module.exports = (io, socket) => {
             (data) => socketHandlerMiddleware.call(socket, data, "chat:message:new"));
         socket.on("chat:message:previous",
             (data) => socketHandlerMiddleware.call(socket, data, "chat:message:previous"));
+        socket.on("chat:data",
+            (data) => socketHandlerMiddleware.call(socket, data, "chat:data"));
         socket.on("chat:join",
             (data) => socketHandlerMiddleware.call(socket, data, "chat:join"))
 
