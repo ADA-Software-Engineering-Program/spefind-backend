@@ -83,7 +83,7 @@ const getChatRoomData = async function (req, res) {
     const socket = this
     const { chat_room_id } = req.data
 
-    const chat_room = await ChatRoom.findById(chat_room_id)
+    const chat_room = await ChatRoom.findById(chat_room_id).populate('messages')
     if (!chat_room) {
         res.error('Chat room does not exist')
         return
@@ -96,6 +96,7 @@ const getChatRoomData = async function (req, res) {
         return
     }
 
+    res.send({ chat_room })
 }
 
 const joinChatRoom = async function (req, res) {
@@ -115,7 +116,7 @@ const joinChatRoom = async function (req, res) {
 
     // Check if chat room exists
     if (!chat_room) {
-        res.send({ error: 'Chat room not found' }); return;
+        res.error('Chat room not found'); return;
     }
 
     // Check if user is part of chat room
@@ -126,7 +127,7 @@ const joinChatRoom = async function (req, res) {
     // Add user to chat room
     joinRoom(socket, chat_room_id)
 
-    res.send(null, { chat_room })
+    res.send({ chat_room })
     return
 }
 
@@ -205,7 +206,7 @@ module.exports = (io, socket) => {
             "chat:message:new": sendMessageToChatRoom,
             "chat:message:previous": getPreviousChatRoomMessages,
             "chat:join": joinChatRoom,
-            "chat:data": joinChatRoom
+            "chat:data": getChatRoomData
         };
 
         socket.on("chat:initiate",
