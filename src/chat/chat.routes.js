@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { getChatRoomMessages } = require('./chat.controller');
+const { getChatRoomMessages, getChatHistory, getSpecificChatHistory } = require('./chat.controller');
 const { userAuthentication, checkUserExistence } = require('../helpers/auth');
 const router = Router()
 
