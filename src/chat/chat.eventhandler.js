@@ -7,6 +7,7 @@ const logger = require("../helpers/logger")
 const initiateChat = async function (req, res) {
     const socket = this;
     const { targetuser_id } = req.data
+    console.log(req.data)
 
     if (!targetuser_id) {
         res.error("Missing required field: targetuser_id");
@@ -169,6 +170,12 @@ const subscribeToUsersChatrooms = async function (socket) {
     const { user } = socket
 
     const chatrooms = await ChatRoom.find({ users: { $in: [user._id.toString()] } })
+
+    chatrooms.forEach((chatroom) => {
+        const chatroom_id = chatroom._id
+
+        joinRoom(socket, chatroom_id.toString())
+    })
 }
 
 class SocketResponseObject {
