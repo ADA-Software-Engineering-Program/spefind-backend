@@ -11,7 +11,7 @@ async function authenticate(socket) {
 
     const decoded_data = await decodeToken(token);
     const existing_user = await User.findById(decoded_data.user._id);
-
+    
     if (!existing_user) { throw new Error('User not found') }
 
     // Show virtuals

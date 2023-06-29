@@ -1,7 +1,8 @@
 const { ChatRoom, Message } = require("./chat.model")
 const { clients } = require('../websocket/clients')
-const { User } = require('../auth/user.model')
+const User = require('../auth/user.model')
 const { joinRoom, getPreviousMessages, sendChatRoomInviteToClient, addNewMessageToChatRoom } = require('./chat.service')
+const logger = require("../helpers/logger")
 
 const initiateChat = async function (req, res) {
     const socket = this;
@@ -160,7 +161,7 @@ module.exports = (io, socket) => {
 
                 res.send(res.path, { error: 'User is not authenticated' })
             } catch (error) {
-                console.log(error)
+                logger.error(error)
                 res.send(res.path, { error: 'Something went wrong' })
             }
         }
@@ -182,6 +183,6 @@ module.exports = (io, socket) => {
             (data) => socketHandlerMiddleware.call(socket, data, "chat:join"))
 
     } catch (error) {
-        console.log(error)
+        logger.error(error)
     }
 }
