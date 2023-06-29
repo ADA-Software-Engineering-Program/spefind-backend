@@ -60,23 +60,23 @@ const getFeeds = async () => {
             'firstName lastName username thumbNail discipline areaOfSpecialty',
         },
       },
-    ])
-    .populate([
-      {
-        path: 'feed',
-        model: 'Feed',
-        populate: {
-          path: 'feed',
-          model: 'Feed',
-          populate: {
-            path: 'author',
-            model: 'User',
-            select:
-              'firstName lastName username thumbNail discipline areaOfSpecialty',
-          },
-        },
-      },
     ]);
+  // .populate([
+  //   {
+  //     path: 'feed',
+  //     model: 'Feed',
+  //     populate: {
+  //       path: 'feed',
+  //       model: 'Feed',
+  //       populate: {
+  //         path: 'author',
+  //         model: 'User',
+  //         select:
+  //           'firstName lastName username thumbNail discipline areaOfSpecialty',
+  //       },
+  //     },
+  //   },
+  // ]);
 
   return returnedData;
 };
