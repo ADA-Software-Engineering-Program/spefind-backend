@@ -91,8 +91,8 @@ const getChatRoomData = async function (req, res) {
 
     // Check if user is part of chat room
     const user_in_chat_room = chat_room.users.includes(socket.user._id)
-    if (!user_in_chat_room) {
-        res.error('User is not part of chat room')
+    if (user_in_chat_room) {
+        res.error('User is not a member of chat room')
         return
     }
 
@@ -132,25 +132,27 @@ const joinChatRoom = async function (req, res) {
 }
 
 const getPreviousChatRoomMessages = async function (req, res) {
+    logger.info('inside')
     const socket = this
     const { chat_room_id } = req.data
 
     const data = await getPreviousMessages(chat_room_id)
     if (data instanceof Error) {
         data.message === 'Chat room not found'
-            ? res.send({ error: data.message })
-            : res.send({ error: 'An error occured' })
+            ? res.error(data.message)
+            : res.error('An error occured')
     }
 
     const { messages, chat_room } = data
 
     // Check if user is part of chat room
     if (!chat_room.users.includes(socket.user._id)) {
-        res.send({ error: 'User is not a member of this chatroom' })
+        res.error('User is not a member of this chatroom')
         return;
     }
 
-    res.send(null, { messages })
+    logger.info('returning response')
+    res.send({ messages })
     return
 }
 
@@ -162,6 +164,7 @@ module.exports = (io, socket) => {
         res.send = (data) => {
             logger.info(data)
             const response_path = res.path
+            logger.info(response_path)
             const response_data = { data }
 
             socket.emit(response_path, response_data)
@@ -195,9 +198,9 @@ module.exports = (io, socket) => {
 
                 res.send(res.path, { error: 'User is not authenticated' })
             } catch (error) {
-                // logger.error(error)
                 logger.info('handling error')
                 res.error({ message: 'Something went wrong' })
+                logger.error(error)
             }
         }
 
