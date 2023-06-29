@@ -34,7 +34,10 @@ const initiateChat = async function (req, res) {
             ? existing_chatroom
             : await ChatRoom.create({ users: [socket.user._id, targetuser_id] });
 
+    logger.info('joining chatroom')
     joinRoom(socket, chat_room._id)
+
+    logger.info('sending chatroom invite')
     sendChatRoomInviteToClient(targetuser_id, chat_room._id)
 
     // Notify initiator of chat room id

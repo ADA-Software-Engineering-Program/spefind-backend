@@ -1,3 +1,4 @@
+const logger = require("../helpers/logger")
 const { ChatRoom, Message } = require("./chat.model")
 
 function joinRoom(client, room_id) {
@@ -28,17 +29,21 @@ async function getPreviousMessages(chat_room_id) {
 }
 
 async function sendChatRoomInviteToClient(target_user_id, room_id) {
-    const target_user_data = await User.findById(target_user_id);
-
-    const target_client = clients.get(target_user_data.email)
-    const client_in_chatroom = room_id in target_client.rooms
-
-    // Send invite to target client if not already in room
-    if (!client_in_chatroom) {
-        target_client.emit("chat:invitation", { chat_room_id: room_id });
+    try {
+        const target_user_data = await User.findById(target_user_id);
+    
+        const target_client = clients.get(target_user_data.email)
+        const client_in_chatroom = room_id in target_client.rooms
+    
+        // Send invite to target client if not already in room
+        if (!client_in_chatroom) {
+            target_client.emit("chat:invitation", { chat_room_id: room_id });
+        }
+    
+        return;
+    } catch (error) {
+        logger.error(error)
     }
-
-    return;
 }
 
 async function addNewMessageToChatRoom(message_data) {

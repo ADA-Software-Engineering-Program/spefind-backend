@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const chatRoomSchema = new Schema({
     users: { type: [Schema.Types.ObjectId], ref: 'User', required: true },
-    messages: { type: [Schema.Types.ObjectId], ref: 'Messages', default: [] }
+    messages: { type: [Schema.Types.ObjectId], ref: 'Message', default: [] }
 }, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 const messageSchema = new Schema({
