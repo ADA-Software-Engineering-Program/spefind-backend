@@ -76,7 +76,7 @@ const deleteFeed = catchAsync(async (req, res) => {
 const repostFeed = catchAsync(async (req, res) => {
   let { _repostType } = req.params;
   let data;
-  console.log(typeof _repostType);
+
   if (
     !_repostType &&
     _repostType != 'repost' &&
