@@ -187,7 +187,7 @@ class SocketResponseObject {
     }
 
     send = (data) => {
-        logger.info('data',data)
+        logger.info('data', data)
         const response_path = this.path
         logger.info('responsepath', response_path)
         const response_data = { data }

@@ -36,20 +36,11 @@ const onConnection = async (socket) => {
 
 
 const webServer = (app) => {
-    logger.info('logging')
-    const deployed = process.env.DEPLOYED | true
     let options = {
         cors: {
-            origin: 'http://localhost:3000',
+            origin: '*',
         }
     }
-
-    options = deployed
-        ? Object.assign(options, {
-            key: fs.readFileSync(__dirname + '\\server.key', 'utf-8'),
-            cert: fs.readFileSync(__dirname + '\\server.cert', 'utf-8')
-        })
-        : options
 
     const httpServer = createServer(app);
     const io = new Server(httpServer, options);
