@@ -1,6 +1,7 @@
 const logger = require('./logger');
 const ApiError = require('./error');
 const errorConverter = (err, req, res, next) => {
+    logger.info(err.message, err.name)
   let error = err;
   if (!(error instanceof ApiError)) {
     const statusCode = error.statusCode || 500;
