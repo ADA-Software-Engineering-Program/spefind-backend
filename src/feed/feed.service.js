@@ -15,7 +15,14 @@ const createFeed = async (userId, data) => {
     feed.feedType = 'original';
     const rawFeed = JSON.parse(JSON.stringify(feed));
 
-    const rawData = (await Feed.create(rawFeed)).populate('author');
+    const rawData = (await Feed.create(rawFeed)).populate('author', {
+      email: 1,
+      thumbNail: 1,
+      firstName: 1,
+      lastName: 1,
+      areaOfSpecialty: 1,
+      discipline: 1,
+    });
 
     const { numberOfPosts } = await User.findById(userId);
 
@@ -34,10 +41,6 @@ const createFeed = async (userId, data) => {
 };
 
 const getFeeds = async () => {
-  // const repostData = await Repost.find({ repostAuthor: userId })
-  //   .sort({ createdAt: -1 })
-  //   .populate('repostAuthor')
-  //   .populate('feed');
   const returnedData = await Feed.find()
     .sort({ createdAt: -1 })
     .populate('author', {
@@ -190,8 +193,11 @@ const editFeed = async (feedId, feedData) => {
 const deleteFeed = async (feedId) => {
   try {
     await Comment.deleteMany({ feed: feedId });
+
     await CommentLike.deleteMany({ feed: feedId });
+
     await Reply.deleteMany({ feed: feedId });
+
     return await Feed.findByIdAndDelete(feedId);
   } catch (error) {
     throw new ApiError(400, 'Unable to delete feed...');
@@ -218,15 +224,29 @@ const repostFeed = async (userId, feedType, feedId, commentary) => {
       { new: true }
     );
 
-    return await Feed.findById(data._id).populate('author');
-    // .populate('feed')
-    // .populate([
-    //   {
-    //     path: 'feed',
-    //     model: 'Feed',
-    //     populate: { path: 'author', model: 'User' },
-    //   },
-    // ]);
+    return await Feed.findById(data._id)
+      .populate('author', {
+        email: 1,
+        thumbNail: 1,
+        firstName: 1,
+        lastName: 1,
+        areaOfSpecialty: 1,
+        discipline: 1,
+      })
+      .populate('feed', { author: 1, content: 1, feedPhotos: 1 })
+      .populate([
+        {
+          path: 'feed',
+          model: 'Feed',
+          select: 'author content feedPhotos',
+          populate: {
+            path: 'author',
+            model: 'User',
+            select:
+              'firstName lastName username thumbNail discipline areaOfSpecialty ',
+          },
+        },
+      ]);
   } catch (error) {
     throw new ApiError(400, 'Unable to repost feed...');
   }

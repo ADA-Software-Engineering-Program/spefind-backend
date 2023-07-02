@@ -91,7 +91,7 @@ const repostFeed = catchAsync(async (req, res) => {
       req.user._id,
       req.params._repostType,
       req.query.feedId,
-      req.body.repostContent
+      req.body.content
     );
   }
 
