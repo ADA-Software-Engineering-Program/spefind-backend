@@ -1,5 +1,5 @@
 const logger = require('./logger');
-const ApiError = require('./error');
+const ApiError = require('./error').default;
 const errorConverter = (err, req, res, next) => {
   let error = err;
   if (!(error instanceof ApiError)) {
