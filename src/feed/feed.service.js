@@ -60,7 +60,7 @@ const getFeeds = async () => {
           path: 'author',
           model: 'User',
           select:
-            'firstName lastName username thumbNail discipline areaOfSpecialty',
+            'firstName lastName username email thumbNail discipline areaOfSpecialty',
         },
       },
     ]);
