@@ -1,5 +1,5 @@
 const Comment = require('./comment.model');
-const ApiError = require('../helpers/error');
+const ApiError = require('../helpers/errors');
 const Feed = require('../feed/feed.model');
 const Reply = require('./reply.model');
 const CommentLike = require('./comment.like');
@@ -33,115 +33,109 @@ const createComment = async (userId, data, feedId) => {
 };
 
 const getComments = async (userId, feedId) => {
-  try {
-    const checkComments = await Comment.find({ feed: feedId });
-    if (checkComments.length === 0) {
-      throw new ApiError(400, 'There are no comments for this feed yet...');
-    }
+  const checkComments = await Comment.find({ feed: feedId });
+  if (checkComments.length === 0) {
+    throw new ApiError(400, 'There are no comments for this feed yet...');
+  }
 
-    const comments = await Comment.find({ feed: feedId });
-    const checkUserLike = await CommentLike.find({
-      likedBy: userId,
-      feed: feedId,
-    });
+  const comments = await Comment.find({ feed: feedId });
+  const checkUserLike = await CommentLike.find({
+    likedBy: userId,
+    feed: feedId,
+  });
 
-    const newComments = comments.map((comment) => comment._id);
+  const newComments = comments.map((comment) => comment._id);
 
-    const newCheckUserLike = checkUserLike.map(
-      (usermake) => usermake.commentary
-    );
+  const newCheckUserLike = checkUserLike.map((usermake) => usermake.commentary);
 
-    if (newComments.length != newCheckUserLike.length) {
-      for (let i = 0; i < newComments.length; i++) {
-        const tellie = await CommentLike.findOne({
+  if (newComments.length != newCheckUserLike.length) {
+    for (let i = 0; i < newComments.length; i++) {
+      const tellie = await CommentLike.findOne({
+        likedBy: userId,
+        commentary: newComments[i],
+      });
+
+      if (!tellie) {
+        await CommentLike.create({
           likedBy: userId,
           commentary: newComments[i],
+          feed: feedId,
         });
-
-        if (!tellie) {
-          await CommentLike.create({
-            likedBy: userId,
-            commentary: newComments[i],
-            feed: feedId,
-          });
-        }
       }
     }
-    const allCommentLikes = await CommentLike.find(
-      { feed: feedId },
-      { likedBy: 0, feed: 0 }
-    )
-      .populate('commentary')
-      .populate([
-        {
-          path: 'commentary',
-          model: 'Comment',
+  }
+  const allCommentLikes = await CommentLike.find(
+    { feed: feedId },
+    { likedBy: 0, feed: 0 }
+  )
+    .populate('commentary')
+    .populate([
+      {
+        path: 'commentary',
+        model: 'Comment',
+        populate: {
+          path: 'author',
+          model: 'User',
+          select:
+            'firstName lastName username discipline areaOfSpecialty thumbNail',
+        },
+      },
+    ])
+    .populate([
+      {
+        path: 'commentary',
+        model: 'Comment',
+        populate: {
+          path: 'feed',
+          model: 'Feed',
+          select: 'author content feedPhotos',
+        },
+      },
+      {
+        path: 'commentary',
+        model: 'Comment',
+        populate: {
+          path: 'feed',
+          model: 'Feed',
+          select: 'author content feedPhotos',
           populate: {
             path: 'author',
             model: 'User',
             select:
-              'firstName lastName username discipline areaOfSpecialty thumbNail',
+              'firstName lastName username thumbNail discipline areaOfSpecialty ',
           },
         },
-      ])
-      .populate([
-        {
-          path: 'commentary',
-          model: 'Comment',
-          populate: {
-            path: 'feed',
-            model: 'Feed',
-            select: 'author content feedPhotos',
-          },
-        },
-        {
-          path: 'commentary',
-          model: 'Comment',
-          populate: {
-            path: 'feed',
-            model: 'Feed',
-            select: 'author content feedPhotos',
-            populate: {
-              path: 'author',
-              model: 'User',
-              select:
-                'firstName lastName username thumbNail discipline areaOfSpecialty ',
-            },
-          },
-        },
-        // {
-        //   path: 'commentary',
-        //   model: 'Comment',
-        //   populate: {
-        //     path: 'replies',
-        //     model: 'Reply',
-        //     select: 'author reply replies replyLikes createdAt updatedAt',
-        //     populate: {
-        //       path: 'author',
-        //       model: 'User',
-        //       select:
-        //         'firstName lastName username thumbNail discipline areaOfSpecialty',
-        //     },
-        //   },
-        // },
-      ]);
-    return allCommentLikes;
-    // return allCommentLikes;
-    // .populate('author')
-    // .populate([
-    //   {
-    //     path: 'replies',
-    //     model: 'Reply',
+      },
+      // {
+      //   path: 'commentary',
+      //   model: 'Comment',
+      //   populate: {
+      //     path: 'replies',
+      //     model: 'Reply',
+      //     select: 'author reply replies replyLikes createdAt updatedAt',
+      //     populate: {
+      //       path: 'author',
+      //       model: 'User',
+      //       select:
+      //         'firstName lastName username thumbNail discipline areaOfSpecialty',
+      //     },
+      //   },
+      // },
+    ]);
+  return allCommentLikes;
+  // return allCommentLikes;
+  // .populate('author')
+  // .populate([
+  //   {
+  //     path: 'replies',
+  //     model: 'Reply',
 
-    //     populate: {
-    //       path: 'author',
-    //       model: 'User',
-    //     },
-    //   },
-    // ]);
-  } catch (error) {
-    throw new ApiError(400, 'Unable to get all comments...');
-  }
+  //     populate: {
+  //       path: 'author',
+  //       model: 'User',
+  //     },
+  //   },
+  // ]);
 };
 
 const getReplies = async (userId, commentId) => {
