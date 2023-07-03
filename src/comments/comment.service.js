@@ -77,7 +77,7 @@ const getComments = async (userId, feedId) => {
           path: 'author',
           model: 'User',
           select:
-            'firstName lastName username discipline areaOfSpecialty thumbNail',
+            'firstName lastName email username discipline areaOfSpecialty thumbNail',
         },
       },
     ])
@@ -102,7 +102,7 @@ const getComments = async (userId, feedId) => {
             path: 'author',
             model: 'User',
             select:
-              'firstName lastName username thumbNail discipline areaOfSpecialty ',
+              'firstName lastName username email thumbNail discipline areaOfSpecialty ',
           },
         },
       },
@@ -191,7 +191,7 @@ const getReplies = async (userId, commentId) => {
             path: 'author',
             model: 'User',
             select:
-              'firstName lastName username thumbNail discipline areaOfSpecialty',
+              'firstName lastName email username thumbNail discipline areaOfSpecialty',
           },
         },
       ]);
