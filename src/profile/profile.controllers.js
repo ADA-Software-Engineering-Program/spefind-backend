@@ -38,10 +38,10 @@ const createPastEvent = catchAsync(async (req, res) => {
     const avatar = await cloudinary.uploader.upload(req.file.path);
     requestBody.eventPhoto = avatar.secure_url;
   }
-  const data = await profileService.createEvent(req.user.id, requestBody);
+  const data = await profileService.createEvent(req.user._id, requestBody);
   res
     .status(201)
-    .json({ status: true, message: 'Past event successfully added...', data });
+    .json({ status: true, message: 'Past event successfully added...' });
 });
 
 const editEvent = catchAsync(async (req, res) => {
