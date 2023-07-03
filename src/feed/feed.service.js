@@ -227,6 +227,7 @@ const repostFeed = async (userId, feedType, feedId, commentary) => {
     return await Feed.findById(data._id)
       .populate('author', {
         email: 1,
+        username: 1,
         thumbNail: 1,
         firstName: 1,
         lastName: 1,
