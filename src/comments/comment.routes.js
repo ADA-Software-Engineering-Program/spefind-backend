@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const {
   createComment,
-  likeComment,
+  reactToComment,
   replyComment,
   unlikeComment,
   likeReply,
@@ -19,9 +19,9 @@ router.get('/replies/all', getReplies);
 
 router.get('/all', getAllComments);
 
-router.put('/like/:_id', likeComment);
+router.put('/:react/:_id', reactToComment);
 
-router.put('/unlike', unlikeComment);
+router.put('/unlike/:_id', unlikeComment);
 
 router.post('/reply/:_commentId', replyComment);
 

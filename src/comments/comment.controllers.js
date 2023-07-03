@@ -17,11 +17,18 @@ const getAllComments = catchAsync(async (req, res) => {
   });
 });
 
-const likeComment = catchAsync(async (req, res) => {
-  await commentService.likeComment(req.user._id, req.params._id);
-  res
-    .status(200)
-    .json({ status: 'success', message: 'You liked this comment...' });
+const reactToComment = catchAsync(async (req, res) => {
+  if (req.params.react === 'like') {
+    await commentService.likeComment(req.user._id, req.params._id);
+    return res
+      .status(200)
+      .json({ status: 'success', message: 'You liked this comment...' });
+  } else {
+    await commentService.unlikeComment(req.user._id, req.params._id);
+    res
+      .status(200)
+      .json({ status: 'success', message: 'You unliked this comment...' });
+  }
 });
 
 const unlikeComment = catchAsync(async (req, res) => {
@@ -78,7 +85,7 @@ module.exports = {
   createComment,
   replyComment,
   likeReply,
-  likeComment,
+  reactToComment,
   unlikeComment,
   getReplies,
   getAllComments,
