@@ -300,13 +300,24 @@ const likeReply = async (userId, replyId) => {
 };
 
 const unlikeReply = async (userId, replyId) => {
-  const { likes } = await Reply.findById(replyId);
-  const newNumberOfLikes = likes - 1;
-  return await Reply.findByIdAndUpdate(
-    replyId,
-    { likes: newNumberOfLikes },
-    { new: true }
-  );
+  try {
+    const { likes } = await Reply.findById(replyId);
+    const newNumberOfLikes = likes - 1;
+
+    await ReplyLike.findOneAndUpdate(
+      { likedBy: userId, reply: replyId },
+      { isLiked: false },
+      { new: true }
+    );
+
+    return await Reply.findByIdAndUpdate(
+      replyId,
+      { likes: newNumberOfLikes },
+      { new: true }
+    );
+  } catch (error) {
+    throw new ApiError(400, 'Unable to like reply...');
+  }
 };
 
 const deleteComment = async (commentId) => {
@@ -332,6 +343,7 @@ module.exports = {
   getReplies,
   getComments,
   likeReply,
+  unlikeReply,
   unlikeComment,
   replyComment,
 };

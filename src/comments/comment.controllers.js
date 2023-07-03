@@ -48,9 +48,15 @@ const replyComment = catchAsync(async (req, res) => {
   res.status(200).json({ status: true, message: 'You replied a comment...' });
 });
 
-const likeReply = catchAsync(async (req, res) => {
-  await commentService.likeReply(req.user._id, req.query.replyId);
-  res.status(201).json({ status: 'success', message: 'You liked a reply' });
+const reactToReply = catchAsync(async (req, res) => {
+  if (req.params.react === 'like') {
+    await commentService.likeReply(req.user._id, req.query.replyId);
+    return res
+      .status(201)
+      .json({ status: 'success', message: 'You liked a reply' });
+  }
+  await commentService.unlikeReply(req.user._id, req.query.replyId);
+  res.status(201).json({ status: 'success', message: 'You unliked a reply' });
 });
 
 const deleteComment = catchAsync(async (req, res) => {
@@ -84,7 +90,7 @@ const deleteReply = catchAsync(async (req, res) => {
 module.exports = {
   createComment,
   replyComment,
-  likeReply,
+  reactToReply,
   reactToComment,
   unlikeComment,
   getReplies,

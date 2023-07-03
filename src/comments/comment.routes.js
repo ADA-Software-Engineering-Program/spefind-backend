@@ -4,30 +4,32 @@ const {
   reactToComment,
   replyComment,
   unlikeComment,
-  likeReply,
+  reactToReply,
   deleteReply,
   deleteComment,
   getReplies,
   getAllComments,
 } = require('./comment.controllers');
-const { userAuthentication } = require('../helpers/auth');
+
 const router = Router();
+
+// Comment Endpoints
 
 router.post('/make', createComment);
 
-router.get('/replies/all', getReplies);
-
 router.get('/all', getAllComments);
+
+router.delete('/delete', deleteComment);
 
 router.put('/:react/:_id', reactToComment);
 
-router.put('/unlike/:_id', unlikeComment);
+// Reply Endpoints
 
 router.post('/reply/:_commentId', replyComment);
 
-router.put('/like/reply', likeReply);
+router.patch('/:react/reply', reactToReply);
 
-router.delete('/delete', deleteComment);
+router.get('/replies/all', getReplies);
 
 router.delete('/reply/delete', deleteReply);
 
