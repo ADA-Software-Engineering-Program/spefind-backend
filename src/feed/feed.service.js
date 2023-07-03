@@ -1,5 +1,5 @@
 const Feed = require('./feed.model');
-const ApiError = require('../helpers/error');
+const ApiError = require('../helpers/errors');
 const Following = require('../user/following.model');
 const Comment = require('../comments/comment.model');
 const User = require('../auth/user.model');

@@ -1,7 +1,7 @@
 const feedService = require('./feed.service');
 const cloudinary = require('../helpers/cloudinary');
 const catchAsync = require('express-async-handler');
-const ApiError = require('../helpers/error');
+const ApiError = require('../helpers/errors');
 const fs = require('fs');
 const { cloudinaryImageUploadMethod } = require('../helpers/image_upload');
 
