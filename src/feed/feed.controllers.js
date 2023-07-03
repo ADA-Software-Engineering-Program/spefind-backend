@@ -95,9 +95,7 @@ const repostFeed = catchAsync(async (req, res) => {
     );
   }
 
-  res
-    .status(201)
-    .json({ status: 'success', message: 'Repost Successful!', data });
+  res.status(201).json({ status: 'success', message: 'Repost Successful!' });
 });
 
 const likeFeedRepost = catchAsync(async (req, res) => {

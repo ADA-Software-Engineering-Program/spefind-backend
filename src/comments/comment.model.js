@@ -26,10 +26,10 @@ const commentSchema = new Schema(
       trim: true,
       default: 0,
     },
-    replies: {
-      type: [{ type: Schema.Types.ObjectId, ref: 'ReplyLike' }],
-      trim: true,
-    },
+    // replies: {
+    //   type: [{ type: Schema.Types.ObjectId, ref: 'ReplyLike' }],
+    //   trim: true,
+    // },
   },
   { timestamps: true }
 );
