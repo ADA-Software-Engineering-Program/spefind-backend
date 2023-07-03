@@ -243,7 +243,7 @@ const repostFeed = async (userId, feedType, feedId, commentary) => {
             path: 'author',
             model: 'User',
             select:
-              'firstName lastName username thumbNail discipline areaOfSpecialty ',
+              'firstName lastName email username thumbNail discipline areaOfSpecialty ',
           },
         },
       ]);
