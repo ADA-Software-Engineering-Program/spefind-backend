@@ -4,6 +4,7 @@ const {
   unfollow,
   getAllUsers,
   getCurrentUser,
+  getFollowers,
 } = require('./user.controllers');
 
 const router = Router();
@@ -15,5 +16,7 @@ router.put('/unfollow', unfollow);
 router.get('/all', getAllUsers);
 
 router.get('/current', getCurrentUser);
+
+router.get('/followers/all', getFollowers);
 
 module.exports = router;

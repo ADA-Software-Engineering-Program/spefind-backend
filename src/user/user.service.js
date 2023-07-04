@@ -58,4 +58,16 @@ const getUsers = async () => {
   return await User.find({ isProfileCreationComplete: true });
 };
 
-module.exports = { follow, getUsers, getUserById, unfollow };
+const allFollowings = async (userId) => {
+  const followers = await Follower.findOne({ userId: userId }).select(
+    '-userId'
+  );
+
+  const followings = await Following.findOne({ userId: userId }).select(
+    '-userId'
+  );
+
+  return [followers, followings];
+};
+
+module.exports = { follow, getUsers, getUserById, unfollow, allFollowings };

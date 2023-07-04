@@ -40,4 +40,21 @@ const getAllUsers = catchAsync(async (req, res) => {
     .json({ status: true, message: 'All users retrieved...', data });
 });
 
-module.exports = { follow, getAllUsers, getCurrentUser, unfollow };
+const getFollowers = catchAsync(async (req, res) => {
+  const data = await userService.allFollowings(req.user._id);
+
+  res.status(201).json({
+    status: 'success',
+    message: 'all followers/followings retrieved...',
+    data,
+  });
+});
+
+module.exports = {
+  follow,
+  getAllUsers,
+  getCurrentUser,
+  getFollowers,
+  unfollow,
+  getFollowers,
+};
