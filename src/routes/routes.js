@@ -40,4 +40,10 @@ router.use(
     require('../chat/chat.routes')
 )
 
+router.use(
+    '/videocall',
+    userAuthentication,
+    require('../videocall/videocall.routes')
+)
+
 module.exports = router;

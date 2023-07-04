@@ -1,7 +1,11 @@
 const { ChatRoom, Message } = require("./chat.model")
 const { clients } = require('../websocket/clients')
 const User = require('../auth/user.model')
-const { joinRoom, getPreviousMessages, sendChatRoomInviteToClient, addNewMessageToChatRoom } = require('./chat.service')
+const {
+    joinRoom, getPreviousMessages,
+    sendChatRoomInviteToClient,
+    addNewMessageToChatRoom
+} = require('./chat.service')
 const logger = require("../helpers/logger")
 
 const initiateChat = async function (req, res) {
