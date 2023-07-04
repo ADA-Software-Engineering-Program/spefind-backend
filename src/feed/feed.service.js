@@ -21,6 +21,7 @@ const createFeed = async (userId, data) => {
       thumbNail: 1,
       firstName: 1,
       lastName: 1,
+      username: 1,
       areaOfSpecialty: 1,
       discipline: 1,
     });
@@ -48,6 +49,7 @@ const getFeeds = async () => {
       email: 1,
       thumbNail: 1,
       firstName: 1,
+      username: 1,
       lastName: 1,
       areaOfSpecialty: 1,
       discipline: 1,
