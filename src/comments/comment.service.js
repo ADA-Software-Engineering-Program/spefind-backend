@@ -140,7 +140,6 @@ const getComments = async (userId, feedId) => {
 
 const getReplies = async (userId, commentId) => {
   try {
-    console.log(commentId);
     const checkReplies = await Reply.find({ comment: commentId });
     // console.log(checkReplies);
     if (checkReplies.length === 0) {

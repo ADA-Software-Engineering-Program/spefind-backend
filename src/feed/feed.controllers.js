@@ -105,6 +105,13 @@ const likeFeedRepost = catchAsync(async (req, res) => {
     .status(201)
     .json({ status: true, message: 'You liked this feed repost...' });
 });
+
+const deleteAllFeeds = catchAsync(async (req, res) => {
+  await feedService.deleteAllFeeds();
+
+  res.status(201).json({ status: true, message: 'All feeds now cleared...' });
+});
+
 module.exports = {
   createFeed,
   editFeed,
@@ -116,4 +123,5 @@ module.exports = {
   unlikeFeed,
   repostFeed,
   deleteFeed,
+  deleteAllFeeds,
 };

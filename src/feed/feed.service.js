@@ -7,6 +7,7 @@ const Repost = require('./repost.model');
 const Reply = require('../comments/reply.model');
 const moment = require('moment');
 const CommentLike = require('../comments/comment.like');
+const ReplyLike = require('../comments/reply.like');
 
 const createFeed = async (userId, data) => {
   try {
@@ -252,6 +253,7 @@ const repostFeed = async (userId, feedType, feedId, commentary) => {
     throw new ApiError(400, 'Unable to repost feed...');
   }
 };
+
 const likeFeedRepost = async (userId, feedId) => {
   try {
     const { repostLikes } = await Feed.findById(feedId);
@@ -273,6 +275,22 @@ const likeFeedRepost = async (userId, feedId) => {
   }
 };
 
+const deleteAllFeeds = async () => {
+  try {
+    await CommentLike.deleteMany();
+
+    await ReplyLike.deleteMany();
+
+    await await Reply.deleteMany();
+
+    await Comment.deleteMany();
+
+    return await Feed.deleteMany();
+  } catch (error) {
+    throw new ApiError(400, 'Unable to delete all fields...');
+  }
+};
+
 module.exports = {
   createFeed,
   editFeed,
@@ -283,5 +301,6 @@ module.exports = {
   likeFeedRepost,
   unlikeFeed,
   deleteFeed,
+  deleteAllFeeds,
   repostFeed,
 };

@@ -9,6 +9,7 @@ const {
   repostFeed,
   likeFeedRepost,
   deleteFeed,
+  deleteAllFeeds,
 } = require('./feed.controllers');
 const { feedAuthorization } = require('../helpers/auth');
 const router = Router();
@@ -32,7 +33,7 @@ router.post('/:_repostType', repostFeed);
 
 router.post('/repost/like', likeFeedRepost);
 
-// router.delete('/');
+router.delete('/all/delete', deleteAllFeeds);
 
 // router.put('/edit');
 
