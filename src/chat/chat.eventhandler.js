@@ -11,7 +11,6 @@ const logger = require("../helpers/logger")
 const initiateChat = async function (req, res) {
     const socket = this;
     const { targetuser_id } = req.data
-    console.log(req.data)
 
     if (!targetuser_id) {
         res.error("Missing required field: targetuser_id");
@@ -39,10 +38,8 @@ const initiateChat = async function (req, res) {
             ? existing_chatroom
             : await ChatRoom.create({ users: [socket.user._id, targetuser_id] });
 
-    logger.info('joining chatroom')
     joinRoom(socket, chat_room._id)
 
-    logger.info('sending chatroom invite')
     await sendChatRoomInviteToClient(targetuser_id, chat_room._id).catch((err) => {
         if (err.message != 'Target client is not connected') {
             throw err
@@ -143,7 +140,6 @@ const joinChatRoom = async function (req, res) {
 }
 
 const getPreviousChatRoomMessages = async function (req, res) {
-    logger.info('inside')
     const socket = this
     const { chat_room_id } = req.data
 
@@ -162,7 +158,6 @@ const getPreviousChatRoomMessages = async function (req, res) {
         return;
     }
 
-    logger.info('returning response')
     res.send({ messages })
     return
 }
@@ -185,15 +180,10 @@ class SocketResponseObject {
     constructor(socket, path) {
         this.socket = socket
         this.response_path = 'response:' + path
-
-        console.log('----> main ' + this.response_path)
-        console.log('----> main ' + path)
     }
 
     send = (data) => {
-        logger.info('data', data)
         const response_path = this.path
-        logger.info('responsepath', response_path)
         const response_data = { data }
 
         this.socket.emit(this.response_path, response_data)
@@ -227,7 +217,6 @@ class SocketRouter {
 
     handleSocketEvent(eventName, callback) {
         this.socket.on(eventName, (data) => {
-            console.log('eventname1', eventName)
             this.socketHandlerMiddleware(data, eventName);
         });
     }
@@ -246,7 +235,6 @@ class SocketRouter {
         try {
             const socket = this.socket;
             const res = new SocketResponseObject(socket, path);
-            console.log(path)
             const req = new SocketRequestObject(socket, path, data);
 
             // Get request handler from route
