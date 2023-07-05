@@ -167,6 +167,47 @@ const getPreviousChatRoomMessages = async function (req, res) {
     return
 }
 
+const updateTypingStatus = async function(req, res)  {
+    const  socket = this
+    const { status, chat_room_id } = req.data
+
+
+    if (!status || !chat_room_id) {
+        res.error('Missing required fields')
+        return
+    }
+
+    if (status !== 'typing' || status !== 'not-typing') {
+        res.error('invalid typing status')
+        return
+    }
+
+    const existing_chat_room = await ChatRoom.findOne({_id: chat_room_id})
+    if (!existing_chat_room) {
+        res.error('Chat room not found')
+        return
+    }
+
+    const user_is_member = existing_chat_rom.members.includes(socket.user._id)
+    if (!user_is_member) {
+        res.error('User is not a member of this chat room')
+        return
+    }
+
+    const target_user_id = existing_chat_room.users.filter((user) => user !== socket.user._id)[0]
+    const target_user = await User.findOne({ _id: target_user_id})
+    const target_user_socket = clients.get(target_user.email)
+    if (target_user_socket) {
+        target_user_socket.emit('response:chat:typingstatus', { status, chat_room_id })
+    }
+
+    res.send({
+        success: true,
+        message: 'Typping status updated successfully'
+    })
+
+ }
+
 const subscribeToUsersChatrooms = async function (socket) {
     const { user } = socket
 
@@ -281,6 +322,7 @@ module.exports = async (io, socket) => {
             "chat:message:previous": getPreviousChatRoomMessages,
             "chat:join": joinChatRoom,
             "chat:data": getChatRoomData,
+            "chat:typingstatus:update": updateTypingStatus,
         });
 
     } catch (error) {
