@@ -162,6 +162,57 @@ const getPreviousChatRoomMessages = async function (req, res) {
     return
 }
 
+const updateTypingStatus = async function(req, res)  {
+    const  socket = this
+    const { status, chat_room_id } = req.data
+
+
+    if (!status || !chat_room_id) {
+        res.error('Missing required fields')
+        return
+    }
+
+    if (status !== 'typing' && status !== 'not-typing') {
+        res.error('invalid typing status')
+        return
+    }
+
+    const existing_chat_room = await ChatRoom.findOne({_id: chat_room_id})
+    if (!existing_chat_room) {
+        res.error('Chat room not found')
+        return
+    }
+
+    const user_is_member = existing_chat_room.users.includes(socket.user._id)
+    if (!user_is_member) {
+        res.error('User is not a member of this chat room')
+        return
+    }
+
+    const target_user_id = existing_chat_room.users.filter((user) => user.toString() !== socket.user._id.toString())[0]
+    const target_user = await User.findOne({ _id: target_user_id})
+    const target_user_socket = clients.get(target_user.email)
+    if (target_user_socket) {
+        const data = {
+            status,
+            sender: {
+                _id: socket.user._id,
+                email: socket.user.email,
+                firstname: socket.user.firstName,
+                lastname: socket.user.lastName
+            },
+            chat_room: existing_chat_room
+        }
+        target_user_socket.emit('response:chat:typingstatus', data)
+    }
+
+    res.send({
+        success: true,
+        message: 'Typing status updated successfully'
+    })
+
+ }
+
 const subscribeToUsersChatrooms = async function (socket) {
     const { user } = socket
 
@@ -192,6 +243,7 @@ class SocketResponseObject {
     error = (err) => {
         const response_path = this.response_path
         const error = { error: err }
+        logger.info('responsepath', response_path)
 
         this.socket.emit(response_path, error)
     }
@@ -232,11 +284,10 @@ class SocketRouter {
     }
 
     async socketHandlerMiddleware(data, path) {
+        const socket = this.socket;
+        const res = new SocketResponseObject(socket, path);
+        const req = new SocketRequestObject(socket, path, data);
         try {
-            const socket = this.socket;
-            const res = new SocketResponseObject(socket, path);
-            const req = new SocketRequestObject(socket, path, data);
-
             // Get request handler from route
             const socketRequestHandler = this.getSocketHandlerFunction(path);
 
@@ -247,6 +298,7 @@ class SocketRouter {
                 res.error('User is not authenticated');
             }
         } catch (error) {
+            logger.error(error)
             res.error({ message: 'Something went wrong' });
         }
     }
@@ -269,6 +321,7 @@ module.exports = async (io, socket) => {
             "chat:message:previous": getPreviousChatRoomMessages,
             "chat:join": joinChatRoom,
             "chat:data": getChatRoomData,
+            "chat:typingstatus:update": updateTypingStatus,
         });
 
     } catch (error) {
