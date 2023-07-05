@@ -177,7 +177,7 @@ const updateTypingStatus = async function(req, res)  {
         return
     }
 
-    if (status !== 'typing' || status !== 'not-typing') {
+    if (status !== 'typing' && status !== 'not-typing') {
         res.error('invalid typing status')
         return
     }
@@ -188,22 +188,32 @@ const updateTypingStatus = async function(req, res)  {
         return
     }
 
-    const user_is_member = existing_chat_rom.members.includes(socket.user._id)
+    const user_is_member = existing_chat_room.users.includes(socket.user._id)
     if (!user_is_member) {
         res.error('User is not a member of this chat room')
         return
     }
 
-    const target_user_id = existing_chat_room.users.filter((user) => user !== socket.user._id)[0]
+    const target_user_id = existing_chat_room.users.filter((user) => user.toString() !== socket.user._id.toString())[0]
     const target_user = await User.findOne({ _id: target_user_id})
     const target_user_socket = clients.get(target_user.email)
     if (target_user_socket) {
-        target_user_socket.emit('response:chat:typingstatus', { status, chat_room_id })
+        const data = {
+            status,
+            sender: {
+                _id: socket.user._id,
+                email: socket.user.email,
+                firstname: socket.user.firstName,
+                lastname: socket.user.lastName
+            },
+            chat_room: existing_chat_room
+        }
+        target_user_socket.emit('response:chat:typingstatus', data)
     }
 
     res.send({
         success: true,
-        message: 'Typping status updated successfully'
+        message: 'Typing status updated successfully'
     })
 
  }
@@ -243,6 +253,7 @@ class SocketResponseObject {
     error = (err) => {
         const response_path = this.response_path
         const error = { error: err }
+        logger.info('responsepath', response_path)
 
         this.socket.emit(response_path, error)
     }
@@ -284,11 +295,11 @@ class SocketRouter {
     }
 
     async socketHandlerMiddleware(data, path) {
+        const socket = this.socket;
+        const res = new SocketResponseObject(socket, path);
+        console.log(path)
+        const req = new SocketRequestObject(socket, path, data);
         try {
-            const socket = this.socket;
-            const res = new SocketResponseObject(socket, path);
-            console.log(path)
-            const req = new SocketRequestObject(socket, path, data);
 
             // Get request handler from route
             const socketRequestHandler = this.getSocketHandlerFunction(path);
@@ -300,6 +311,7 @@ class SocketRouter {
                 res.error('User is not authenticated');
             }
         } catch (error) {
+            logger.error(error)
             res.error({ message: 'Something went wrong' });
         }
     }
