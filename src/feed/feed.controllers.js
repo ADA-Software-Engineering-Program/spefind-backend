@@ -119,6 +119,14 @@ const likeFeedRepost = catchAsync(async (req, res) => {
     .json({ status: true, message: 'You liked this feed repost...' });
 });
 
+const getUserFeeds = catchAsync(async (req, res) => {
+  const data = await feedService.getUserFeeds(req.user._id);
+
+  res
+    .status(201)
+    .json({ status: 'success', message: 'All user feeds retrieved...', data });
+});
+
 const deleteAllFeeds = catchAsync(async (req, res) => {
   await feedService.deleteAllFeeds();
 
@@ -131,6 +139,7 @@ module.exports = {
   editRepost,
   getFeed,
   getFeeds,
+  getUserFeeds,
   likeFeed,
   pinFeed,
   likeFeedRepost,

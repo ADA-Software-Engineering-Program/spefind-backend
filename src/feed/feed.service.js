@@ -8,6 +8,7 @@ const Reply = require('../comments/reply.model');
 const moment = require('moment');
 const CommentLike = require('../comments/comment.like');
 const ReplyLike = require('../comments/reply.like');
+const customizedFeed = require('./customized.feed');
 
 const createFeed = async (userId, data) => {
   try {
@@ -40,6 +41,43 @@ const createFeed = async (userId, data) => {
   } catch (error) {
     throw new ApiError(400, 'Unable to create feed...');
   }
+};
+
+const getUserFeeds = async (userId) => {
+  const getAllFeeds = await Feed.find();
+  let feedId = getAllFeeds.map((feed) => feed._id);
+
+  for (let i = 0; i < feedId.length; i++) {
+    const checkFeed = await customizedFeed.find({
+      userId: userId,
+      feed: feedId[i],
+    });
+    if (checkFeed.length === 0) {
+      const newie = await customizedFeed.create({
+        userId: userId,
+        feed: feedId[i],
+      });
+    }
+  }
+  return await customizedFeed
+    .find({ userId: userId }, { userId: 0 })
+    .populate('feed')
+    .populate([
+      {
+        path: 'feed',
+        model: 'Feed',
+        populate: {
+          path: 'author',
+          model: 'User',
+          select:
+            'firstName lastName email username thumbNail discipline areaOfSpecialty ',
+        },
+        populate: {
+          path: 'feed',
+          model: 'Feed',
+        },
+      },
+    ]);
 };
 
 const getFeeds = async () => {
@@ -329,6 +367,7 @@ module.exports = {
   pinFeed,
   unPinFeed,
   deleteFeed,
+  getUserFeeds,
   deleteAllFeeds,
   repostFeed,
 };

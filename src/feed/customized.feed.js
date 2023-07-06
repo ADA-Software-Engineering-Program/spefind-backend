@@ -13,13 +13,10 @@ const customizeFeed = new Schema({
     ref: 'Feed',
     trim: true,
   },
-  isPinned: {
-    type: Boolean,
-    default: false,
-  },
   isHidden: {
     type: Boolean,
     default: false,
+    trim: true,
   },
 });
 
