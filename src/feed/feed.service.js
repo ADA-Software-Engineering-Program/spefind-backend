@@ -185,6 +185,30 @@ const getFeed = async (feedId) => {
   }
 };
 
+const pinFeed = async (feedId) => {
+  try {
+    return await Feed.findByIdAndUpdate(
+      feedId,
+      { isPinned: true },
+      { new: true }
+    );
+  } catch (error) {
+    throw new ApiError(400, 'Unable to pin feed...');
+  }
+};
+
+const unPinFeed = async (feedId) => {
+  try {
+    return await Feed.findByIdAndUpdate(
+      feedId,
+      { isPinned: false },
+      { new: true }
+    );
+  } catch (error) {
+    throw new ApiError(400, 'Unable to unpin feed...');
+  }
+};
+
 const editFeed = async (feedId, feedData) => {
   try {
     return await Feed.findByIdAndUpdate(feedId, feedData, { new: true });
@@ -302,6 +326,8 @@ module.exports = {
   editRepost,
   likeFeedRepost,
   unlikeFeed,
+  pinFeed,
+  unPinFeed,
   deleteFeed,
   deleteAllFeeds,
   repostFeed,

@@ -6,6 +6,7 @@ const {
   unlikeFeed,
   getFeed,
   editFeed,
+  pinFeed,
   repostFeed,
   likeFeedRepost,
   deleteFeed,
@@ -24,6 +25,8 @@ router.put('/unlike', unlikeFeed);
 router.get('/all', getFeeds);
 
 router.get('/:_id', getFeed);
+
+router.patch('/:_feedPin', feedAuthorization, pinFeed);
 
 router.put('/edit', feedAuthorization, editFeed);
 

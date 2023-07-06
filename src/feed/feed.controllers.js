@@ -57,6 +57,19 @@ const unlikeFeed = catchAsync(async (req, res) => {
   res.status(201).json({ status: true, message: 'You unliked this feed...' });
 });
 
+const pinFeed = catchAsync(async (req, res) => {
+  if (req.params._feedPin === 'pin') {
+    await feedService.pinFeed(req.query.feedId);
+    return res
+      .status(200)
+      .json({ status: true, message: 'This feed was just pinned' });
+  }
+  await feedService.unPinFeed(req.query.feedId);
+  res
+    .status(200)
+    .json({ status: true, message: 'This feed was just unpinned' });
+});
+
 const editFeed = catchAsync(async (req, res) => {
   const data = await feedService.editFeed(req.query.feedId, req.body);
   res
@@ -119,6 +132,7 @@ module.exports = {
   getFeed,
   getFeeds,
   likeFeed,
+  pinFeed,
   likeFeedRepost,
   unlikeFeed,
   repostFeed,
