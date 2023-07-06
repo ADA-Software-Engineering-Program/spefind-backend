@@ -6,6 +6,7 @@ const {
   unlikeFeed,
   getFeed,
   editFeed,
+  hideFeed,
   pinFeed,
   repostFeed,
   likeFeedRepost,
@@ -32,6 +33,8 @@ router.get('/:_id', getFeed);
 router.patch('/:_feedPin', feedAuthorization, pinFeed);
 
 router.put('/edit', feedAuthorization, editFeed);
+
+router.patch('/:hide/:_feedId', hideFeed);
 
 router.delete('/delete/:_id', deleteFeed);
 

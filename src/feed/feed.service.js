@@ -72,9 +72,19 @@ const getUserFeeds = async (userId) => {
           select:
             'firstName lastName email username thumbNail discipline areaOfSpecialty ',
         },
+      },
+      {
+        path: 'feed',
+        model: 'Feed',
         populate: {
           path: 'feed',
           model: 'Feed',
+          populate: {
+            path: 'author',
+            model: 'User',
+            select:
+              'firstName lastName username email thumbNail discipline areaOfSpecialty ',
+          },
         },
       },
     ]);
@@ -247,6 +257,30 @@ const unPinFeed = async (feedId) => {
   }
 };
 
+const hideFeed = async (userId, feedId) => {
+  try {
+    return await customizedFeed.findOneAndUpdate(
+      { userId: userId, feed: feedId },
+      { isHidden: true },
+      { new: true }
+    );
+  } catch (error) {
+    throw new ApiError(400, 'Unable to hide feed...');
+  }
+};
+
+const unHideFeed = async (userId, feedId) => {
+  try {
+    return await customizedFeed.findOneAndUpdate(
+      { userId: userId, feed: feedId },
+      { isHidden: false },
+      { new: true }
+    );
+  } catch (error) {
+    throw new ApiError(400, 'Unable to unhide feed...');
+  }
+};
+
 const editFeed = async (feedId, feedData) => {
   try {
     return await Feed.findByIdAndUpdate(feedId, feedData, { new: true });
@@ -363,6 +397,8 @@ module.exports = {
   likeFeed,
   editRepost,
   likeFeedRepost,
+  hideFeed,
+  unHideFeed,
   unlikeFeed,
   pinFeed,
   unPinFeed,

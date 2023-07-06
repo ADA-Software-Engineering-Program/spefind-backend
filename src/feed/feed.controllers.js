@@ -70,6 +70,19 @@ const pinFeed = catchAsync(async (req, res) => {
     .json({ status: true, message: 'This feed was just unpinned' });
 });
 
+const hideFeed = catchAsync(async (req, res) => {
+  if (req.params.hide === 'hide') {
+    await feedService.hideFeed(req.user._id, req.params._feedId);
+    return res
+      .status(200)
+      .json({ status: true, message: 'This feed was just hidden' });
+  }
+  await feedService.unHideFeed(req.user._id, req.params._feedId);
+  res
+    .status(200)
+    .json({ status: true, message: 'This feed has just been unhidden' });
+});
+
 const editFeed = catchAsync(async (req, res) => {
   const data = await feedService.editFeed(req.query.feedId, req.body);
   res
@@ -140,6 +153,7 @@ module.exports = {
   getFeed,
   getFeeds,
   getUserFeeds,
+  hideFeed,
   likeFeed,
   pinFeed,
   likeFeedRepost,
