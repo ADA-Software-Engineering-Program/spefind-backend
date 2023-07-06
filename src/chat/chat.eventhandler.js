@@ -213,6 +213,57 @@ const updateTypingStatus = async function(req, res)  {
 
  }
 
+ const sendReadReceipt = async function(req, res) {
+    const socket = this;
+    const { message_id } = req.data;
+
+    if (!message_id ) {
+        res.error('Missing required fields');
+        return;
+    }
+
+    const existing_message = await Message.findOne({ _id: message_id})
+    if (!existing_message) {
+        res.erro('Message not found')
+        return
+    }
+
+    const existing_chat_room = await ChatRoom.findOne({ _id: existing_message.chat_room });
+    if (!existing_chat_room) {
+        res.error('Chat room not found');
+        return;
+    }
+
+    const user_is_member = existing_chat_room.users.includes(socket.user._id);
+    if (!user_is_member) {
+        res.error('User is not a member of this chat room');
+        return;
+    }
+
+    const target_user_id = existing_chat_room.users.find((user) => user.toString() !== socket.user._id.toString());
+    const target_user = await User.findOne({ _id: target_user_id });
+    const target_user_socket = clients.get(target_user.email);
+    if (target_user_socket) {
+        const data = {
+            message_id,
+            status: 'read',
+            sender: {
+                id: socket.user._id,
+                email: socket.user.email,
+                first_name: socket.user.first_name,
+                last_name: socket.user.last_name
+            },
+            chat_room: existing_chat_room
+        };
+        target_user_socket.emit('response:chat:message:readreceipt', data);
+    }
+
+    res.send({
+        success: true,
+        message: 'Read receipt sent successfully'
+    });
+}
+
 const subscribeToUsersChatrooms = async function (socket) {
     const { user } = socket
 
@@ -322,6 +373,7 @@ module.exports = async (io, socket) => {
             "chat:join": joinChatRoom,
             "chat:data": getChatRoomData,
             "chat:typingstatus:update": updateTypingStatus,
+            "chat:message:readreceipt:send": sendReadReceipt
         });
 
     } catch (error) {
