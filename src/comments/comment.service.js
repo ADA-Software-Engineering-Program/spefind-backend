@@ -323,6 +323,19 @@ const deleteComment = async (commentId) => {
   const data = await Reply.deleteMany({ comment: commentId });
 
   await CommentLike.deleteMany({ commentary: commentId });
+
+  const { feed } = await Comment.findById(commentId);
+
+  const { numberOfComments } = await Feed.findById(feed);
+
+  const newNumberOfComments = numberOfComments - 1;
+
+  await Feed.findByIdAndUpdate(
+    feed,
+    { numberOfComments: newNumberOfComments },
+    { new: true }
+  );
+
   return Comment.findByIdAndDelete(commentId);
 };
 
