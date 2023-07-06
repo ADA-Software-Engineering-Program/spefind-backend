@@ -320,7 +320,7 @@ const unlikeReply = async (userId, replyId) => {
 };
 
 const deleteComment = async (commentId) => {
-  const data = await Reply.deleteMany({ comment: commentId });
+  await Reply.deleteMany({ comment: commentId });
 
   await CommentLike.deleteMany({ commentary: commentId });
 
