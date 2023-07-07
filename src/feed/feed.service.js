@@ -8,6 +8,7 @@ const Reply = require('../comments/reply.model');
 const moment = require('moment');
 const CommentLike = require('../comments/comment.like');
 const ReplyLike = require('../comments/reply.like');
+const customizedFeed = require('./customized.feed');
 
 const createFeed = async (userId, data) => {
   try {
@@ -40,6 +41,53 @@ const createFeed = async (userId, data) => {
   } catch (error) {
     throw new ApiError(400, 'Unable to create feed...');
   }
+};
+
+const getUserFeeds = async (userId) => {
+  const getAllFeeds = await Feed.find();
+  let feedId = getAllFeeds.map((feed) => feed._id);
+
+  for (let i = 0; i < feedId.length; i++) {
+    const checkFeed = await customizedFeed.find({
+      userId: userId,
+      feed: feedId[i],
+    });
+    if (checkFeed.length === 0) {
+      const newie = await customizedFeed.create({
+        userId: userId,
+        feed: feedId[i],
+      });
+    }
+  }
+  return await customizedFeed
+    .find({ userId: userId }, { userId: 0 })
+    .populate('feed')
+    .populate([
+      {
+        path: 'feed',
+        model: 'Feed',
+        populate: {
+          path: 'author',
+          model: 'User',
+          select:
+            'firstName lastName email username thumbNail discipline areaOfSpecialty ',
+        },
+      },
+      {
+        path: 'feed',
+        model: 'Feed',
+        populate: {
+          path: 'feed',
+          model: 'Feed',
+          populate: {
+            path: 'author',
+            model: 'User',
+            select:
+              'firstName lastName username email thumbNail discipline areaOfSpecialty ',
+          },
+        },
+      },
+    ]);
 };
 
 const getFeeds = async () => {
@@ -185,6 +233,54 @@ const getFeed = async (feedId) => {
   }
 };
 
+const pinFeed = async (feedId) => {
+  try {
+    return await Feed.findByIdAndUpdate(
+      feedId,
+      { isPinned: true },
+      { new: true }
+    );
+  } catch (error) {
+    throw new ApiError(400, 'Unable to pin feed...');
+  }
+};
+
+const unPinFeed = async (feedId) => {
+  try {
+    return await Feed.findByIdAndUpdate(
+      feedId,
+      { isPinned: false },
+      { new: true }
+    );
+  } catch (error) {
+    throw new ApiError(400, 'Unable to unpin feed...');
+  }
+};
+
+const hideFeed = async (userId, feedId) => {
+  try {
+    return await customizedFeed.findOneAndUpdate(
+      { userId: userId, feed: feedId },
+      { isHidden: true },
+      { new: true }
+    );
+  } catch (error) {
+    throw new ApiError(400, 'Unable to hide feed...');
+  }
+};
+
+const unHideFeed = async (userId, feedId) => {
+  try {
+    return await customizedFeed.findOneAndUpdate(
+      { userId: userId, feed: feedId },
+      { isHidden: false },
+      { new: true }
+    );
+  } catch (error) {
+    throw new ApiError(400, 'Unable to unhide feed...');
+  }
+};
+
 const editFeed = async (feedId, feedData) => {
   try {
     return await Feed.findByIdAndUpdate(feedId, feedData, { new: true });
@@ -301,8 +397,13 @@ module.exports = {
   likeFeed,
   editRepost,
   likeFeedRepost,
+  hideFeed,
+  unHideFeed,
   unlikeFeed,
+  pinFeed,
+  unPinFeed,
   deleteFeed,
+  getUserFeeds,
   deleteAllFeeds,
   repostFeed,
 };

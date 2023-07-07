@@ -46,6 +46,11 @@ const feedSchema = new Schema(
       trim: true,
       default: 0,
     },
+    isPinned: {
+      type: Boolean,
+      default: false,
+      trim: true,
+    },
     isPublic: {
       type: Boolean,
       default: true,

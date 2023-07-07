@@ -57,6 +57,32 @@ const unlikeFeed = catchAsync(async (req, res) => {
   res.status(201).json({ status: true, message: 'You unliked this feed...' });
 });
 
+const pinFeed = catchAsync(async (req, res) => {
+  if (req.params._feedPin === 'pin') {
+    await feedService.pinFeed(req.query.feedId);
+    return res
+      .status(200)
+      .json({ status: true, message: 'This feed was just pinned' });
+  }
+  await feedService.unPinFeed(req.query.feedId);
+  res
+    .status(200)
+    .json({ status: true, message: 'This feed was just unpinned' });
+});
+
+const hideFeed = catchAsync(async (req, res) => {
+  if (req.params.hide === 'hide') {
+    await feedService.hideFeed(req.user._id, req.params._feedId);
+    return res
+      .status(200)
+      .json({ status: true, message: 'This feed was just hidden' });
+  }
+  await feedService.unHideFeed(req.user._id, req.params._feedId);
+  res
+    .status(200)
+    .json({ status: true, message: 'This feed has just been unhidden' });
+});
+
 const editFeed = catchAsync(async (req, res) => {
   const data = await feedService.editFeed(req.query.feedId, req.body);
   res
@@ -106,6 +132,14 @@ const likeFeedRepost = catchAsync(async (req, res) => {
     .json({ status: true, message: 'You liked this feed repost...' });
 });
 
+const getUserFeeds = catchAsync(async (req, res) => {
+  const data = await feedService.getUserFeeds(req.user._id);
+
+  res
+    .status(201)
+    .json({ status: 'success', message: 'All user feeds retrieved...', data });
+});
+
 const deleteAllFeeds = catchAsync(async (req, res) => {
   await feedService.deleteAllFeeds();
 
@@ -118,7 +152,10 @@ module.exports = {
   editRepost,
   getFeed,
   getFeeds,
+  getUserFeeds,
+  hideFeed,
   likeFeed,
+  pinFeed,
   likeFeedRepost,
   unlikeFeed,
   repostFeed,

@@ -6,8 +6,11 @@ const {
   unlikeFeed,
   getFeed,
   editFeed,
+  hideFeed,
+  pinFeed,
   repostFeed,
   likeFeedRepost,
+  getUserFeeds,
   deleteFeed,
   deleteAllFeeds,
 } = require('./feed.controllers');
@@ -21,11 +24,17 @@ router.put('/like', likeFeed);
 
 router.put('/unlike', unlikeFeed);
 
-router.get('/all', getFeeds);
+router.get('/user/all', getUserFeeds);
+
+// router.get('/all', getFeeds);
 
 router.get('/:_id', getFeed);
 
+router.patch('/:_feedPin', feedAuthorization, pinFeed);
+
 router.put('/edit', feedAuthorization, editFeed);
+
+router.patch('/:hide/:_feedId', hideFeed);
 
 router.delete('/delete/:_id', deleteFeed);
 
