@@ -25,11 +25,10 @@ const addCoverBanner = catchAsync(async (req, res) => {
   let userInfo = req.body;
   const avatar = await cloudinary.uploader.upload(req.file.path);
   userInfo.coverBanner = avatar.secure_url;
-  const data = await profileService.addCoverBanner(req.user._id, userInfo);
+  await profileService.addCoverBanner(req.user._id, userInfo);
   res.status(201).json({
     status: 'success',
     message: 'Profile Update Successful!',
-    data,
   });
 });
 

@@ -22,7 +22,6 @@ const createProfile = async (userId, data) => {
 
 const addCoverBanner = async (userId, data) => {
   try {
-    console.log(data, userId);
     return await User.findByIdAndUpdate(
       userId,
       { coverBanner: data.coverBanner },
