@@ -17,7 +17,7 @@ router.get('/event/:_eventId', getEvent);
 
 router.put('/setup', upload.single('photo'), editProfile);
 
-router.put('/cover/banner', upload.single('banner-cover'), addCoverBanner);
+router.put('/cover/banner', upload.single('bannerCover'), addCoverBanner);
 
 router.patch('/event/edit/:_eventId', upload.single('eventPhoto'), editEvent);
 
