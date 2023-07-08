@@ -22,7 +22,12 @@ const createProfile = async (userId, data) => {
 
 const addCoverBanner = async (userId, data) => {
   try {
-    return await User.findByIdAndUpdate(userId, data, { new: true });
+    console.log(data, userId);
+    return await User.findByIdAndUpdate(
+      userId,
+      { coverBanner: data.coverBanner },
+      { new: true }
+    );
   } catch (error) {
     throw new ApiError(400, 'Unable to update profile...');
   }

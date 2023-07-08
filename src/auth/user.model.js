@@ -15,7 +15,6 @@ const userSchema = new Schema(
     },
     email: {
       type: String,
-      required: true,
       trim: true,
     },
     gender: {
@@ -49,6 +48,7 @@ const userSchema = new Schema(
     coverBanner: {
       type: String,
       trim: true,
+      default: null,
     },
     password: {
       type: String,
