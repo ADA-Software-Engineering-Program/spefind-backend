@@ -351,6 +351,8 @@ const deleteFeed = async (feedId) => {
 
     await Reply.deleteMany({ feed: feedId });
 
+    await customizedFeed.deleteMany({ feed: feedId });
+
     return await Feed.findByIdAndDelete(feedId);
   } catch (error) {
     throw new ApiError(400, 'Unable to delete feed...');
