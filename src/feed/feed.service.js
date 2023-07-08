@@ -8,7 +8,7 @@ const Reply = require('../comments/reply.model');
 const moment = require('moment');
 const CommentLike = require('../comments/comment.like');
 const ReplyLike = require('../comments/reply.like');
-const customizedFeed = require('./customized.feed');
+const { customizedFeed, userBlock } = require('./customized.feed');
 
 const createFeed = async (userId, data) => {
   try {
@@ -45,22 +45,29 @@ const createFeed = async (userId, data) => {
 
 const getUserFeeds = async (userId) => {
   const getAllFeeds = await Feed.find();
-  let feedId = getAllFeeds.map((feed) => feed._id);
+  let feedInfo = getAllFeeds.map((feed) => {
+    return { feedId: feed._id, feedAuthor: feed.author[0] };
+  });
 
-  for (let i = 0; i < feedId.length; i++) {
+  for (let i = 0; i < feedInfo.length; i++) {
     const checkFeed = await customizedFeed.find({
       userId: userId,
-      feed: feedId[i],
+      feed: feedInfo[i].feedId,
     });
+    //console.log(checkFeed);
     if (checkFeed.length === 0) {
       const newie = await customizedFeed.create({
         userId: userId,
-        feed: feedId[i],
+        feed: feedInfo[i].feedId,
+        feedAuthor: feedInfo[i].feedAuthor,
       });
     }
   }
   return await customizedFeed
-    .find({ userId: userId }, { userId: 0 })
+    .find(
+      { userId: userId, isHidden: false, isBlocked: false },
+      { userId: 0, feedAuthor: 0, isBlocked: 0 }
+    )
     .populate('feed')
     .populate([
       {
@@ -88,6 +95,53 @@ const getUserFeeds = async (userId) => {
         },
       },
     ]);
+};
+
+const unblockUser = async (userId, userToUnblock) => {
+  const checkBlockedContact = await userBlock.find({
+    blockedContacts: { $in: userToUnblock },
+    userId: { $in: userId },
+  });
+  if (checkBlockedContact.length === 0) {
+    throw new ApiError(400, 'Oops! This user never got blocked...');
+  }
+  await userBlock.findOneAndUpdate(
+    { userId: userId },
+    { $pull: { blockedContacts: userToUnblock } },
+    { new: true }
+  );
+  await customizedFeed.updateMany(
+    { userId: userId, feedAuthor: userToUnblock },
+    { $set: { isBlocked: false } }
+  );
+};
+
+const blockUser = async (userId, userToBlock) => {
+  const checkUserBlockList = await userBlock.findOne({ userId: userId });
+  if (!checkUserBlockList) {
+    const talk = await userBlock.create({
+      userId: userId,
+      blockedContacts: [userToBlock],
+    });
+  }
+  const checkBlockedContact = await userBlock.find({
+    blockedContacts: { $in: userToBlock },
+    userId: { $in: userId },
+  });
+
+  if (checkBlockedContact.length > 0) {
+    throw new ApiError(400, 'Oops! You already blocked this user...');
+  }
+
+  await userBlock.findOneAndUpdate(
+    { userId: userId },
+    { $push: { blockedContacts: [userToBlock] } },
+    { new: true }
+  );
+  await customizedFeed.updateMany(
+    { userId: userId, feedAuthor: userToBlock },
+    { $set: { isBlocked: true } }
+  );
 };
 
 const getFeeds = async () => {
@@ -375,6 +429,8 @@ const likeFeedRepost = async (userId, feedId) => {
 
 const deleteAllFeeds = async () => {
   try {
+    await customizedFeed.deleteMany();
+
     await CommentLike.deleteMany();
 
     await ReplyLike.deleteMany();
@@ -390,6 +446,8 @@ const deleteAllFeeds = async () => {
 };
 
 module.exports = {
+  blockUser,
+  unblockUser,
   createFeed,
   editFeed,
   getFeed,

@@ -140,6 +140,24 @@ const getUserFeeds = catchAsync(async (req, res) => {
     .json({ status: 'success', message: 'All user feeds retrieved...', data });
 });
 
+const blockUser = catchAsync(async (req, res) => {
+  if (req.params.block === 'block') {
+    await feedService.blockUser(req.user._id, req.query.userId);
+    return res.status(200).json({
+      status: true,
+      message: `You blocked the user ${req.query.userId}`,
+    });
+  } else if (req.params.block === 'unblock') {
+    await feedService.unblockUser(req.user._id, req.query.userId);
+    res.status(200).json({
+      status: true,
+      message: `You unblocked the user ${req.query.userId}`,
+    });
+  } else {
+    throw new ApiError(400, 'Do indicate the parameters appropriately...');
+  }
+});
+
 const deleteAllFeeds = catchAsync(async (req, res) => {
   await feedService.deleteAllFeeds();
 
@@ -147,6 +165,7 @@ const deleteAllFeeds = catchAsync(async (req, res) => {
 });
 
 module.exports = {
+  blockUser,
   createFeed,
   editFeed,
   editRepost,

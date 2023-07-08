@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const {
+  blockUser,
   createFeed,
   getFeeds,
   likeFeed,
@@ -37,6 +38,8 @@ router.put('/edit', feedAuthorization, editFeed);
 router.patch('/:hide/:_feedId', hideFeed);
 
 router.delete('/delete/:_id', deleteFeed);
+
+router.put('/:block/user', blockUser);
 
 router.post('/:_repostType', repostFeed);
 
