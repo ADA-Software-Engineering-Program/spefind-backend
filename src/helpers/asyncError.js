@@ -1,11 +1,11 @@
 const logger = require('./logger');
-const ApiError = require('./error').default;
+const ApiErrors = require('./errors');
 const errorConverter = (err, req, res, next) => {
   let error = err;
-  if (!(error instanceof ApiError)) {
+  if (!(error instanceof ApiErrors)) {
     const statusCode = error.statusCode || 500;
     const message = error.message || 'An error occurred';
-    error = new ApiError(statusCode, message, false, err.stack);
+    error = new ApiErrors(statusCode, message, false, err.stack);
   }
   next(error);
 };
