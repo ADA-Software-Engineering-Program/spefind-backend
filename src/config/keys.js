@@ -13,4 +13,5 @@ module.exports = {
   AGORA_CERTIFICATE: process.env.AGORA_CERTIFICATE,
   AGORA_CUSTOMER_KEY: process.env.AGORA_CUSTOMER_KEY,
   AGORA_CUSTOMER_SECRET: process.env.AGORA_CUSTOMER_SECRET,
+  NODE_ENV: process.env.NODE_ENV,
 };
