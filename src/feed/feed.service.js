@@ -54,13 +54,24 @@ const getUserFeeds = async (userId) => {
       userId: userId,
       feed: feedInfo[i].feedId,
     });
-    //console.log(checkFeed);
     if (checkFeed.length === 0) {
-      const newie = await customizedFeed.create({
-        userId: userId,
-        feed: feedInfo[i].feedId,
-        feedAuthor: feedInfo[i].feedAuthor,
-      });
+      const { blockedContacts } = await userBlock.findOne({ userId: userId });
+
+      for (let i = 0; i < blockedContacts.length; i++) {
+        if (blockedContacts[i] === feedAuthor[i].feedId) {
+          await customizedFeed.create({
+            userId: userId,
+            feed: feedInfo[i].feedId,
+            feedAuthor: feedInfo[i].feedAuthor,
+            isBlocked: true,
+          });
+        }
+        await customizedFeed.create({
+          userId: userId,
+          feed: feedInfo[i].feedId,
+          feedAuthor: feedInfo[i].feedAuthor,
+        });
+      }
     }
   }
   return await customizedFeed
