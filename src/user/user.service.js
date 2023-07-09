@@ -13,7 +13,7 @@ const follow = async (follower, followed) => {
 
   for (let i = 0; i < following.length; i++) {
     if (followed == following[i]) {
-      throw new ApiError(400, 'Ooops, You already follower this user!');
+      throw new ApiError(400, 'Ooops, You already follow this user!');
     }
   }
   const data = await Following.findOneAndUpdate(
