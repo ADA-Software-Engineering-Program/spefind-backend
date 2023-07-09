@@ -109,22 +109,26 @@ const getUserFeeds = async (userId) => {
 };
 
 const unblockUser = async (userId, userToUnblock) => {
-  const checkBlockedContact = await userBlock.find({
-    blockedContacts: { $in: userToUnblock },
-    userId: { $in: userId },
-  });
-  if (checkBlockedContact.length === 0) {
-    throw new ApiError(400, 'Oops! This user never got blocked...');
+  try {
+    const checkBlockedContact = await userBlock.find({
+      blockedContacts: { $in: userToUnblock },
+      userId: { $in: userId },
+    });
+    if (checkBlockedContact.length === 0) {
+      throw new ApiError(400, 'Oops! This user never got blocked...');
+    }
+    await userBlock.findOneAndUpdate(
+      { userId: userId },
+      { $pull: { blockedContacts: userToUnblock } },
+      { new: true }
+    );
+    await customizedFeed.updateMany(
+      { userId: userId, feedAuthor: userToUnblock },
+      { $set: { isBlocked: false } }
+    );
+  } catch (error) {
+    throw new ApiError(400, 'Oops! This user probably never got blocked...');
   }
-  await userBlock.findOneAndUpdate(
-    { userId: userId },
-    { $pull: { blockedContacts: userToUnblock } },
-    { new: true }
-  );
-  await customizedFeed.updateMany(
-    { userId: userId, feedAuthor: userToUnblock },
-    { $set: { isBlocked: false } }
-  );
 };
 
 const blockUser = async (userId, userToBlock) => {
