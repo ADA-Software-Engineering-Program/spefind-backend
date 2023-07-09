@@ -1,5 +1,5 @@
 const Feed = require('./feed.model');
-const ApiError = require('../helpers/errors');
+const ApiErrors = require('../helpers/errors');
 const Following = require('../user/following.model');
 const Comment = require('../comments/comment.model');
 const User = require('../auth/user.model');
@@ -39,7 +39,7 @@ const createFeed = async (userId, data) => {
 
     return rawData;
   } catch (error) {
-    throw new ApiError(400, 'Unable to create feed...');
+    throw new ApiErrors(400, 'Unable to create feed...');
   }
 };
 
@@ -115,7 +115,7 @@ const unblockUser = async (userId, userToUnblock) => {
       userId: { $in: userId },
     });
     if (checkBlockedContact.length === 0) {
-      throw new ApiError(400, 'Oops! This user never got blocked...');
+      throw new ApiErrors(400, 'Oops! This user never got blocked...');
     }
     await userBlock.findOneAndUpdate(
       { userId: userId },
@@ -127,7 +127,7 @@ const unblockUser = async (userId, userToUnblock) => {
       { $set: { isBlocked: false } }
     );
   } catch (error) {
-    throw new ApiError(400, 'Oops! This user probably never got blocked...');
+    throw new ApiErrors(400, 'Oops! This user probably never got blocked...');
   }
 };
 
@@ -145,7 +145,7 @@ const blockUser = async (userId, userToBlock) => {
   });
 
   if (checkBlockedContact.length > 0) {
-    throw new ApiError(400, 'Oops! You already blocked this user...');
+    throw new ApiErrors(400, 'Oops! You already blocked this user...');
   }
 
   await userBlock.findOneAndUpdate(
@@ -212,7 +212,7 @@ const likeFeed = async (userId, feedId) => {
 
   for (let i = 0; i <= likedBy.length; i++) {
     if (userId == likedBy[i]) {
-      throw new ApiError(400, 'Oops! You already liked this feed...');
+      throw new ApiErrorss(400, 'Oops! You already liked this feed...');
     }
   }
   await Feed.findByIdAndUpdate(
@@ -253,7 +253,7 @@ const unlikeFeed = async (userId, feedId) => {
       { new: true }
     );
   } catch (error) {
-    throw new ApiError(400, 'Unable to unlike this feed...');
+    throw new ApiErrors(400, 'Unable to unlike this feed...');
   }
 };
 
@@ -298,7 +298,7 @@ const getFeed = async (feedId) => {
         },
       ]);
   } catch (error) {
-    throw new ApiError(400, 'Unable to retrieve feed...');
+    throw new ApiErrors(400, 'Unable to retrieve feed...');
   }
 };
 
@@ -310,7 +310,7 @@ const pinFeed = async (feedId) => {
       { new: true }
     );
   } catch (error) {
-    throw new ApiError(400, 'Unable to pin feed...');
+    throw new ApiErrors(400, 'Unable to pin feed...');
   }
 };
 
@@ -322,7 +322,7 @@ const unPinFeed = async (feedId) => {
       { new: true }
     );
   } catch (error) {
-    throw new ApiError(400, 'Unable to unpin feed...');
+    throw new ApiErrors(400, 'Unable to unpin feed...');
   }
 };
 
@@ -334,7 +334,7 @@ const hideFeed = async (userId, feedId) => {
       { new: true }
     );
   } catch (error) {
-    throw new ApiError(400, 'Unable to hide feed...');
+    throw new ApiErrors(400, 'Unable to hide feed...');
   }
 };
 
@@ -346,7 +346,7 @@ const unHideFeed = async (userId, feedId) => {
       { new: true }
     );
   } catch (error) {
-    throw new ApiError(400, 'Unable to unhide feed...');
+    throw new ApiErrors(400, 'Unable to unhide feed...');
   }
 };
 
@@ -354,7 +354,7 @@ const editFeed = async (feedId, feedData) => {
   try {
     return await Feed.findByIdAndUpdate(feedId, feedData, { new: true });
   } catch (error) {
-    throw new ApiError(400, 'Unable to edit feed...');
+    throw new ApiErrors(400, 'Unable to edit feed...');
   }
 };
 
@@ -370,7 +370,7 @@ const deleteFeed = async (feedId) => {
 
     return await Feed.findByIdAndDelete(feedId);
   } catch (error) {
-    throw new ApiError(400, 'Unable to delete feed...');
+    throw new ApiErrors(400, 'Unable to delete feed...');
   }
 };
 
@@ -419,7 +419,7 @@ const repostFeed = async (userId, feedType, feedId, commentary) => {
         },
       ]);
   } catch (error) {
-    throw new ApiError(400, 'Unable to repost feed...');
+    throw new ApiErrors(400, 'Unable to repost feed...');
   }
 };
 
@@ -440,7 +440,7 @@ const likeFeedRepost = async (userId, feedId) => {
       { new: true }
     );
   } catch (error) {
-    throw new ApiError(400, 'Unable to like reposted feed...');
+    throw new ApiErrors(400, 'Unable to like reposted feed...');
   }
 };
 
@@ -458,7 +458,7 @@ const deleteAllFeeds = async () => {
 
     return await Feed.deleteMany();
   } catch (error) {
-    throw new ApiError(400, 'Unable to delete all fields...');
+    throw new ApiErrors(400, 'Unable to delete all fields...');
   }
 };
 
