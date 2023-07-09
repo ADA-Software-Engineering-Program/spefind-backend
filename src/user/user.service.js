@@ -4,6 +4,11 @@ const User = require('../auth/user.model');
 const ApiError = require('../helpers/errors');
 
 const follow = async (follower, followed) => {
+  // try {
+
+  // }catch(error) {
+  //   throw new ApiError(400, 'Unable to follow user')
+  // }
   const { following } = await Following.findOne({ userId: follower });
 
   for (let i = 0; i < following.length; i++) {
@@ -32,13 +37,14 @@ const getUserById = async (id) => {
 };
 
 const unfollow = async (follower, followed) => {
-  const { following } = await Following.findOne({ userId: follower });
-  for (let i = 0; i < following.length; i++) {
-    if (followed != following[i]) {
-      throw new ApiError(400, 'Ooops, You already follow this user!');
-    }
-  }
   try {
+    const { following } = await Following.findOne({ userId: follower });
+    for (let i = 0; i < following.length; i++) {
+      if (followed != following[i]) {
+        throw new ApiError(400, 'Ooops, You already follow this user!');
+      }
+    }
+
     const data = await Following.findOneAndUpdate(
       { userId: follower },
       { $pull: { following: followed } },
