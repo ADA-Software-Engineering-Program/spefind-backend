@@ -1,7 +1,7 @@
 const Follower = require('./follow.model');
 const Following = require('./following.model');
 const User = require('../auth/user.model');
-const ApiError = require('../helpers/error');
+const ApiError = require('../helpers/errors');
 
 const follow = async (follower, followed) => {
   const { following } = await Following.findOne({ userId: follower });
