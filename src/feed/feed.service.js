@@ -103,6 +103,10 @@ const getUserFeeds = async (userId) => {
             select:
               'firstName lastName username email thumbNail discipline areaOfSpecialty ',
           },
+          populate: {
+            path: 'feed',
+            model: 'Feed',
+          },
         },
       },
     ]);
