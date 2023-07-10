@@ -88,7 +88,7 @@ const getUserFeeds = async (userId) => {
           path: 'author',
           model: 'User',
           select:
-            'firstName lastName email username thumbNail discipline areaOfSpecialty ',
+            'firstName lastName email username thumbNail discipline areaOfSpecialty',
         },
       },
       {
@@ -101,11 +101,25 @@ const getUserFeeds = async (userId) => {
             path: 'author',
             model: 'User',
             select:
-              'firstName lastName username email thumbNail discipline areaOfSpecialty ',
+              'firstName lastName email username thumbNail discipline areaOfSpecialty',
           },
+        },
+      },
+      {
+        path: 'feed',
+        model: 'Feed',
+        populate: {
+          path: 'feed',
+          model: 'Feed',
           populate: {
             path: 'feed',
             model: 'Feed',
+            populate: {
+              path: 'author',
+              model: 'User',
+              select:
+                'firstName lastName email username thumbNail discipline areaOfSpecialty',
+            },
           },
         },
       },
