@@ -1,5 +1,5 @@
 const Comment = require('./comment.model');
-const ApiError = require('../helpers/errors');
+const ApiErrors = require('../helpers/errors');
 const Feed = require('../feed/feed.model');
 const Reply = require('./reply.model');
 const CommentLike = require('./comment.like');
@@ -28,14 +28,14 @@ const createComment = async (userId, data, feedId) => {
       { new: true }
     );
   } catch (error) {
-    throw new ApiError(400, 'Unable to create comment...');
+    throw new ApiErrors(400, 'Unable to create comment...');
   }
 };
 
 const getComments = async (userId, feedId) => {
   const checkComments = await Comment.find({ feed: feedId });
   if (checkComments.length === 0) {
-    throw new ApiError(400, 'There are no comments for this feed yet...');
+    throw new ApiErrors(400, 'There are no comments for this feed yet...');
   }
 
   const comments = await Comment.find({ feed: feedId });
@@ -143,7 +143,7 @@ const getReplies = async (userId, commentId) => {
     const checkReplies = await Reply.find({ comment: commentId });
     // console.log(checkReplies);
     if (checkReplies.length === 0) {
-      throw new ApiError(400, 'There are no comments for this feed yet...');
+      throw new ApiErrors(400, 'There are no comments for this feed yet...');
     }
 
     const replies = await Reply.find({ comment: commentId });
@@ -196,14 +196,14 @@ const getReplies = async (userId, commentId) => {
       ]);
     return allReplyLikes;
   } catch (error) {
-    throw new ApiError(400, 'Unable to get replies...');
+    throw new ApiErrors(400, 'Unable to get replies...');
   }
 };
 
 const likeComment = async (userId, commentId) => {
   const checkComment = await Comment.findById(commentId);
   if (!checkComment) {
-    throw new ApiError(400, ' Oops! This comment no longer exists!');
+    throw new ApiErrors(400, ' Oops! This comment no longer exists!');
   }
 
   await CommentLike.findOneAndUpdate(
@@ -228,7 +228,7 @@ const unlikeComment = async (userId, commentId) => {
   try {
     const checkComment = await Comment.findById(commentId);
     if (!checkComment) {
-      throw new ApiError(400, 'Oops! This comment no longer exists!');
+      throw new ApiErrors(400, 'Oops! This comment no longer exists!');
     }
 
     await CommentLike.findOneAndUpdate(
@@ -245,7 +245,7 @@ const unlikeComment = async (userId, commentId) => {
       { new: true }
     );
   } catch (error) {
-    throw new ApiError(400, 'Unable to like comment...');
+    throw new ApiErrors(400, 'Unable to like comment...');
   }
 };
 
@@ -274,7 +274,7 @@ const replyComment = async (userId, commentId, reply) => {
       { new: true }
     );
   } catch (error) {
-    throw new ApiError(400, 'Unable to reply comment...');
+    throw new ApiErrors(400, 'Unable to reply comment...');
   }
 };
 
@@ -294,7 +294,7 @@ const likeReply = async (userId, replyId) => {
       { new: true }
     );
   } catch (error) {
-    throw new ApiError(400, 'Unable to like reply');
+    throw new ApiErrors(400, 'Unable to like reply');
   }
 };
 
@@ -315,7 +315,7 @@ const unlikeReply = async (userId, replyId) => {
       { new: true }
     );
   } catch (error) {
-    throw new ApiError(400, 'Unable to like reply...');
+    throw new ApiErrors(400, 'Unable to like reply...');
   }
 };
 
@@ -343,7 +343,7 @@ const deleteReply = async (replyId) => {
   try {
     return await Reply.findByIdAndDelete(replyId);
   } catch (error) {
-    throw new ApiError(400, 'Unable to delete reply...');
+    throw new ApiErrors(400, 'Unable to delete reply...');
   }
 };
 
