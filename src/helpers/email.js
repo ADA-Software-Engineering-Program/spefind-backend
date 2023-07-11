@@ -132,4 +132,46 @@ const resendOTPMail = async (userMail, userPin) => {
   });
 };
 
-module.exports = { sendOTP, followNotification, resendOTPMail };
+const editProfileMail = async (userMail, emailContent, subject_title) => {
+  const email_sender = 'info@spefind.com';
+  const subject_matter = `${subject_title} Reset`;
+  const email = {
+    body: {
+      greeting: `Heyy There`,
+      intro: [``],
+
+      action: {
+        instructions: emailContent,
+        button: {
+          color: '', // Optional action button color
+          text: '',
+          link: '',
+        },
+      },
+      outro: '',
+    },
+  };
+  const msg = {
+    // Change to your recipient
+    from: email_sender,
+    from_name: 'Corddit Support',
+    to: userMail,
+    subject: subject_matter,
+    body_text: mailGenerator.generatePlaintext(email),
+    // html: mailGenerator.generate(email),
+  };
+  client.mailer.send(msg, function(err, result) {
+    if (err) {
+      return console.error(err);
+    }
+
+    console.log(result);
+  });
+};
+
+module.exports = {
+  sendOTP,
+  editProfileMail,
+  followNotification,
+  resendOTPMail,
+};

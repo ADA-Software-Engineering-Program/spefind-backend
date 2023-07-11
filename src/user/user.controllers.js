@@ -1,5 +1,6 @@
 const userService = require('./user.service');
 const catchAsync = require('express-async-handler');
+const { editProfileMail } = require('../helpers/email');
 
 const follow = catchAsync(async (req, res) => {
   await userService.follow(req.user._id, req.query.userId);
@@ -15,6 +16,23 @@ const unfollow = catchAsync(async (req, res) => {
   res.status(201).json({
     status: 'success',
     message: `You have successfully unfollowed the user ${req.query.userId}`,
+  });
+});
+
+const requestCredentialReset = catchAsync(async (req, res) => {
+  let passcode = await userService.requestCredentialResetCode(req.user._id);
+  let firstLetter = req.params.credential[0].toUpperCase();
+  let otherLetters = req.params.credential.slice(1);
+  let credentialTransform = `${firstLetter}${otherLetters}`;
+  editProfileMail(
+    req.user.email,
+    `You're receiving this mail because you requested to change your ${req.params.credential} on the Corddit app. Your six-digit pin is ${passcode}. Kindly ignore if you did not request to make this change.`,
+    credentialTransform
+  );
+
+  res.status(200).json({
+    status: true,
+    message: `We sent a verification code to ${req.user.email}... Do confirm!`,
   });
 });
 
@@ -54,6 +72,7 @@ module.exports = {
   follow,
   getAllUsers,
   getCurrentUser,
+  requestCredentialReset,
   getFollowers,
   unfollow,
   getFollowers,

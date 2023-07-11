@@ -28,6 +28,12 @@ const follow = async (follower, followed) => {
   );
 };
 
+const requestCredentialResetCode = async (userId) => {
+  const code = Math.floor(Math.random() * (999999 - 100000) + 100000);
+  await User.findByIdAndUpdate(userId, { userPin: code }, { new: true });
+  return code;
+};
+
 const getUserById = async (id) => {
   try {
     return await User.findById(id).populate('discipline');
@@ -71,4 +77,11 @@ const allFollowings = async (userId) => {
   return [followers, followings];
 };
 
-module.exports = { follow, getUsers, getUserById, unfollow, allFollowings };
+module.exports = {
+  follow,
+  getUsers,
+  requestCredentialResetCode,
+  getUserById,
+  unfollow,
+  allFollowings,
+};
