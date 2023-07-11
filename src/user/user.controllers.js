@@ -36,6 +36,11 @@ const requestCredentialReset = catchAsync(async (req, res) => {
   });
 });
 
+const verifyCode = catchAsync(async (req, res) => {
+  await userService(req.user._id, req.body.pin);
+  res.status(201).json({ status: true, message: 'Pin correctly inputted...' });
+});
+
 const getCurrentUser = catchAsync(async (req, res) => {
   let user;
 
@@ -76,4 +81,5 @@ module.exports = {
   getFollowers,
   unfollow,
   getFollowers,
+  verifyCode,
 };

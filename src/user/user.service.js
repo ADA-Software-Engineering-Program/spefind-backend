@@ -34,6 +34,14 @@ const requestCredentialResetCode = async (userId) => {
   return code;
 };
 
+const pinVerification = async (userId, inputtedPin) => {
+  const { userPin } = await User.findById(userId);
+  if (userPin !== inputtedPin) {
+    throw new ApiError(400, 'Invalid pin inputted...');
+  }
+  return;
+};
+
 const getUserById = async (id) => {
   try {
     return await User.findById(id).populate('discipline');
@@ -84,4 +92,5 @@ module.exports = {
   getUserById,
   unfollow,
   allFollowings,
+  pinVerification,
 };
