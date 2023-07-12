@@ -1,11 +1,11 @@
 const logger = require('./logger');
-const ApiErrors = require('./errors');
+const ApiError = require('./errors');
 const errorConverter = (err, req, res, next) => {
   let error = err;
-  if (!(error instanceof ApiErrors)) {
+  if (!(error instanceof ApiError)) {
     const statusCode = error.statusCode || 500;
     const message = error.message || 'An error occurred';
-    error = new ApiErrors(statusCode, message, false, err.stack);
+    error = new ApiError(statusCode, message, false, err.stack);
   }
   next(error);
 };
@@ -23,7 +23,7 @@ const errorHandler = (err, req, res, next) => {
   const response = {
     code: statusCode,
     message,
-    // ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   };
 
   if (process.env.NODE_ENV === 'development') {

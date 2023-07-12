@@ -7,6 +7,7 @@ const {
   requestCredentialReset,
   updateCredential,
   verifyCode,
+  updateProfile,
   getFollowers,
 } = require('./user.controllers');
 
@@ -19,6 +20,8 @@ router.put('/unfollow', unfollow);
 router.put('/profile/:credential/update', updateCredential);
 
 router.patch('/:credential/reset', requestCredentialReset);
+
+router.put('/info/update', updateProfile);
 
 router.post('/verify/code', verifyCode);
 

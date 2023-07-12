@@ -100,6 +100,22 @@ const updatePassword = async (userId, newPassword) => {
   }
 };
 
+const updateProfile = async (userId, data) => {
+  if (data.username) {
+    const checkUsername = await User.find({ username: data.username });
+    if (checkUsername.length > 0) {
+      throw new ApiError(400, 'Oops! This username has been taken...');
+    } else {
+      await User.findByIdAndUpdate(
+        userId,
+        { username: data.username },
+        { new: true }
+      );
+    }
+  }
+  await User.findByIdAndUpdate(userId, data, { new: true });
+};
+
 const allFollowings = async (userId) => {
   const followers = await Follower.findOne({ userId: userId }).select(
     '-userId'
@@ -120,6 +136,7 @@ module.exports = {
   unfollow,
   updateEmail,
   updatePassword,
+  updateProfile,
   allFollowings,
   pinVerification,
 };

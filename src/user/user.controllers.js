@@ -51,12 +51,17 @@ const updateCredential = catchAsync(async (req, res) => {
   } else if (req.params.credential === 'password') {
     await userService.updatePassword(req.user._id, req.body.password);
   }
+  res.status(202).json({
+    status: 'success',
+    message: `${req.params.credential} info now updated...`,
+  });
+});
+
+const updateProfile = catchAsync(async (req, res) => {
+  let data = await userService.updateProfile(req.user._id, req.body);
   res
-    .status(202)
-    .json({
-      status: 'success',
-      message: `${req.params.credential} info now updated...`,
-    });
+    .status(200)
+    .json({ status: true, message: 'Profile update successful...' });
 });
 
 const getCurrentUser = catchAsync(async (req, res) => {
@@ -98,6 +103,7 @@ module.exports = {
   requestCredentialReset,
   updateCredential,
   getFollowers,
+  updateProfile,
   unfollow,
   getFollowers,
   verifyCode,
