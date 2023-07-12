@@ -2,6 +2,7 @@ const Follower = require('./follow.model');
 const Following = require('./following.model');
 const User = require('../auth/user.model');
 const ApiError = require('../helpers/errors');
+const bcrypt = require('bcryptjs');
 
 const follow = async (follower, followed) => {
   // try {
@@ -36,6 +37,7 @@ const requestCredentialResetCode = async (userId) => {
 
 const pinVerification = async (userId, inputtedPin) => {
   const { userPin } = await User.findById(userId);
+  console.log(userPin);
   if (userPin !== inputtedPin) {
     throw new ApiError(400, 'Invalid pin inputted...');
   }
@@ -70,7 +72,32 @@ const unfollow = async (follower, followed) => {
 };
 
 const getUsers = async () => {
-  return await User.find({ isProfileCreationComplete: true });
+  try {
+    return await User.find({ isProfileCreationComplete: true });
+  } catch (error) {
+    throw new ApiError(400, 'Unable to retrieve all users...');
+  }
+};
+
+const updateEmail = async (userId, newEmail) => {
+  try {
+    await User.findByIdAndUpdate(userId, { email: newEmail }, { new: true });
+  } catch (error) {
+    throw new ApiError(400, 'Unable to update email');
+  }
+};
+
+const updatePassword = async (userId, newPassword) => {
+  let hashedPassword = await bcrypt.hash(newPassword, 10);
+  try {
+    await User.findByIdAndUpdate(
+      userId,
+      { password: hashedPassword },
+      { new: true }
+    );
+  } catch (error) {
+    throw new ApiError(400, 'Unable to update password');
+  }
 };
 
 const allFollowings = async (userId) => {
@@ -91,6 +118,8 @@ module.exports = {
   requestCredentialResetCode,
   getUserById,
   unfollow,
+  updateEmail,
+  updatePassword,
   allFollowings,
   pinVerification,
 };

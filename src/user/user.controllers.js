@@ -37,8 +37,26 @@ const requestCredentialReset = catchAsync(async (req, res) => {
 });
 
 const verifyCode = catchAsync(async (req, res) => {
-  await userService(req.user._id, req.body.pin);
-  res.status(201).json({ status: true, message: 'Pin correctly inputted...' });
+  await userService.pinVerification(req.user._id, req.body.userpin);
+  res.status(201).json({
+    status: true,
+    message:
+      'Pin correctly inputted... Do proceed onto update your email/password',
+  });
+});
+
+const updateCredential = catchAsync(async (req, res) => {
+  if (req.params.credential === 'email') {
+    await userService.updateEmail(req.user._id, req.body.email);
+  } else if (req.params.credential === 'password') {
+    await userService.updatePassword(req.user._id, req.body.password);
+  }
+  res
+    .status(202)
+    .json({
+      status: 'success',
+      message: `${req.params.credential} info now updated...`,
+    });
 });
 
 const getCurrentUser = catchAsync(async (req, res) => {
@@ -78,6 +96,7 @@ module.exports = {
   getAllUsers,
   getCurrentUser,
   requestCredentialReset,
+  updateCredential,
   getFollowers,
   unfollow,
   getFollowers,

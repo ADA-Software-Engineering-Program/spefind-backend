@@ -5,6 +5,7 @@ const {
   getAllUsers,
   getCurrentUser,
   requestCredentialReset,
+  updateCredential,
   verifyCode,
   getFollowers,
 } = require('./user.controllers');
@@ -14,6 +15,8 @@ const router = Router();
 router.put('/follow', follow);
 
 router.put('/unfollow', unfollow);
+
+router.put('/profile/:credential/update', updateCredential);
 
 router.patch('/:credential/reset', requestCredentialReset);
 
