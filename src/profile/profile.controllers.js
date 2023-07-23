@@ -55,6 +55,18 @@ const editEvent = catchAsync(async (req, res) => {
   res.status(201).json({ status: true, message: 'Event Item updated...' });
 });
 
+const updateUserInfo = catchAsync(async (req, res) => {
+  let requestBody = req.body;
+  if (req.file) {
+    const avatar = await cloudinary.uploader.upload(req.file.path);
+    requestBody.photo = avatar.secure_url;
+  }
+  await profileService.updateUser(req.user._id, requestBody);
+  res
+    .status(201)
+    .json({ status: true, message: 'User profile now updated...' });
+});
+
 const deleteEvent = catchAsync(async (req, res) => {
   await profileService.deleteEvent(req.user._id, req.query.eventId);
   res.status(200).json({ status: true, message: 'Event now deleted...' });
@@ -107,5 +119,6 @@ module.exports = {
   addCoverBanner,
   emailSubscribe,
   allSubscribers,
+  updateUserInfo,
   editEvent,
 };

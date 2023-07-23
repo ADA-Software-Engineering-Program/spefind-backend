@@ -40,6 +40,10 @@ const createEvent = async (userId, data) => {
   });
 };
 
+const updateUser = async (userId, data) => {
+  return await User.findByIdAndUpdate(userId, data, { new: true });
+};
+
 const getEvent = async (id) => {
   try {
     return await Event.findById(id).select('-userId');
@@ -105,4 +109,5 @@ module.exports = {
   emailSubscribe,
   addCoverBanner,
   getUserById,
+  updateUser,
 };
