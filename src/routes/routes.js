@@ -22,6 +22,8 @@ router.use(
   require('../profile/profile.routes')
 );
 
+router.use('/stat', require('../stats/stat.routes'));
+
 router.use('/field', require('../fields/field.routes'));
 
 router.post('/event/type/add', createEventType);
