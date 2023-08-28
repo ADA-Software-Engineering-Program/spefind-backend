@@ -61,11 +61,15 @@ const userSchema = new Schema(
       type: [String],
       trim: true,
     },
-    field: {
+    mainField: {
       type: String,
       trim: true,
     },
-    subField: {
+    subfield: {
+      type: String,
+      trim: true,
+    },
+    career: {
       type: String,
       trim: true,
     },
