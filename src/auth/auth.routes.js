@@ -1,6 +1,12 @@
 const { Router } = require('express');
 const passport = require('passport');
-const { register, login } = require('./auth.controllers');
+const {
+  register,
+  login,
+  inputEmail,
+  verifyEmail,
+  updatePassword,
+} = require('./auth.controllers');
 const { registerValidator, loginValidator } = require('../helpers/validate');
 const { checkEmail } = require('../helpers/checkEmail');
 const { editProfile } = require('./auth.controllers');
@@ -26,5 +32,11 @@ router.post(
 );
 
 router.post('/login', loginValidator, login);
+
+router.post('/password/forgot', inputEmail);
+
+router.put('/password/reset', updatePassword);
+
+router.get('/verify', verifyEmail);
 
 module.exports = router;

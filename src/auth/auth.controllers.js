@@ -82,12 +82,21 @@ const changePassword = catchAsync(async (req, res) => {
   });
 });
 
+const inputEmail = catchAsync(async (req, res) => {
+  await tokenService.inputMail(req.body.email);
+  res
+    .status(200)
+    .json({ status: true, message: 'Email just sent... Do verify!' });
+});
+
+const verifyEmail = catchAsync((req, res) => {
+  res
+    .status(200)
+    .json({ status: true, message: 'Proceed onto reset your password...' });
+});
+
 const updatePassword = catchAsync(async (req, res) => {
-  await authService.updatePassword(
-    req.user.email,
-    req.body.oldPassword,
-    req.body.newPassword
-  );
+  await tokenService.updatePassword(req.body.email, req.body.password);
   res
     .status(201)
     .json({ status: 'success', message: 'Password Successfully Updated...' });
@@ -99,4 +108,6 @@ module.exports = {
   registerAdmin,
   changePassword,
   updatePassword,
+  inputEmail,
+  verifyEmail,
 };

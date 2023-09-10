@@ -1,5 +1,6 @@
 const logger = require('./logger');
 const ApiError = require('./error');
+require('dotenv').config();
 const errorConverter = (err, req, res, next) => {
   let error = err;
   if (!(error instanceof ApiError)) {
