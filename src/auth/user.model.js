@@ -29,6 +29,10 @@ const userSchema = new Schema(
       type: String,
       trim: true,
     },
+    nameOfOrganization: {
+      type: String,
+      trim: true,
+    },
     phone: {
       type: String,
       trim: true,
