@@ -11,12 +11,15 @@ const { PORT } = require('./config/keys');
 const app = express();
 
 app.use(cors());
-app.use(json());
+
 app.use(urlencoded({ extended: true }));
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   next();
 });
+
+app.use(json());
+
 app.use(morgan('dev'));
 
 require('./auth/auth.service')(passport);
